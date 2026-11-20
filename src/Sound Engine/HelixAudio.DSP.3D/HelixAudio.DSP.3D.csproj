@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>HelixAudio.DSP._3D</RootNamespace>
+    <AssemblyName>HelixAudio.DSP.3D</AssemblyName>
+    <Description>HelixBassAudio - 3D/Spatial Audio</Description>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HelixAudio.Core\HelixAudio.Core.csproj" />
+  </ItemGroup>
+</Project>

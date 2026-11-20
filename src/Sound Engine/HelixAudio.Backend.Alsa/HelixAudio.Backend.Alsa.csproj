@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>HelixAudio.Backend.Alsa</RootNamespace>
+    <AssemblyName>HelixAudio.Backend.Alsa</AssemblyName>
+    <Description>HelixBassAudio - ALSA Backend (Linux)</Description>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HelixAudio.Core\HelixAudio.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,120 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWpf>true</UseWpf>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>AudioForge.UI</RootNamespace>
+    <AssemblyName>AudioForge.UI</AssemblyName>
+    <ApplicationIcon>Assets\Main\audioforge.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\Options\Help\Help main\contact.png" />
+    <None Remove="Assets\Options\Help\Help main\feedback.png" />
+    <None Remove="Assets\Options\Help\Help main\help_main.png" />
+    <None Remove="Assets\Options\Help\Help main\training.png" />
+    <None Remove="Assets\Options\Help\Help main\VisualStylingRibbonGroup.png" />
+    <None Remove="Assets\Options\Help\Splash Screen\audioforge.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\Transport\TransportBar\next.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Transport\TransportBar\pause.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Transport\TransportBar\Play.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Transport\TransportBar\power_button.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Transport\TransportBar\prev.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Transport\TransportBar\random.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Transport\TransportBar\repeat_all.png.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Transport\TransportBar\repeat_button.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Transport\TransportBar\repeat_none.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Transport\TransportBar\repeat_one.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Transport\TransportBar\slider1.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Transport\TransportBar\slider2.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Transport\TransportBar\slider3.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Transport\TransportBar\sliderpanel.jpg" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Main\audioforge.ico" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\InternetRadio\station is not available.mp3" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Transport\TransportBar\stop.png" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sound Engine\HelixAudio.Engine\HelixAudio.Engine.csproj" />
+    <ProjectReference Include="..\Sound Engine\HelixAudio.DSP\HelixAudio.DSP.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="11.0.0" />
+    <PackageReference Include="System.Reactive.Windows.Forms" Version="7.0.0" />
+    <PackageReference Include="TagLibSharp" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Options\Help\Help main\contact.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Options\Help\Help main\feedback.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Options\Help\Help main\help_main.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Options\Help\Help main\training.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Options\Help\Help main\VisualStylingRibbonGroup.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Options\Help\Splash Screen\audioforge.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Transport\TransportBar\next.png" />
+    <Resource Include="Assets\Transport\TransportBar\pause.png" />
+    <Resource Include="Assets\Transport\TransportBar\Play.png" />
+    <Resource Include="Assets\Transport\TransportBar\power_button.png" />
+    <Resource Include="Assets\Transport\TransportBar\prev.png" />
+    <Resource Include="Assets\Transport\TransportBar\random.png" />
+    <Resource Include="Assets\Transport\TransportBar\repeat_all.png.png" />
+    <Resource Include="Assets\Transport\TransportBar\repeat_button.png" />
+    <Resource Include="Assets\Transport\TransportBar\repeat_none.png" />
+    <Resource Include="Assets\Transport\TransportBar\repeat_one.png" />
+    <Resource Include="Assets\Transport\TransportBar\slider1.png" />
+    <Resource Include="Assets\Transport\TransportBar\slider2.png" />
+    <Resource Include="Assets\Transport\TransportBar\slider3.png" />
+    <Resource Include="Assets\Transport\TransportBar\sliderpanel.jpg" />
+    <Resource Include="Assets\Transport\TransportBar\stop.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SpeakerForge\SpeakerForge.csproj" />
+    <ProjectReference Include="..\AudioForge.SoundEngine\AudioForge.SoundEngine.csproj" />
+    <ProjectReference Include="..\AudioForge.Visualizer.Contracts\AudioForge.Visualizer.Contracts.csproj" />
+    <ProjectReference Include="..\AudioForge.VisualPlugins.Samples\AudioForge.VisualPlugins.Samples.csproj" />
+  </ItemGroup>
+
+  <Target Name="CopyVisualiserPlugins" AfterTargets="Build">
+    <ItemGroup>
+      <PluginDll Include="$(OutDir)AudioForge.VisualPlugins.Samples.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(PluginDll)" DestinationFolder="$(OutDir)visualisers" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

@@ -1,0 +1,38 @@
+$sourcePath = "H:\Audio forge with helix sound engine using winforms"
+$targetDir  = "$sourcePath\Full tree text files"
+$targetFile = "$targetDir\full tree.txt"
+
+if (-not (Test-Path $targetDir)) { 
+    New-Item -ItemType Directory -Force -Path $targetDir | Out-Null 
+}
+
+function Build-ProjectTree {
+    param (
+        [string]$Path,
+        [string]$Indent = ""
+    )
+    
+    # Exclude the target directory where the text file is being saved to prevent infinite loops
+    $items = Get-ChildItem -Path $Path | Where-Object { $_.FullName -ne $targetDir } | Sort-Object { $_.PSIsContainer -eq $false }, Name
+    $count = $items.Count
+
+    for ($i = 0; $i -lt $count; $i++) {
+        $item = $items[$i]
+        $isLast = ($i -eq ($count - 1))
+        
+        if ($isLast) { $connector = "└── " } else { $connector = "├── " }
+        
+        $script:TreeLines += "$Indent$connector$($item.Name)"
+        
+        if ($item.PSIsContainer) {
+            if ($isLast) { $nextIndent = $Indent + "    " } else { $nextIndent = $Indent + "│   " }
+            Build-ProjectTree -Path $item.FullName -Indent $nextIndent
+        }
+    }
+}
+
+$script:TreeLines = @((Get-Item $sourcePath).Name)
+Build-ProjectTree -Path $sourcePath
+$script:TreeLines | Out-File -FilePath $targetFile -Encoding utf8
+
+Write-Host "Success! Visual folder and file tree saved to: $targetFile" -ForegroundColor Green

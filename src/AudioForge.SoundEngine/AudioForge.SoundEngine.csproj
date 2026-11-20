@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>AudioForge.SoundEngine</RootNamespace>
+    <AssemblyName>AudioForge.SoundEngine</AssemblyName>
+    <Description>AudioForge standalone sound engine SDK - realtime playback, DSP chain, meters, EQ, loopback capture</Description>
+    <Version>1.0.0</Version>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sound Engine\HelixAudio.Engine\HelixAudio.Engine.csproj" />
+    <ProjectReference Include="..\Sound Engine\HelixAudio.DSP\HelixAudio.DSP.csproj" />
+    <ProjectReference Include="..\Sound Engine\HelixAudio.Analysis\HelixAudio.Analysis.csproj" />
+  </ItemGroup>
+
+</Project>

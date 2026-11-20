@@ -1,0 +1,232 @@
+﻿├── HelixAudio.Analysis
+├── HelixAudio.Backend.Alsa
+├── HelixAudio.Backend.CoreAudio
+├── HelixAudio.Backend.Wasapi
+├── HelixAudio.Benchmarks
+├── HelixAudio.Core
+├── HelixAudio.DSP
+├── HelixAudio.DSP.3D
+├── HelixAudio.Effects
+├── HelixAudio.Engine
+├── HelixAudio.Filters
+├── HelixAudio.IO
+├── HelixAudio.IO.Codecs
+├── HelixAudio.MIDI
+├── HelixAudio.Mixing
+├── HelixAudio.PluginHost
+├── HelixAudio.PluginHost.CLAP
+├── HelixAudio.PluginHost.VST3
+├── HelixAudio.Streaming
+├── HelixAudio.Tests
+├── HelixAudio.Visualization
+├── audio engine tree.txt
+  ├── AnalysisBase.cs
+  ├── HelixAudio.Analysis.csproj
+  ├── LoudnessAnalyzer.cs
+  ├── LoudnessMeterNode.cs
+  ├── PeakDetector.cs
+  ├── PeakMeterNode.cs
+  ├── PhaseCorrelationNode.cs
+  ├── RMSAnalyzer.cs
+  ├── RMSMeterNode.cs
+  ├── SpectrumAnalyzer.cs
+  ├── ZeroCrossingRate.cs
+  ├── HelixAudio.Backend.Alsa.csproj
+  ├── HelixAudio.Backend.CoreAudio.csproj
+  ├── CircularBuffer.cs
+  ├── HelixAudio.Backend.Wasapi.csproj
+  ├── WasapiCapture.cs
+  ├── WasapiDeviceManager.cs
+  ├── WasapiInputThread.cs
+  ├── WasapiInterop.cs
+  ├── WasapiOutput.cs
+  ├── WasapiOutputThread.cs
+  ├── HelixAudio.Benchmarks.csproj
+  ├── Engine
+  ├── AudioBuffer.cs
+  ├── AudioCallback.cs
+  ├── AudioClock.cs
+  ├── AudioDevice.cs
+  ├── AudioDiagnostics.cs
+  ├── AudioEngine.cs
+  ├── AudioFormat.cs
+  ├── AudioFormatConverter.cs
+  ├── AudioMixer.cs
+  ├── AudioNode.cs
+  ├── AudioPipeline.cs
+  ├── AudioSourceBase.cs
+  ├── BackendOptions.cs
+  ├── ChannelLayout.cs
+  ├── ChorusNode.cs
+  ├── CompressorNode.cs
+  ├── DelayNode.cs
+  ├── DeviceDirection.cs
+  ├── EffectNode.cs
+  ├── EngineNode.cs
+  ├── FlangerNode.cs
+  ├── GainNode.cs
+  ├── HelixAudio.Core.csproj
+  ├── HighPassNode.cs
+  ├── IAudioBackend.cs
+  ├── IAudioDeviceManager.cs
+  ├── IAudioNode.cs
+  ├── IAudioSource.cs
+  ├── LatencyProfile.cs
+  ├── LimiterNode.cs
+  ├── LowPassNode.cs
+  ├── MeterNode.cs
+  ├── NoiseGateNode.cs
+  ├── PanNode.cs
+  ├── PhaserNode.cs
+  ├── PluginParameter.cs
+  ├── ReverbNode.cs
+  ├── SampleType.cs
+  ├── SilenceSource.cs
+  ├── TremoloNode.cs
+  ├── VibratoNode.cs
+  ├── WASAPIBackend.cs
+  ├── Analysis
+  ├── Dynamics
+  ├── GraphicEQ
+  ├── MasterEQ
+  ├── Mastering
+  ├── Stereo
+  ├── AudioBuffer.cs
+  ├── BiquadFilter.cs
+  ├── BufferUtils.cs
+  ├── Convolution.cs
+  ├── DelayLine.cs
+  ├── DSPMath.cs
+  ├── DSPNode.cs
+  ├── DSPUtils.cs
+  ├── EnvelopeADSR.cs
+  ├── FIRFilter.cs
+  ├── HelixAudio.DSP.csproj
+  ├── IIRFilter.cs
+  ├── NodeGraph.cs
+  ├── NoiseGenerator.cs
+  ├── Oscillator.cs
+  ├── Resampler.cs
+  ├── WindowFunctions.cs
+    ├── FFT.cs
+    ├── SpectrumProcessor.cs
+    ├── CompressorEnvelope.cs
+    ├── CompressorProcessor.cs
+    ├── LimiterEnvelope.cs
+    ├── LimiterProcessor.cs
+    ├── BiquadCoefficients.cs
+    ├── BiquadFilter.cs
+    ├── EQPresets.cs
+    ├── MasterEQPresets.cs
+    ├── MasterEQProcessor.cs
+    ├── MidSide.cs
+    ├── StereoImagerProcessor.cs
+  ├── AmbisonicNode.cs
+  ├── AmbisonicOrder.cs
+  ├── BinauralNode.cs
+  ├── HelixAudio.DSP.3D.csproj
+  ├── ListenerNode.cs
+  ├── Quaternion.cs
+  ├── SpatialAudioNode.cs
+  ├── SpatialMode.cs
+  ├── SpatialNode.cs
+  ├── SurroundNode.cs
+  ├── Vector3.cs
+  ├── AllpassFilter.cs
+  ├── CombFilter.cs
+  ├── DelayEffect.cs
+  ├── EffectBase.cs
+  ├── HelixAudio.Effects.csproj
+  ├── ReverbEffect.cs
+  ├── AnalysisNode.cs
+  ├── AudioEngine.cs
+  ├── EffectNode.cs
+  ├── EngineBase.cs
+  ├── EngineConfig.cs
+  ├── EngineController.cs
+  ├── EngineNode.cs
+  ├── FilterNode.cs
+  ├── HelixAudio.Engine.csproj
+  ├── IAudioDeviceManager.cs
+  ├── InputNode.cs
+  ├── MixerNode.cs
+  ├── OutputNode.cs
+  ├── ProcessingGraph.cs
+  ├── BandPassFilter.cs
+  ├── FilterBase.cs
+  ├── HelixAudio.Filters.csproj
+  ├── HighPassFilter.cs
+  ├── LowPassFilter.cs
+  ├── AudioMetadata.cs
+  ├── AudioStream.cs
+  ├── FlacDecoder.cs
+  ├── FormatDetector.cs
+  ├── HelixAudio.IO.csproj
+  ├── Mp3Decoder.cs
+  ├── OggVorbisDecoder.cs
+  ├── PcmReader.cs
+  ├── PcmWriter.cs
+  ├── WavReader.cs
+  ├── WavWriter.cs
+  ├── AacCodec.cs
+  ├── AlacCodec.cs
+  ├── CodecManager.cs
+  ├── DsdCodec.cs
+  ├── FlacCodec.cs
+  ├── HelixAudio.IO.Codecs.csproj
+  ├── IAudioCodec.cs
+  ├── Mp3Codec.cs
+  ├── OggCodec.cs
+  ├── OpusCodec.cs
+  ├── WavCodec.cs
+  ├── WmaCodec.cs
+  ├── GeneralMIDI.cs
+  ├── HelixAudio.MIDI.csproj
+  ├── MIDIEnums.cs
+  ├── MIDIEvent.cs
+  ├── MIDIFile.cs
+  ├── MIDIInput.cs
+  ├── MIDIOutput.cs
+  ├── Synthesizer.cs
+  ├── CrossfadeMixer.cs
+  ├── HelixAudio.Mixing.csproj
+  ├── MixerBase.cs
+  ├── MixerChannel.cs
+  ├── MixerNode.cs
+  ├── MixerProcessor.cs
+  ├── MultiTrackMixer.cs
+  ├── PanMixer.cs
+  ├── SimpleMixer.cs
+  ├── BuiltinPlugin.cs
+  ├── HelixAudio.PluginHost.csproj
+  ├── IAudioPlugin.cs
+  ├── PluginDescriptor.cs
+  ├── PluginHost.cs
+  ├── PluginHostStatistics.cs
+  ├── PluginLoader.cs
+  ├── PluginManager.cs
+  ├── PluginNode.cs
+  ├── PluginParameterController.cs
+  ├── PluginType.cs
+  ├── CLAPHost.cs
+  ├── HelixAudio.PluginHost.CLAP.csproj
+  ├── HelixAudio.PluginHost.VST3.csproj
+  ├── VST3Host.cs
+  ├── AudioPipeline.cs
+  ├── AudioStreamer.cs
+  ├── DASHStream.cs
+  ├── HelixAudio.Streaming.csproj
+  ├── HLSStream.cs
+  ├── HTTPStream.cs
+  ├── IStream.cs
+  ├── ShoutcastStream.cs
+  ├── StreamManager.cs
+  ├── StreamReader.cs
+  ├── StreamWriter.cs
+  ├── AudioDiagnosticsTests.cs
+  ├── AudioEngineRoutingTests.cs
+  ├── CoreAndAnalysisTests.cs
+  ├── HelixAudio.Tests.csproj
+  ├── ProcessingGraphTests.cs
+  ├── ProcessingSubsystemTests.cs
+  ├── HelixAudio.Visualization.csproj

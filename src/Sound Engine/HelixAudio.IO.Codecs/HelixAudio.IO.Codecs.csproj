@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>HelixAudio.IO.Codecs</RootNamespace>
+    <AssemblyName>HelixAudio.IO.Codecs</AssemblyName>
+    <Description>HelixBassAudio - Audio Codecs</Description>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HelixAudio.IO\HelixAudio.IO.csproj" />
+    <ProjectReference Include="..\HelixAudio.Core\HelixAudio.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NAudio" Version="3.3.0" />
+    <PackageReference Include="NVorbis" Version="0.10.5" />
+    <PackageReference Include="PureFlac" Version="1.0.0" />
+  </ItemGroup>
+</Project>

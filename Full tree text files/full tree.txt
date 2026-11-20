@@ -1,0 +1,202 @@
+﻿Audio forge with helix sound engine using winforms
+├── .github
+│   └── copilot-instructions.md
+├── For gemini
+│   └── reminder for gemini.txt
+├── Powershell apps
+│   └── tree to text powershell app.txt
+├── UI
+│   ├── Assets
+│   │   ├── GraphicEqualiser
+│   │   ├── InternetRadio
+│   │   ├── Media
+│   │   ├── Mixer
+│   │   ├── NetworkSpeakers
+│   │   ├── Options
+│   │   │   └── Help
+│   │   │       ├── Help main
+│   │   │       │   ├── contact.png
+│   │   │       │   ├── feedback.png
+│   │   │       │   ├── help_main.png
+│   │   │       │   ├── training.png
+│   │   │       │   └── VisualStylingRibbonGroup.png
+│   │   │       ├── memory management
+│   │   │       │   └── memory management.jpg
+│   │   │       └── Splash Screen
+│   │   │           └── audioforge.png
+│   │   ├── Plugins
+│   │   ├── Transport
+│   │   │   └── TransportBar
+│   │   │       ├── next.png
+│   │   │       ├── pause.png
+│   │   │       ├── Play.png
+│   │   │       ├── power_button.png
+│   │   │       ├── prev.png
+│   │   │       ├── random.png
+│   │   │       ├── repeat_all.png.png
+│   │   │       ├── repeat_button.png
+│   │   │       ├── repeat_none.png
+│   │   │       ├── repeat_one.png
+│   │   │       ├── slider1.png
+│   │   │       ├── slider2.png
+│   │   │       ├── slider3.png
+│   │   │       ├── sliderpanel.jpg
+│   │   │       └── stop.png
+│   │   └── Visualiser
+│   ├── bin
+│   │   └── Debug
+│   │       └── net8.0-windows
+│   │           ├── Assets
+│   │           │   └── Transport
+│   │           │       └── TransportBar
+│   │           │           ├── next.png
+│   │           │           ├── pause.png
+│   │           │           ├── Play.png
+│   │           │           ├── power_button.png
+│   │           │           ├── prev.png
+│   │           │           ├── random.png
+│   │           │           ├── repeat_all.png.png
+│   │           │           ├── repeat_button.png
+│   │           │           ├── repeat_none.png
+│   │           │           ├── repeat_one.png
+│   │           │           ├── slider1.png
+│   │           │           ├── slider2.png
+│   │           │           ├── slider3.png
+│   │           │           ├── sliderpanel.jpg
+│   │           │           └── stop.png
+│   │           ├── AudioForge.UI.deps.json
+│   │           ├── AudioForge.UI.dll
+│   │           ├── AudioForge.UI.exe
+│   │           ├── AudioForge.UI.pdb
+│   │           ├── AudioForge.UI.runtimeconfig.json
+│   │           ├── CommunityToolkit.Common.dll
+│   │           ├── CommunityToolkit.Diagnostics.dll
+│   │           ├── CommunityToolkit.Mvvm.dll
+│   │           ├── HelixToolkit.dll
+│   │           ├── HelixToolkit.Geometry.dll
+│   │           ├── HelixToolkit.Maths.dll
+│   │           ├── HelixToolkit.Wpf.dll
+│   │           ├── Microsoft.Extensions.DependencyInjection.Abstractions.dll
+│   │           ├── Microsoft.Extensions.Logging.Abstractions.dll
+│   │           ├── System.Reactive.dll
+│   │           └── System.Reactive.Windows.Forms.dll
+│   ├── MainWindow
+│   │   ├── GraphicEqualizer
+│   │   ├── InternetRadio
+│   │   ├── Media
+│   │   ├── Mixer
+│   │   ├── NetworkSpeakers
+│   │   ├── Options
+│   │   │   ├── About
+│   │   │   ├── Help
+│   │   │   │   ├── Contact
+│   │   │   │   ├── Documents
+│   │   │   │   └── New folder
+│   │   │   ├── MemoryManagement
+│   │   │   └── ThemeOptions
+│   │   │       ├── OptionsRibbonControl.cs
+│   │   │       └── OptionsRibbonControl.Designer.cs
+│   │   ├── Plugins
+│   │   │   └── PluginManager
+│   │   ├── Visualizer
+│   │   ├── MainForm.cs
+│   │   ├── MainForm.Designer.cs
+│   │   └── MainForm.resx
+│   ├── obj
+│   │   ├── Debug
+│   │   │   └── net8.0-windows
+│   │   │       ├── ref
+│   │   │       │   └── AudioForge.UI.dll
+│   │   │       ├── refint
+│   │   │       │   └── AudioForge.UI.dll
+│   │   │       ├── TempPE
+│   │   │       │   └── Properties.Resources.Designer.cs.dll
+│   │   │       ├── .NETCoreApp,Version=v8.0.AssemblyAttributes.cs
+│   │   │       ├── apphost.exe
+│   │   │       ├── AudioFor.822580EF.Up2Date
+│   │   │       ├── AudioForge.UI.AssemblyInfo.cs
+│   │   │       ├── AudioForge.UI.AssemblyInfoInputs.cache
+│   │   │       ├── AudioForge.UI.assets.cache
+│   │   │       ├── AudioForge.UI.csproj.AssemblyReference.cache
+│   │   │       ├── AudioForge.UI.csproj.BuildWithSkipAnalyzers
+│   │   │       ├── AudioForge.UI.csproj.CoreCompileInputs.cache
+│   │   │       ├── AudioForge.UI.csproj.FileListAbsolute.txt
+│   │   │       ├── AudioForge.UI.csproj.GenerateResource.cache
+│   │   │       ├── AudioForge.UI.designer.deps.json
+│   │   │       ├── AudioForge.UI.designer.runtimeconfig.json
+│   │   │       ├── AudioForge.UI.dll
+│   │   │       ├── AudioForge.UI.g.resources
+│   │   │       ├── AudioForge.UI.GeneratedMSBuildEditorConfig.editorconfig
+│   │   │       ├── AudioForge.UI.genruntimeconfig.cache
+│   │   │       ├── AudioForge.UI.GlobalUsings.g.cs
+│   │   │       ├── AudioForge.UI.MainWindow.MainForm.resources
+│   │   │       ├── AudioForge.UI.MainWindow.Options.ThemeOptions.GraphicEqualiserRibbonControl.resources
+│   │   │       ├── AudioForge.UI.MainWindow.Options.ThemeOptions.InternetRadioRibbonControl.resources
+│   │   │       ├── AudioForge.UI.MainWindow.Options.ThemeOptions.OptionsRibbonControl.resources
+│   │   │       ├── AudioForge.UI.MainWindow.Options.ThemeOptions.VisualStylingRibbonGroup.resources
+│   │   │       ├── AudioForge.UI.pdb
+│   │   │       ├── AudioForge.UI.Properties.Resources.resources
+│   │   │       ├── AudioForge.UI.TransportBar.CurrentTimeControl.resources
+│   │   │       ├── AudioForge.UI.TransportBar.NextButtonControl.resources
+│   │   │       ├── AudioForge.UI.TransportBar.PauseButtonControl.resources
+│   │   │       ├── AudioForge.UI.TransportBar.PlayButtonControl.resources
+│   │   │       ├── AudioForge.UI.TransportBar.PreviousButtonControl.resources
+│   │   │       ├── AudioForge.UI.TransportBar.TransportBarControl.resources
+│   │   │       └── AudioForge.UI.TransportBar.VolumeControl.resources
+│   │   ├── AudioForge.UI.csproj.nuget.dgspec.json
+│   │   ├── AudioForge.UI.csproj.nuget.g.props
+│   │   ├── AudioForge.UI.csproj.nuget.g.targets
+│   │   ├── project.assets.json
+│   │   └── project.nuget.cache
+│   ├── Properties
+│   │   ├── Resources.Designer.cs
+│   │   └── Resources.resx
+│   ├── Shared
+│   │   ├── ThemeManager.cs
+│   │   └── ThemeModel.cs
+│   ├── TransportBar
+│   │   ├── BarVisualizerRenderer.cs
+│   │   ├── CurrentTimeControl.cs
+│   │   ├── CurrentTimeControl.Designer.cs
+│   │   ├── CurrentTimeControl.resx
+│   │   ├── MiniVisualizerControl.cs
+│   │   ├── MiniVisualizerControl.Designer.cs
+│   │   ├── NextButtonControl.cs
+│   │   ├── NextButtonControl.Designer.cs
+│   │   ├── NextButtonControl.resx
+│   │   ├── OscilloscopeRenderer.cs
+│   │   ├── PauseButtonControl.cs
+│   │   ├── PauseButtonControl.Designer.cs
+│   │   ├── PauseButtonControl.resx
+│   │   ├── PlaybackControls.cs
+│   │   ├── PlaybackControls.Designer.cs
+│   │   ├── PlayButtonControl.cs
+│   │   ├── PlayButtonControl.Designer.cs
+│   │   ├── PlayButtonControl.resx
+│   │   ├── PreviousButtonControl.cs
+│   │   ├── PreviousButtonControl.Designer.cs
+│   │   ├── PreviousButtonControl.resx
+│   │   ├── RepeatButtonControl.cs
+│   │   ├── RepeatButtonControl.Designer.cs
+│   │   ├── ShuffleButtonControl.cs
+│   │   ├── ShuffleButtonControl.Designer.cs
+│   │   ├── StopButtonControl.cs
+│   │   ├── StopButtonControl.Designer.cs
+│   │   ├── TotalTimeControl.cs
+│   │   ├── TotalTimeControl.Designer.cs
+│   │   ├── TrackInfoControl.cs
+│   │   ├── TrackInfoControl.Designer.cs
+│   │   ├── TransportBarControl.cs
+│   │   ├── TransportBarControl.Designer.cs
+│   │   ├── TransportBarControl.resx
+│   │   ├── VisualizerModeControl.cs
+│   │   ├── VisualizerModeControl.Designer.cs
+│   │   ├── VisualizerPowerControl.cs
+│   │   ├── VisualizerPowerControl.Designer.cs
+│   │   ├── VolumeControl.cs
+│   │   ├── VolumeControl.Designer.cs
+│   │   └── VolumeControl.resx
+│   ├── AudioForge.UI.csproj
+│   ├── AudioForge.UI.csproj.user
+│   └── Program.cs
+└── AudioForge.sln

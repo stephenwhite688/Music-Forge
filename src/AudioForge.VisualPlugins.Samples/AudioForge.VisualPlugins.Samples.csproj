@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>AudioForge.VisualPlugins.Samples</RootNamespace>
+    <AssemblyName>AudioForge.VisualPlugins.Samples</AssemblyName>
+    <Description>Sample visualiser plugins for AudioForge</Description>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AudioForge.Visualizer.Contracts\AudioForge.Visualizer.Contracts.csproj" />
+  </ItemGroup>
+</Project>

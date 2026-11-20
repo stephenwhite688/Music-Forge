@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>HelixAudio.Backend.Wasapi</RootNamespace>
+    <AssemblyName>HelixAudio.Backend.Wasapi</AssemblyName>
+    <Description>HelixBassAudio - WASAPI Backend (Windows)</Description>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HelixAudio.Core\HelixAudio.Core.csproj" />
+    <PackageReference Include="NAudio" Version="3.3.0" />
+  </ItemGroup>
+</Project>

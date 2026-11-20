@@ -1,0 +1,74 @@
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Text;
+
+namespace HelixAudio.Core;
+
+/// <summary>Rate-limited diagnostics shared by the engine, backends, and UI.</summary>
+public static class AudioDiagnostics
+{
+    private static readonly object FileGate = new();
+    private static readonly ConcurrentDictionary<string, long> LastMessages = new();
+    private static readonly string _logDirectory = ResolveLogDirectory();
+    private static readonly string _logFilePath = Path.Combine(_logDirectory, "audio-engine.log");
+
+    static AudioDiagnostics()
+    {
+        Directory.CreateDirectory(_logDirectory);
+        Log("Diagnostics", $"Initialized; log directory={_logDirectory}");
+    }
+
+    public static string LogDirectory => _logDirectory;
+    public static string LogFilePath => _logFilePath;
+
+    public static void Log(string subsystem, string message)
+    {
+        var line = $"[{DateTimeOffset.UtcNow:O}] [{subsystem}] {message}{Environment.NewLine}";
+        try
+        {
+            lock (FileGate)
+                File.AppendAllText(_logFilePath, line, Encoding.UTF8);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Audio diagnostics write failed: {ex.Message}");
+        }
+    }
+
+    public static void LogError(string subsystem, string message, Exception? exception = null)
+    {
+        var detail = exception == null ? string.Empty : $" exception={exception.GetType().Name}: {exception.Message}";
+        Log(subsystem, $"ERROR {message}{detail}");
+    }
+
+    public static void LogRateLimited(string key, string subsystem, string message, TimeSpan interval)
+    {
+        var now = Stopwatch.GetTimestamp();
+        var minimumTicks = Math.Max(1L, (long)(interval.TotalSeconds * Stopwatch.Frequency));
+        var previous = LastMessages.GetOrAdd(key, 0);
+        if (now - previous < minimumTicks)
+            return;
+
+        LastMessages[key] = now;
+        Log(subsystem, message);
+    }
+
+    private static string ResolveLogDirectory()
+    {
+        var configured = Environment.GetEnvironmentVariable("HELIX_AUDIO_LOG_DIRECTORY");
+        if (!string.IsNullOrWhiteSpace(configured))
+            return configured;
+
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        for (var i = 0; i < 10 && directory != null; i++, directory = directory.Parent)
+        {
+            if (File.Exists(Path.Combine(directory.FullName, "HelixBassAudio.sln")))
+                return Path.Combine(directory.FullName, "logs");
+        }
+
+        return Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "AudioForge",
+            "logs");
+    }
+}
