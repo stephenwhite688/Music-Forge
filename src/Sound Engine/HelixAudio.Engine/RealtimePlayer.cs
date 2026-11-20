@@ -242,9 +242,7 @@ public sealed class RealtimePlayer : IDisposable
                     proc = buffer;
                 }
                 foreach (var node in _nodes)
-                    proc = node.Process(proc) ?? proc;
-                if (proc.Length != validSamples)
-                    Array.Resize(ref proc, validSamples);
+                    node.Process(proc);
 
                 _device.Write(proc, validSamples);
                 _framesWritten += frames;

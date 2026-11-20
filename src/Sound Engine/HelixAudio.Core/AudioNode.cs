@@ -59,11 +59,10 @@ namespace HelixAudio.Core
         public virtual void Reset() { }
 
         /// <summary>
-        /// Processes an audio buffer and returns the processed output.
+        /// Processes an interleaved audio buffer in place.
         /// Override this method in derived classes to implement custom processing logic.
         /// </summary>
-        /// <param name="buffer">The input audio buffer to process.</param>
-        /// <returns>The processed audio buffer.</returns>
-        public abstract float[] Process(float[] buffer);
+        /// <param name="buffer">The interleaved audio buffer to process in place.</param>
+        public abstract void Process(Span<float> buffer);
     }
 }

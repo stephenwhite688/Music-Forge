@@ -36,7 +36,7 @@ public sealed class LevelMeterNode : AudioNode
     /// <summary>True when the last block hit or exceeded 0 dBFS.</summary>
     public bool Clip { get { lock (_gate) return _blockPeak >= 0f; } }
 
-    public override float[] Process(float[] buffer)
+    public override void Process(Span<float> buffer)
     {
         int channels = Math.Max(1, Format?.Channels ?? Channels);
         int frames = buffer.Length / channels;
@@ -64,7 +64,6 @@ public sealed class LevelMeterNode : AudioNode
             _rmsDb = _rmsDb + (_rmsDb < -119f ? (blockRms - _rmsDb) : a * (blockRms - _rmsDb));
             if (_rmsDb < -120f) _rmsDb = -120f;
         }
-        return buffer;
     }
 
     public override void Reset()

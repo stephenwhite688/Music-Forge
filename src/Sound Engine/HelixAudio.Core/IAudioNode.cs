@@ -26,12 +26,12 @@ namespace HelixAudio.Core
         void Prepare(AudioFormat format);
 
         /// <summary>
-        /// Processes an audio buffer and returns the processed output.
-        /// Override this method in derived classes to implement custom processing logic.
+        /// Processes an interleaved audio buffer in place.
+        /// The buffer contains <c>frames * Format.Channels</c> samples.
+        /// Implementations must not allocate per block on the real-time path.
         /// </summary>
-        /// <param name="buffer">The input audio buffer to process.</param>
-        /// <returns>The processed audio buffer.</returns>
-        float[] Process(float[] buffer);
+        /// <param name="buffer">The interleaved audio buffer to process in place.</param>
+        void Process(Span<float> buffer);
 
         /// <summary>
         /// Resets the node state to initial values.

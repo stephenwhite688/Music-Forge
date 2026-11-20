@@ -62,11 +62,11 @@ public sealed class TruePeakNode : AudioNode
         lock (_gate) { _blockPeakDb = -120f; _heldPeakDb = -120f; }
     }
 
-    public override float[] Process(float[] buffer)
+    public override void Process(Span<float> buffer)
     {
         int channels = _pending is not null ? _channels : Math.Max(1, Format?.Channels ?? Channels);
         int frames = buffer.Length / channels;
-        if (frames == 0 || _pending is null || _pendingCount is null) return buffer;
+        if (frames == 0 || _pending is null || _pendingCount is null) return;
 
         float peak = 0f;
         for (int ch = 0; ch < channels; ch++)
@@ -123,7 +123,6 @@ public sealed class TruePeakNode : AudioNode
             _blockPeakDb = db;
             _heldPeakDb = db > _heldPeakDb ? db : Math.Max(_heldPeakDb * PeakDecayPerBlock, -120f);
         }
-        return buffer;
     }
 
     /// <summary>Builds Blackman-windowed sinc interpolation kernels for the

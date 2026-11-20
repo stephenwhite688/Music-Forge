@@ -152,7 +152,7 @@ public sealed class SpectrumTapNode : AudioNode
         }
     }
 
-    public override float[] Process(float[] buffer)
+    public override void Process(Span<float> buffer)
     {
         int channels = Math.Max(1, Format?.Channels ?? _channels);
         int frames = buffer.Length / channels;
@@ -167,8 +167,6 @@ public sealed class SpectrumTapNode : AudioNode
 
         if (_fill >= FftSize)
             AnalyzeFrame(channels);
-
-        return buffer;
     }
 
     private void AnalyzeFrame(int inputChannels)

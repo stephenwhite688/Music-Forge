@@ -149,7 +149,7 @@ public sealed class SpectrogramTapNode : AudioNode
         }
     }
 
-    public override float[] Process(float[] buffer)
+    public override void Process(Span<float> buffer)
     {
         // Locked so SetFftParameters can't swap buffers mid-frame.
         lock (_gate)
@@ -167,8 +167,6 @@ public sealed class SpectrogramTapNode : AudioNode
 
         if (_fill >= FftSize)
             AnalyzeFrame(channels);
-
-        return buffer;
         }
     }
 

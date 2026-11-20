@@ -68,10 +68,10 @@ public sealed class SystemAudioProcessor : IDisposable
         {
             if (_format is null) return interleaved; // not prepared - pass through
             SyncEqFromSource();
-            var buf = ActiveEqNode.Process(interleaved) ?? interleaved;
-            if (_meter is not null) buf = _meter.Process(buf) ?? buf;
-            if (_truePeak is not null) buf = _truePeak.Process(buf) ?? buf;
-            return buf;
+            ActiveEqNode.Process(interleaved);
+            _meter?.Process(interleaved);
+            _truePeak?.Process(interleaved);
+            return interleaved;
         }
     }
 

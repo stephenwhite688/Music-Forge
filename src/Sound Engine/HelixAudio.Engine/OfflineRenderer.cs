@@ -82,7 +82,7 @@ public sealed class OfflineRenderer
                 if (buffer.Length == 0) break;
 
                 foreach (var node in nodeList)
-                    buffer = node.Process(buffer) ?? buffer;
+                    node.Process(buffer);
 
                 writer.WriteFrames(buffer);
                 framesRendered += buffer.Length / channels;

@@ -62,11 +62,11 @@ public sealed class WaveformTapNode : AudioNode
         _totalFrames = 0;
     }
 
-    public override float[] Process(float[] buffer)
+    public override void Process(Span<float> buffer)
     {
         int ch = Math.Max(1, Format?.Channels ?? _activeChannels);
         int frames = buffer.Length / ch;
-        if (frames <= 0) return buffer;
+        if (frames <= 0) return;
 
         for (int i = 0; i < frames; i++)
         {
@@ -77,7 +77,6 @@ public sealed class WaveformTapNode : AudioNode
             _writePos = (_writePos + 1) % _capacityFrames;
         }
         _totalFrames += frames;
-        return buffer;
     }
 
     /// <summary>

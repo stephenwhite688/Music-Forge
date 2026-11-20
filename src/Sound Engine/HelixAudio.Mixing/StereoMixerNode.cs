@@ -30,6 +30,8 @@ public sealed class StereoMixerNode : AudioNode
     private readonly object _gate = new();
     private float[] _peakDb;
     private float[] _rmsDb;
+    private float[] _meterPeaks;
+    private double[] _meterSumSq;
     private int _activeChannels;
     private float _balance; // -1 = hard left, 0 = centre, +1 = hard right
 
@@ -93,11 +95,11 @@ public sealed class StereoMixerNode : AudioNode
         }
     }
 
-    public override float[] Process(float[] buffer)
+    public override void Process(Span<float> buffer)
     {
         int ch = Math.Max(1, Format?.Channels ?? _activeChannels);
         int frames = buffer.Length / ch;
-        if (frames <= 0) return buffer;
+        if (frames <= 0) return;
 
         bool anySolo = false;
         for (int c = 0; c < ch && c < _strips.Length; c++)
@@ -129,9 +131,16 @@ public sealed class StereoMixerNode : AudioNode
             }
         }
 
-        // Post-mix metering
-        var peaks = new float[ch];
-        var sumSq = new double[ch];
+        // Post-mix metering (reused buffers - no per-block allocation)
+        if (_meterPeaks is null || _meterPeaks.Length < ch)
+        {
+            _meterPeaks = new float[ch];
+            _meterSumSq = new double[ch];
+        }
+        var peaks = _meterPeaks;
+        var sumSq = _meterSumSq;
+        Array.Clear(peaks, 0, ch);
+        Array.Clear(sumSq, 0, ch);
         for (int f = 0; f < frames; f++)
         {
             int offset = f * ch;
@@ -152,6 +161,5 @@ public sealed class StereoMixerNode : AudioNode
                 _rmsDb[c] = _rmsDb[c] < -119f ? rmsDb : _rmsDb[c] + 0.4f * (rmsDb - _rmsDb[c]);
             }
         }
-        return buffer;
     }
 }

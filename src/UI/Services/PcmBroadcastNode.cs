@@ -16,6 +16,7 @@ public sealed class PcmBroadcastNode : AudioNode
     private readonly NetworkAudioServer _server;
     private int _channels;
     private int _framesPerBlock;
+    private float[] _scratch = Array.Empty<float>();
 
     public PcmBroadcastNode(NetworkAudioServer server, int sampleRate = 48000, int channels = 2, string name = "NetworkBroadcast")
         : base(sampleRate, channels, name)
@@ -37,16 +38,18 @@ public sealed class PcmBroadcastNode : AudioNode
         _server.SampleRate = format.SampleRate;
     }
 
-    public override float[] Process(float[] buffer)
+    public override void Process(Span<float> buffer)
     {
-        if (buffer.Length == 0) return buffer;
+        if (buffer.Length == 0) return;
         int frames = buffer.Length / Math.Max(1, _channels);
         if (Enabled && frames > 0 && _server.ConnectedClients > 0)
         {
             _server.SampleRate = Format?.SampleRate ?? SampleRate;
             _server.ChunkFrames = frames;
-            _server.Broadcast(buffer, frames);
+            if (_scratch.Length < buffer.Length)
+                _scratch = new float[buffer.Length];
+            buffer.CopyTo(_scratch);
+            _server.Broadcast(_scratch, frames);
         }
-        return buffer;
     }
 }

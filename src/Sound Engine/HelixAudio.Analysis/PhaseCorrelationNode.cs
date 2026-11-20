@@ -37,9 +37,8 @@ namespace HelixAudio.Analysis
         /// Processes the input stereo buffer and calculates phase correlation between left and right channels.
         /// Returns the original input unchanged (pass-through behavior).
         /// </summary>
-        /// <param name="input">The input stereo audio buffer (left channel first, then right).</param>
-        /// <returns>The original input buffer (unchanged).</returns>
-        public override float[] Process(float[] input)
+        /// <param name="input">The interleaved stereo audio buffer (left channel first, then right).</param>
+        public override void Process(Span<float> input)
         {
             double sumL = 0.0;
             double sumR = 0.0;
@@ -63,8 +62,6 @@ namespace HelixAudio.Analysis
             {
                 _correlation = 0.0f;
             }
-
-            return input;
         }
 
         /// <summary>

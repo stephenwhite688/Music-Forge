@@ -34,16 +34,12 @@ public class LoudnessMeterNode : AudioNode
     }
 
     /// <summary>
-    /// Processes the input audio buffer and calculates loudness/peak metrics.
-    /// Returns the original input unchanged (pass-through behavior).
+    /// Processes the input audio buffer in place and calculates loudness/peak metrics.
+    /// Pass-through: the buffer is not modified.
     /// </summary>
-    /// <param name="input">The input audio buffer to process.</param>
-    /// <returns>The original input buffer (unchanged).</returns>
-    public override float[] Process(float[] input)
+    /// <param name="input">The interleaved audio buffer to analyze.</param>
+    public override void Process(Span<float> input)
     {
-        if (input == null)
-            throw new ArgumentNullException(nameof(input));
-
         double sumSquares = 0.0;
         float peak = 0.0f;
 
@@ -60,8 +56,6 @@ public class LoudnessMeterNode : AudioNode
 
         _loudness = (float)Math.Sqrt(sumSquares / input.Length);
         _peak = peak;
-
-        return input;
     }
 
     /// <summary>

@@ -97,16 +97,16 @@ public sealed class LinearPhaseEqNode : AudioNode
         }
     }
 
-    public override float[] Process(float[] buffer)
+    public override void Process(Span<float> buffer)
     {
         if (buffer.Length == 0 || _states is null || _spec.Bypass || !_spec.Enabled)
-            return buffer;
+            return;
 
         EnsureKernelsBuilt();
 
         int channels = _states.Length;
         int frames = buffer.Length / channels;
-        if (frames == 0) return buffer;
+        if (frames == 0) return;
         float inGain = DbToLinear(_spec.InputGainDb);
         float outGain = DbToLinear(_spec.OutputGainDb);
 
@@ -140,7 +140,6 @@ public sealed class LinearPhaseEqNode : AudioNode
                     Array.Copy(s.Pending, n, s.Pending, 0, s.PendingCount);
             }
         }
-        return buffer;
     }
 
     private void EnsurePendingCapacity(ChannelState s, int needed)

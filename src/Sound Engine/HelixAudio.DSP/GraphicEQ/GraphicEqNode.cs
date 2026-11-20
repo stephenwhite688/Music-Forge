@@ -306,15 +306,15 @@ public sealed class GraphicEqNode : AudioNode
         }
     }
 
-    public override float[] Process(float[] buffer)
+    public override void Process(Span<float> buffer)
     {
         if (buffer.Length == 0 || !_enabled || _bypass || _filters is null)
-            return buffer;
+            return;
 
         ApplyPendingGains();
 
         int channels = _filters.GetLength(0);
-        if (channels < 1) return buffer;
+        if (channels < 1) return;
         int frames = buffer.Length / channels;
         float inGain = DbToLinear(_inputGainDb);
         float outGain = DbToLinear(_outputGainDb);
@@ -331,7 +331,6 @@ public sealed class GraphicEqNode : AudioNode
                 buffer[idx] = s * outGain;
             }
         }
-        return buffer;
     }
 
     /// <summary>

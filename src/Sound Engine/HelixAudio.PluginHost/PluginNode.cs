@@ -19,18 +19,21 @@ public class PluginNode : AudioNode
         _initialized = true;
     }
 
-    public override float[] Process(float[] input)
+    public override void Process(Span<float> input)
     {
         if (!_initialized)
-            return input;
+            return;
 
         try
         {
-            return _plugin.Process(input);
+            // IAudioPlugin still uses the array contract; copy in/out.
+            float[] output = _plugin.Process(input.ToArray());
+            if (output != null)
+                output.AsSpan().CopyTo(input);
         }
         catch
         {
-            return input;
+            // Plugin failure passes audio through unchanged.
         }
     }
 

@@ -234,8 +234,8 @@ public sealed class EqService
 
         var a = (float[])src.Clone();
         var b = (float[])src.Clone();
-        a = bypassed.Process(a);
-        b = flat.Process(b);
+        bypassed.Process(a);
+        flat.Process(b);
 
         float maxDiff = 0f;
         for (int i = 0; i < a.Length; i++) maxDiff = Math.Max(maxDiff, MathF.Abs(a[i] - b[i]));
@@ -251,8 +251,8 @@ public sealed class EqService
         lin.Prepare(fmt);
         var cbuf = (float[])src.Clone();
         var d = (float[])src.Clone();
-        cbuf = lin.Process(cbuf);
-        d = bypassed.Process(d);
+        lin.Process(cbuf);
+        bypassed.Process(d);
         // account for FIR group delay: compare with a shifted reference is
         // complex; instead verify the linear node output is bounded and
         // non-silent, and measure diff after compensating ~kernelLen/2 delay

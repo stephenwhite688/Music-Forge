@@ -38,13 +38,9 @@ namespace HelixAudio.Analysis
         /// Processes the input audio buffer and calculates RMS/peak metrics.
         /// Returns the original input unchanged (pass-through behavior).
         /// </summary>
-        /// <param name="input">The input audio buffer to process.</param>
-        /// <returns>The original input buffer (unchanged).</returns>
-        public override float[] Process(float[] input)
+        /// <param name="input">The interleaved audio buffer to analyze.</param>
+        public override void Process(Span<float> input)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-
             double sumSquares = 0.0;
             float peak = 0.0f;
 
@@ -61,8 +57,6 @@ namespace HelixAudio.Analysis
 
             _peak = peak;
             _rms = (float)Math.Sqrt(sumSquares / input.Length);
-
-            return input;
         }
 
         /// <summary>
