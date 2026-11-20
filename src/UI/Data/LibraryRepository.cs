@@ -105,40 +105,68 @@ public sealed class LibraryRepository
         return Task.Run(() =>
         {
             var sources = GetSourcePaths();
-            int added = 0;
 
-            using var connection = AudioForgeDatabase.Instance.OpenConnection();
-            using var tx = connection.BeginTransaction();
-
-            foreach (string source in sources)
+            // Phase 1: enumerate files and read tags with NO write transaction
+            // held - TagLib file I/O is slow and must not keep the DB locked.
+            var pending = new List<(string Path, TrackMeta Meta, long Size)>();
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            using (var readConnection = AudioForgeDatabase.Instance.OpenConnection())
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                if (!Directory.Exists(source)) continue;
-
-                IEnumerable<string> files;
-                try
-                {
-                    var options = new EnumerationOptions
-                    {
-                        RecurseSubdirectories = true,
-                        IgnoreInaccessible = true,
-                        AttributesToSkip = FileAttributes.ReparsePoint
-                    };
-                    files = Directory.EnumerateFiles(source, "*", options)
-                        .Where(f => AudioExtensions.Contains(Path.GetExtension(f)));
-                }
-                catch (Exception) { continue; } // inaccessible folder - skip
-
-                foreach (string file in files)
+                foreach (string source in sources)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
+                    if (!Directory.Exists(source)) continue;
+
+                    IEnumerable<string> files;
                     try
                     {
-                        bool isNew = !TrackExists(connection, tx, file);
-                        EnsureTrackRow(connection, tx, file);
-                        if (isNew) added++;
+                        var options = new EnumerationOptions
+                        {
+                            RecurseSubdirectories = true,
+                            IgnoreInaccessible = true,
+                            AttributesToSkip = FileAttributes.ReparsePoint
+                        };
+                        files = Directory.EnumerateFiles(source, "*", options)
+                            .Where(f => AudioExtensions.Contains(Path.GetExtension(f)));
                     }
-                    catch (Exception) { /* skip unreadable file */ }
+                    catch (Exception) { continue; } // inaccessible folder - skip
+
+                    foreach (string file in files)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        try
+                        {
+                            if (!seen.Add(file) || TrackExists(readConnection, null, file)) continue;
+                            pending.Add((file, ReadTags(file), new FileInfo(file).Length));
+                        }
+                        catch { /* skip unreadable file */ }
+                    }
+                }
+            }
+
+            // Phase 2: write in small batches so UI writes get windows.
+            int added = 0;
+            using var connection = AudioForgeDatabase.Instance.OpenConnection();
+            const int BatchSize = 200;
+            int sinceCommit = 0;
+            var tx = connection.BeginTransaction();
+            try
+            {
+            foreach (var (path, meta, size) in pending)
+            {
+                try
+                {
+                    EnsureTrackRow(connection, tx, path, meta, size);
+                    added++;
+                }
+                catch { /* skip unreadable file */ }
+
+                if (++sinceCommit >= BatchSize)
+                {
+                    tx.Commit();
+                    tx.Dispose();
+                    tx = connection.BeginTransaction();
+                    sinceCommit = 0;
                 }
             }
 
@@ -154,6 +182,8 @@ public sealed class LibraryRepository
 
             tx.Commit();
             return added;
+            }
+            finally { tx.Dispose(); }
         }, cancellationToken);
     }
 
@@ -195,10 +225,11 @@ public sealed class LibraryRepository
     /// Upserts a single audio file into Tracks (with tag metadata) and returns
     /// its track Id. Used by scan and by ad-hoc folder/file additions.
     /// </summary>
-    private static int EnsureTrackRow(SqliteConnection connection, SqliteTransaction tx, string file)
+    private static int EnsureTrackRow(SqliteConnection connection, SqliteTransaction tx, string file,
+        TrackMeta? preReadMeta = null, long? preReadSize = null)
     {
-        var meta = ReadTags(file);
-        var info = new FileInfo(file);
+        var meta = preReadMeta ?? ReadTags(file);
+        long size = preReadSize ?? new FileInfo(file).Length;
 
         int? artistId = UpsertArtist(connection, tx, meta.Artist);
         int? albumId = UpsertAlbum(connection, tx, meta.Album, artistId, meta.Year, meta.Genre);
@@ -227,7 +258,7 @@ public sealed class LibraryRepository
         cmd.Parameters.AddWithValue("$trackno", (object?)meta.TrackNumber ?? DBNull.Value);
         cmd.Parameters.AddWithValue("$duration", (object?)meta.DurationSeconds ?? DBNull.Value);
         cmd.Parameters.AddWithValue("$path", file);
-        cmd.Parameters.AddWithValue("$size", info.Length);
+        cmd.Parameters.AddWithValue("$size", size);
         cmd.Parameters.AddWithValue("$date", DateTime.UtcNow.ToString("o"));
         cmd.ExecuteNonQuery();
 
@@ -312,7 +343,7 @@ public sealed class LibraryRepository
         ins.ExecuteNonQuery();
     }
 
-    private static bool TrackExists(SqliteConnection connection, SqliteTransaction tx, string path)
+    private static bool TrackExists(SqliteConnection connection, SqliteTransaction? tx, string path)
     {
         using var cmd = connection.CreateCommand();
         cmd.Transaction = tx;

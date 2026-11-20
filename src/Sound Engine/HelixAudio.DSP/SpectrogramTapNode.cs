@@ -24,6 +24,7 @@ public sealed class SpectrogramTapNode : AudioNode
     private int _colCount;
     private int _activeChannels;
     private bool _hasData;
+    private readonly double _historySeconds;
 
     /// <param name="sampleRate">Sample rate in Hz.</param>
     /// <param name="channels">Number of channels.</param>
@@ -45,6 +46,7 @@ public sealed class SpectrogramTapNode : AudioNode
         BinCount = fftSize / 2;
         Window = window;
         PerChannel = perChannel;
+        _historySeconds = historySeconds;
         _window = WindowFunctions.GenerateProfile(window, fftSize);
         _activeChannels = Math.Max(1, channels);
 
@@ -60,19 +62,19 @@ public sealed class SpectrogramTapNode : AudioNode
     }
 
     /// <summary>FFT size in points.</summary>
-    public int FftSize { get; }
+    public int FftSize { get; private set; }
 
     /// <summary>Number of magnitude bins per column (fftSize / 2).</summary>
-    public int BinCount { get; }
+    public int BinCount { get; private set; }
 
     /// <summary>Window function used.</summary>
-    public WindowType Window { get; }
+    public WindowType Window { get; private set; }
 
     /// <summary>Whether columns are stored per channel (true) or mono-mixed.</summary>
     public bool PerChannel { get; }
 
     /// <summary>Maximum number of time columns retained.</summary>
-    public int MaxColumns { get; }
+    public int MaxColumns { get; private set; }
 
     /// <summary>Hz per bin.</summary>
     public float BinWidthHz => (float)(Format?.SampleRate ?? SampleRate) / FftSize;
@@ -88,6 +90,36 @@ public sealed class SpectrogramTapNode : AudioNode
 
     /// <summary>Number of column sets stored (1 for mono, channels for per-channel).</summary>
     public int StoredChannels => PerChannel ? _activeChannels : 1;
+
+    /// <summary>
+    /// Reconfigures FFT size and window at runtime. Clears accumulated history
+    /// and resizes all buffers. Safe to call from the UI thread while playing.
+    /// </summary>
+    public void SetFftParameters(int fftSize, WindowType window)
+    {
+        if (fftSize < 256 || fftSize > 16384 || (fftSize & (fftSize - 1)) != 0)
+            throw new ArgumentException("FFT size must be a power of two between 256 and 16384.", nameof(fftSize));
+
+        lock (_gate)
+        {
+            FftSize = fftSize;
+            BinCount = fftSize / 2;
+            Window = window;
+            _window = WindowFunctions.GenerateProfile(window, fftSize);
+
+            double framesPerSec = (Format?.SampleRate ?? SampleRate) / (double)fftSize;
+            MaxColumns = Math.Max(8, (int)Math.Ceiling(framesPerSec * _historySeconds));
+            int colChannels = PerChannel ? _activeChannels : 1;
+            _columns = new float[colChannels * MaxColumns * BinCount];
+            _time = new float[_activeChannels * fftSize];
+            _real = new float[fftSize];
+            _imag = new float[fftSize];
+            _fill = 0;
+            _writeCol = 0;
+            _colCount = 0;
+            _hasData = false;
+        }
+    }
 
     public override void Prepare(AudioFormat format)
     {
@@ -119,6 +151,9 @@ public sealed class SpectrogramTapNode : AudioNode
 
     public override float[] Process(float[] buffer)
     {
+        // Locked so SetFftParameters can't swap buffers mid-frame.
+        lock (_gate)
+        {
         int channels = Math.Max(1, Format?.Channels ?? _activeChannels);
         int frames = buffer.Length / channels;
 
@@ -134,6 +169,7 @@ public sealed class SpectrogramTapNode : AudioNode
             AnalyzeFrame(channels);
 
         return buffer;
+        }
     }
 
     private void AnalyzeFrame(int inputChannels)
@@ -228,6 +264,24 @@ public sealed class SpectrogramTapNode : AudioNode
             if (cols == 0) return result;
             int copied = CopyTo(result);
             return copied == cols ? result : result;
+        }
+    }
+
+    /// <summary>
+    /// Atomically returns the snapshot AND the dimensions it was captured with.
+    /// Use this instead of reading ColumnCount/BinCount separately - the node
+    /// can be reconfigured (SetFftParameters) between calls.
+    /// </summary>
+    public (int Sets, int Cols, int Bins, float[] Data) SnapshotDetailed()
+    {
+        lock (_gate)
+        {
+            int sets = StoredChannels;
+            int cols = _colCount;
+            int bins = BinCount;
+            var data = new float[sets * Math.Max(1, cols) * bins];
+            if (cols > 0) CopyTo(data);
+            return (sets, cols, bins, data);
         }
     }
 }

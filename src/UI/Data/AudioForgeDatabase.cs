@@ -42,6 +42,14 @@ public sealed class AudioForgeDatabase
     {
         var connection = new SqliteConnection(_connectionString);
         connection.Open();
+        // busy_timeout is per-connection: without this every new connection
+        // fails instantly with SQLITE_BUSY when a writer (e.g. the library
+        // scanner) holds the write lock. Wait up to 30s instead.
+        using (var cmd = connection.CreateCommand())
+        {
+            cmd.CommandText = "PRAGMA busy_timeout = 30000;";
+            cmd.ExecuteNonQuery();
+        }
         return connection;
     }
 

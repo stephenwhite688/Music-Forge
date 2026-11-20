@@ -30,6 +30,7 @@ public sealed class LibraryBrowserControl : UserControl
     private readonly LibraryRepository _library = new();
     private readonly TreeView _tree = new();
     private readonly ListView _tracks = new();
+    private readonly Panel _leftPanel = new();
     private readonly ContextMenuStrip _nodeMenu = new();
     private readonly StatusStrip _status = new();
     private readonly ToolStripStatusLabel _statusLabel = new();
@@ -43,9 +44,10 @@ public sealed class LibraryBrowserControl : UserControl
         BackColor = BgDark;
         Visible = false; // hidden until toggled from the ribbon
 
-        // ---- Left: Album List tree ----
-        _tree.Dock = DockStyle.Left;
-        _tree.Width = 300;
+        // ---- Left: Album List tree (fills panel; track list is detail view) ----
+        _leftPanel.Dock = DockStyle.Fill;
+        _leftPanel.BackColor = PanelDark;
+        _tree.Dock = DockStyle.Fill;
         _tree.BackColor = PanelDark;
         _tree.ForeColor = TextColor;
         _tree.LineColor = LineColor;
@@ -84,14 +86,25 @@ public sealed class LibraryBrowserControl : UserControl
         _status.Items.Add(_statusLabel);
         _status.BackColor = PanelDark;
 
-        var leftPanel = new Panel { Dock = DockStyle.Left, Width = 300, BackColor = PanelDark };
-        leftPanel.Controls.Add(_tree);
+        _leftPanel.Controls.Add(_tree);
         var bottomPanel = new Panel { Dock = DockStyle.Bottom, Height = 24, BackColor = PanelDark };
         bottomPanel.Controls.Add(_status);
 
         Controls.Add(_tracks);
-        Controls.Add(leftPanel);
+        Controls.Add(_leftPanel);
         Controls.Add(bottomPanel);
+
+        // Tree-only by default (matches SourceBrowser); the track list appears
+        // only for search results.
+        SetDetailVisible(false);
+    }
+
+    /// <summary>Shows/hides the right-hand track list; tree takes full width when hidden.</summary>
+    private void SetDetailVisible(bool visible)
+    {
+        _tracks.Visible = visible;
+        _leftPanel.Dock = visible ? DockStyle.Left : DockStyle.Fill;
+        if (visible) _leftPanel.Width = 300;
     }
 
     /// <summary>Reloads the tree and track list from the database.</summary>
@@ -217,6 +230,7 @@ public sealed class LibraryBrowserControl : UserControl
             AddTrackItem(t, ++i);
         _tracks.EndUpdate();
         _statusLabel.Text = $"{_tracks.Items.Count} match(es) for '{term}'";
+        SetDetailVisible(true); // search results need the detail list
     }
 
     /// <summary>Shows every track in the library.</summary>
@@ -229,6 +243,7 @@ public sealed class LibraryBrowserControl : UserControl
             AddTrackItem(t, ++i);
         _tracks.EndUpdate();
         UpdateStatus();
+        SetDetailVisible(false); // back to tree-only view
     }
 
     private void AddTrackItem(LibraryRepository.LibraryTrack t, int index)
@@ -281,6 +296,9 @@ public sealed class LibraryBrowserControl : UserControl
         {
             var set = new HashSet<int>();
             CollectTrackIds(node, set);
+            // Track leaf nodes have no children - include the node itself.
+            if (node.Name.StartsWith("track:") && node.Tag is LibraryRepository.LibraryTrack self)
+                set.Add(self.Id);
             ids = set.ToList();
         }
         else return;
@@ -298,21 +316,39 @@ public sealed class LibraryBrowserControl : UserControl
             _ = PlaybackService.Instance.PlayPlaylistAsync(picker.SelectedPlaylistId);
     }
 
-    /// <summary>Plays the currently shown track list as a fresh playlist.</summary>
+    /// <summary>
+    /// Plays the context: a single track node plays just that file; an
+    /// album/artist/root node plays all its tracks; selected detail-list
+    /// tracks play those. Replaces whatever is playing - no playlist created.
+    /// </summary>
     private void PlayNode()
     {
-        var shown = _tracks.Items
-            .Cast<ListViewItem>()
-            .Select(i => (LibraryRepository.LibraryTrack)i.Tag!)
-            .ToList();
-        if (shown.Count == 0) return;
+        List<LibraryRepository.LibraryTrack> tracks;
+        if (_tracks.Focused && _tracks.SelectedItems.Count > 0)
+        {
+            tracks = _tracks.SelectedItems
+                .Cast<ListViewItem>()
+                .Select(i => (LibraryRepository.LibraryTrack)i.Tag!)
+                .ToList();
+        }
+        else if (_tree.SelectedNode?.Name.StartsWith("track:") == true)
+        {
+            tracks = new List<LibraryRepository.LibraryTrack>
+            {
+                (LibraryRepository.LibraryTrack)_tree.SelectedNode.Tag!
+            };
+        }
+        else if (_tree.SelectedNode is { } node)
+        {
+            var ids = new HashSet<int>();
+            CollectTrackIds(node, ids);
+            tracks = _allTracks.Where(t => ids.Contains(t.Id)).ToList();
+        }
+        else return;
 
-        string name = $"Library Play {DateTime.Now:HHmmss}";
-        int playlistId = _library.CreatePlaylist(name);
-        foreach (var t in shown)
-            _library.AddTrackToPlaylist(playlistId, t.Id);
-        _ = PlaybackService.Instance.PlayPlaylistAsync(playlistId);
-        _statusLabel.Text = $"Playing {shown.Count} track(s)";
+        if (tracks.Count == 0) return;
+        _statusLabel.Text = $"Playing {tracks.Count} track(s)";
+        _ = PlaybackService.Instance.PlayQueueAsync(tracks.Select(t => t.FilePath).ToList());
     }
 
     private static string FormatTime(double? seconds) =>

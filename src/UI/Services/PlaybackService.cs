@@ -149,6 +149,9 @@ public sealed class PlaybackService : IDisposable
         else if (_player.IsPlaying) _player.Pause();
     }
 
+    /// <summary>Pauses playback if playing; does nothing when already paused/stopped.</summary>
+    public void Pause() => _player.Pause();
+
     public void Next()
     {
         if (_queue.Count == 0) return;
@@ -183,6 +186,44 @@ public sealed class PlaybackService : IDisposable
     {
         get => string.IsNullOrEmpty(_player.OutputDeviceId) ? null : _player.OutputDeviceId;
         set => _player.OutputDeviceId = value ?? "";
+    }
+
+    /// <summary>
+    /// Plays a 3-second 440 Hz test tone through the full processing chain
+    /// (EQ, mixer, meters, taps) without touching the queue. Used to verify
+    /// the visualiser and engine taps.
+    /// </summary>
+    public async Task PlayTestToneAsync()
+    {
+        var path = Path.Combine(Path.GetTempPath(), "audioforge-test-tone.wav");
+        WriteTestToneWav(path);
+        await _player.PlayAsync(path, MeterService.Instance.Chain());
+    }
+
+    private static void WriteTestToneWav(string path)
+    {
+        const int sampleRate = 48000, channels = 2, seconds = 3;
+        int frames = sampleRate * seconds;
+        int dataSize = frames * channels * 2;
+        using var fs = new FileStream(path, FileMode.Create, FileAccess.Write);
+        using var w = new BinaryWriter(fs);
+        w.Write(System.Text.Encoding.ASCII.GetBytes("RIFF"));
+        w.Write(36 + dataSize);
+        w.Write(System.Text.Encoding.ASCII.GetBytes("WAVE"));
+        w.Write(System.Text.Encoding.ASCII.GetBytes("fmt "));
+        w.Write(16); w.Write((short)1); w.Write((short)channels);
+        w.Write(sampleRate); w.Write(sampleRate * channels * 2);
+        w.Write((short)(channels * 2)); w.Write((short)16);
+        w.Write(System.Text.Encoding.ASCII.GetBytes("data"));
+        w.Write(dataSize);
+        for (int i = 0; i < frames; i++)
+        {
+            double t = (double)i / sampleRate;
+            // 5 ms fade in/out to avoid clicks
+            float env = (float)Math.Min(1.0, Math.Min(t / 0.005, (seconds - t) / 0.005));
+            short s = (short)(Math.Sin(2 * Math.PI * 440 * t) * 0.3 * env * 32767);
+            w.Write(s); w.Write(s);
+        }
     }
 
     private async Task PlayCurrentAsync()

@@ -99,8 +99,7 @@ public class MixerPanelControl : UserControl
         {
             Minimum = 0, Maximum = 200, Value = 100, // percent
             Orientation = Orientation.Vertical,
-            Height = 200, Width = 30,
-            BackColor = Color.Transparent
+            Height = 200, Width = 30
         };
         fader.Scroll += (_, _) => strip.Gain = fader.Value / 100f;
 
@@ -117,9 +116,9 @@ public class MixerPanelControl : UserControl
 
         // Layout: label top, meter left, fader center, M/S bottom
         label.Dock = DockStyle.Top;
-        var bottom = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 28, FlowDirection = FlowDirection.LeftToRight, WrapContents = false, BackColor = Color.Transparent };
+        var bottom = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 28, FlowDirection = FlowDirection.LeftToRight, WrapContents = false, BackColor = Color.FromArgb(40, 40, 45) };
         bottom.Controls.Add(mute); bottom.Controls.Add(solo);
-        var faderWrap = new Panel { Width = 36, Height = 200, BackColor = Color.Transparent };
+        var faderWrap = new Panel { Width = 36, Height = 200, BackColor = Color.FromArgb(40, 40, 45) };
         faderWrap.Controls.Add(fader);
         fader.Location = new Point(3, 0);
         faderWrap.Controls.Add(meter);

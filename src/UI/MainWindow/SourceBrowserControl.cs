@@ -27,6 +27,7 @@ public sealed class SourceBrowserControl : UserControl
     private readonly StatusStrip _status = new();
     private readonly ToolStripStatusLabel _statusLabel = new();
     private readonly ContextMenuStrip _folderMenu = new();
+    private readonly ContextMenuStrip _treeFileMenu = new();
     private readonly ContextMenuStrip _fileMenu = new();
 
     private const string ComputerRoot = "__computer__";
@@ -50,6 +51,9 @@ public sealed class SourceBrowserControl : UserControl
         _folderMenu.Items.Add("Add to Library", null, (s, e) => AddAsSource());
         _folderMenu.Items.Add("Add Folder to Playlist…", null, (s, e) => AddFolderToPlaylist());
         _tree.ContextMenuStrip = _folderMenu;
+
+        _treeFileMenu.Items.Add("Add to Playlist…", null, (s, e) => AddTreeFileToPlaylist());
+        _treeFileMenu.Items.Add("Add File's Folder to Playlist…", null, (s, e) => AddTreeFileFolderToPlaylist());
 
         // ---- File list ----
         _files.Dock = DockStyle.Fill;
@@ -153,6 +157,21 @@ public sealed class SourceBrowserControl : UserControl
                 AddPlaceholder(child);
                 node.Nodes.Add(child);
             }
+
+            // Show audio files directly in the tree so folders containing
+            // only tracks don't appear "(empty)".
+            foreach (string file in Directory.EnumerateFiles(node.Name)
+                .Where(f => AudioExtensions.Contains(Path.GetExtension(f)))
+                .OrderBy(f => f, StringComparer.OrdinalIgnoreCase))
+            {
+                var info = new FileInfo(file);
+                node.Nodes.Add(new TreeNode($"{Path.GetFileNameWithoutExtension(file)}  ({FormatSize(info.Length)})")
+                {
+                    Name = file,
+                    Tag = file,
+                    ForeColor = Color.FromArgb(170, 195, 230)
+                });
+            }
         }
         catch { /* inaccessible */ }
 
@@ -162,8 +181,13 @@ public sealed class SourceBrowserControl : UserControl
 
     private void Tree_AfterSelect(object? sender, TreeViewEventArgs e)
     {
-        if (e.Node?.Tag is not string dir) { _files.Items.Clear(); return; }
-        LoadFiles(dir);
+        if (e.Node?.Tag is not string path) { _files.Items.Clear(); return; }
+        if (Directory.Exists(path)) LoadFiles(path);
+        else
+        {
+            _files.Items.Clear();
+            _statusLabel.Text = path;
+        }
     }
 
     private void LoadFiles(string dir)
@@ -196,7 +220,10 @@ public sealed class SourceBrowserControl : UserControl
     {
         if (e.Button != MouseButtons.Right || e.Node?.Tag is null) return;
         _tree.SelectedNode = e.Node;
-        _folderMenu.Show(_tree, e.Location);
+        if (e.Node.Tag is string p && !Directory.Exists(p))
+            _treeFileMenu.Show(_tree, e.Location);
+        else
+            _folderMenu.Show(_tree, e.Location);
     }
 
     private void Files_MouseDown(object? sender, MouseEventArgs e)
@@ -272,6 +299,45 @@ public sealed class SourceBrowserControl : UserControl
             catch { }
         }
         _statusLabel.Text = $"Added {added} track(s) to playlist";
+    }
+
+    private void AddTreeFileToPlaylist()
+    {
+        if (_tree.SelectedNode?.Tag is not string file || !File.Exists(file)) return;
+        int playlistId = PickOrCreatePlaylist();
+        if (playlistId < 0) return;
+        try
+        {
+            _library.AddFileToPlaylist(playlistId, file);
+            _statusLabel.Text = $"Added '{Path.GetFileName(file)}' to playlist";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Could not add file:\n{ex.Message}", "Browse Media",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void AddTreeFileFolderToPlaylist()
+    {
+        if (_tree.SelectedNode?.Tag is not string file || !File.Exists(file)) return;
+        string? folder = Path.GetDirectoryName(file);
+        if (folder is null) return;
+        int playlistId = PickOrCreatePlaylist();
+        if (playlistId < 0) return;
+        _statusLabel.Text = "Adding folder…";
+        Cursor = Cursors.WaitCursor;
+        try
+        {
+            int count = _library.AddFolderToPlaylist(playlistId, folder);
+            _statusLabel.Text = $"Added {count} track(s) from '{folder}'";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Could not add folder:\n{ex.Message}", "Browse Media",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        finally { Cursor = Cursors.Default; }
     }
 
     private void AddAsSource()

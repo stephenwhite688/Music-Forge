@@ -19,7 +19,6 @@ public partial class TransportBarControl : UserControl
 
         var playback = PlaybackService.Instance;
         playbackControls.PlayClicked += (s, e) => playback.TogglePlayPause();
-        playbackControls.PauseClicked += (s, e) => playback.TogglePlayPause();
         playbackControls.StopClicked += (s, e) => playback.Stop();
         playbackControls.NextClicked += (s, e) => playback.Next();
         playbackControls.PreviousClicked += (s, e) => playback.Previous();
@@ -47,6 +46,7 @@ public partial class TransportBarControl : UserControl
         if (_busy) return; // don't overwrite progress display during long operations
         var playback = PlaybackService.Instance;
         currentTimeControl.CurrentTime = FormatTime(playback.Position);
+        playbackControls.SetPlayButtonPaused(playback.IsPaused);
     }
 
     /// <summary>Shows a long-running operation (e.g. directory load) in the transport bar.</summary>
@@ -82,6 +82,7 @@ public partial class TransportBarControl : UserControl
         currentTimeControl.CurrentTime = "00:00";
         trackInfoControl.TrackName = "";
         totalTimeControl.TotalTime = "00:00";
+        playbackControls.SetPlayButtonPaused(false);
     }
 
     private static string FormatTime(TimeSpan t)

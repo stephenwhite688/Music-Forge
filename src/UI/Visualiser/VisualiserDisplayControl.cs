@@ -281,10 +281,9 @@ public class VisualiserDisplayControl : UserControl
         float binHz = meters.PostEq.BinWidthHz;
         foreach (var f in new[] { 100f, 1000f, 10000f })
         {
-            int bin = (int)(f / binHz);
-            if (bin >= 0 && bin < spec.Length)
+            float x = _logFreq ? LogX(f, w) : (float)(f / binHz) / spec.Length * w;
+            if (x >= 0 && x <= w)
             {
-                float x = _logFreq ? LogX(bin, spec.Length, w) : (float)bin / spec.Length * w;
                 g.DrawLine(gridPen, x, 0, x, h);
             }
         }
@@ -293,7 +292,7 @@ public class VisualiserDisplayControl : UserControl
         PointF? prevPeak = null;
         for (int i = 0; i < spec.Length; i++)
         {
-            float x = _logFreq ? LogX(i, spec.Length, w) : (float)i / spec.Length * w;
+            float x = _logFreq ? LogX(i * binHz, w) : (float)i / spec.Length * w;
             float y = h - DbToNorm(spec[i]) * h;
             var pt = new PointF(x, y);
             if (prev.HasValue) g.DrawLine(pen, prev.Value, pt);
@@ -311,44 +310,73 @@ public class VisualiserDisplayControl : UserControl
         g.DrawLine(gridPen, 0, h, w, h);
     }
 
-    private static float LogX(int bin, int bins, int width)
+    private static float LogX(float freqHz, int width)
     {
-        // map bin index (linear freq) to log-frequency x position 20Hz-20kHz
-        double f = bin; // relative position; true Hz handled by caller binHz - approximation ok for display
-        return (float)(Math.Log10(Math.Max(1, bin + 1)) / Math.Log10(bins)) * width;
+        // True log-frequency mapping: 20 Hz -> 20 kHz across the width
+        const float fmin = 20f, fmax = 20000f;
+        float t = (float)(Math.Log10(Math.Max(freqHz, fmin)) - Math.Log10(fmin))
+                / (float)(Math.Log10(fmax) - Math.Log10(fmin));
+        return Math.Clamp(t, 0f, 1f) * width;
     }
 
     private void DrawSpectrogram(Graphics g, MeterService meters)
     {
-        var snap = meters.Spectrogram.Snapshot();
-        int sets = meters.Spectrogram.StoredChannels;
-        int cols = meters.Spectrogram.ColumnCount;
-        int bins = meters.Spectrogram.BinCount;
+        // Snapshot and dims captured atomically - FFT reconfig can't race us.
+        var (sets, cols, bins, snap) = meters.Spectrogram.SnapshotDetailed();
         if (cols == 0 || snap.Length == 0) { DrawCentered(g, "Building spectrogram…"); return; }
 
         int w = ClientRectangle.Width, h = ClientRectangle.Height;
-        int bandH = h / Math.Max(1, sets);
-        float dbFloor = -90f, dbCeil = 0f;
+        int bandH = Math.Max(1, h / Math.Max(1, sets));
+        const float dbFloor = -90f, dbCeil = 0f;
 
-        for (int s = 0; s < sets; s++)
+        // Pre-quantized brush palette - one brush per intensity level instead
+        // of allocating a brush per pixel (8192-pt FFT = 4096 bins/column).
+        const int levels = 80;
+        var palette = new SolidBrush[levels];
+        for (int i = 0; i < levels; i++)
         {
-            for (int c = 0; c < cols; c++)
+            float t = i / (float)(levels - 1);
+            Color col = SpectrumColor(t);
+            palette[i] = new SolidBrush(Color.FromArgb((int)(60 + 195 * t), col));
+        }
+
+        var rowMax = new float[bandH];
+        try
+        {
+            for (int s = 0; s < sets; s++)
             {
-                int x = w - 1 - (int)((long)c * w / Math.Max(1, cols)); // newest at right
-                for (int b = 0; b < bins; b++)
+                for (int c = 0; c < cols; c++)
                 {
-                    // freq vertical: low freq at bottom
-                    int yInBand = bandH - 1 - (int)((long)b * bandH / bins);
-                    float db = snap[(s * cols + c) * bins + b];
-                    float t = DbToNorm(db, dbFloor, dbCeil);
-                    if (t <= 0.01f) continue;
-                    int y = s * bandH + yInBand;
-                    Color col = SpectrumColor(t);
-                    using var brush = new SolidBrush(Color.FromArgb((int)(60 + 195 * t), col));
-                    g.FillRectangle(brush, x, y, 1, 1);
+                    int x = w - 1 - (int)((long)c * w / Math.Max(1, cols)); // newest at right
+                    Array.Clear(rowMax);
+
+                    // Fold bins into pixel rows keeping the max dB per row -
+                    // bins >> pixels at large FFT sizes.
+                    int colBase = (s * cols + c) * bins;
+                    for (int b = 0; b < bins; b++)
+                    {
+                        int yInBand = bandH - 1 - (int)((long)b * bandH / bins);
+                        if (yInBand < 0) yInBand = 0; else if (yInBand >= bandH) yInBand = bandH - 1;
+                        float db = snap[colBase + b];
+                        float t = DbToNorm(db, dbFloor, dbCeil);
+                        if (t > rowMax[yInBand]) rowMax[yInBand] = t;
+                    }
+
+                    for (int yInBand = 0; yInBand < bandH; yInBand++)
+                    {
+                        float t = rowMax[yInBand];
+                        if (t <= 0.01f) continue;
+                        int q = Math.Min(levels - 1, (int)(t * levels));
+                        g.FillRectangle(palette[q], x, s * bandH + yInBand, 1, 1);
+                    }
                 }
             }
         }
+        finally
+        {
+            foreach (var brush in palette) brush.Dispose();
+        }
+
         // channel labels
         using var labelFont = new Font("Segoe UI", 8F, FontStyle.Bold);
         using var labelBrush = new SolidBrush(AccentColor);
@@ -395,32 +423,79 @@ public class VisualiserDisplayControl : UserControl
         }
     }
 
+    // Scrolling loudness history (one sample per paint frame, ~30 fps)
+    private const int LoudnessHistorySize = 600; // ~20 s at 30 fps
+    private readonly float[] _histRms = new float[LoudnessHistorySize];
+    private readonly float[] _histPeak = new float[LoudnessHistorySize];
+    private readonly float[] _histTrue = new float[LoudnessHistorySize];
+    private int _histPos;
+
+    private void PushLoudnessSample(float rms, float peak, float truePk)
+    {
+        _histRms[_histPos] = rms;
+        _histPeak[_histPos] = peak;
+        _histTrue[_histPos] = truePk;
+        _histPos = (_histPos + 1) % LoudnessHistorySize;
+    }
+
     private void DrawLoudness(Graphics g, MeterService meters)
     {
         int w = ClientRectangle.Width, h = ClientRectangle.Height;
         var output = meters.Output;
         var tp = meters.TruePeak;
+        PushLoudnessSample(output.RmsDb, output.HeldPeakDb, tp.HeldPeakDb);
 
-        // Vertical level bars: RMS, Peak-hold, True-peak
-        DrawLevelBar(g, 20, 10, 30, h - 20, output.RmsDb, -60, 0, Color.DodgerBlue, "RMS");
-        DrawLevelBar(g, w / 3, 10, 30, h - 20, output.HeldPeakDb, -60, 0, AccentColor, "Peak");
-        DrawLevelBar(g, 2 * w / 3, 10, 30, h - 20, tp.HeldPeakDb, -60, 0, Color.OrangeRed, "TruePk");
+        // Left ~72%: scrolling level history graph
+        int graphW = (int)(w * 0.72);
+        int graphX = 34, graphY = 8;
+        int graphH = h - 30;
 
-        // dB scale labels
-        using var font = new Font("Consolas", 8F);
-        using var brush = new SolidBrush(Color.Gainsboro);
+        using var gridPen = new Pen(GridColor);
         for (int db = -60; db <= 0; db += 12)
         {
-            float y = 10 + (h - 20) * (1f - DbToNorm(db, -60, 0));
-            g.DrawString($"{db}", font, brush, 4, y - 7);
-            using var gp = new Pen(GridColor);
-            g.DrawLine(gp, 50, y, w - 10, y);
+            float y = graphY + graphH * (1f - DbToNorm(db, -60, 0));
+            g.DrawLine(gridPen, graphX, y, graphX + graphW, y);
+            using var f = new Font("Consolas", 7F);
+            g.DrawString($"{db}", f, Brushes.Gray, 4, y - 5);
         }
+
+        DrawHistoryLine(g, _histRms, graphX, graphY, graphW, graphH, Color.DodgerBlue, 1.4f, "RMS");
+        DrawHistoryLine(g, _histPeak, graphX, graphY, graphW, graphH, AccentColor, 1.2f, "Peak");
+        DrawHistoryLine(g, _histTrue, graphX, graphY, graphW, graphH, Color.OrangeRed, 1.0f, "TruePk");
+
+        // Right side: instantaneous bars
+        int barX = graphX + graphW + 16;
+        int barW = Math.Min(28, (w - barX - 8) / 3 - 8);
+        DrawLevelBar(g, barX, 10, barW, h - 30, output.RmsDb, -60, 0, Color.DodgerBlue, "RMS");
+        DrawLevelBar(g, barX + barW + 12, 10, barW, h - 30, output.HeldPeakDb, -60, 0, AccentColor, "Peak");
+        DrawLevelBar(g, barX + 2 * (barW + 12), 10, barW, h - 30, tp.HeldPeakDb, -60, 0, Color.OrangeRed, "TruePk");
+
         if (output.Clip || tp.Clip)
         {
             using var warn = new SolidBrush(Color.Red);
-            g.DrawString("CLIP", new Font("Segoe UI", 12F, FontStyle.Bold), warn, w / 2 - 20, 8);
+            g.DrawString("CLIP", new Font("Segoe UI", 12F, FontStyle.Bold), warn, graphX + graphW / 2 - 20, 4);
         }
+    }
+
+    private void DrawHistoryLine(Graphics g, float[] history, int x, int y, int w, int h, Color color, float penWidth, string label)
+    {
+        using var pen = new Pen(color, penWidth);
+        int count = Math.Min(history.Length, LoudnessHistorySize);
+        PointF? prev = null;
+        for (int i = 0; i < count; i++)
+        {
+            // oldest -> newest left to right; _histPos is next write = oldest when full
+            int idx = (_histPos + i) % history.Length;
+            float db = history[idx];
+            float px = x + (float)i / count * w;
+            float py = y + h * (1f - DbToNorm(db, -60, 0));
+            var pt = new PointF(px, py);
+            if (prev.HasValue) g.DrawLine(pen, prev.Value, pt);
+            prev = pt;
+        }
+        // label at right edge
+        float lastDb = history[(_histPos + count - 1) % history.Length];
+        g.DrawString($"{label} {lastDb:F1}", new Font("Consolas", 8F), new SolidBrush(color), x + 4, y + 4 + Array.IndexOf(new[] { _histRms, _histPeak, _histTrue }, history) * 14);
     }
 
     private void DrawLevelBar(Graphics g, int x, int y, int barW, int barH, float db, float floorDb, float ceilDb, Color color, string label)
@@ -442,11 +517,22 @@ public class VisualiserDisplayControl : UserControl
         var output = meters.Output;
         var tp = meters.TruePeak;
         using var font = new Font("Segoe UI", 8F);
+        string line1 = $"Out RMS {output.RmsDb:F1} dB  Peak {output.HeldPeakDb:F1} dB  TruePk {tp.HeldPeakDb:F1} dBTP";
+        string line2 = $"Mode: {_mode}   Theme: {_theme}   FFT {meters.PostEq.FftSize} {meters.PostEq.Window}   {(_logFreq ? "Log" : "Lin")}   {(PeakHoldEnabled ? "Peak-hold" : "")}";
+
+        // Translucent backdrop so traces never strike through the text
+        var size1 = g.MeasureString(line1, font);
+        var size2 = g.MeasureString(line2, font);
+        float pad = 4f;
+        var bgRect = new RectangleF(4, ClientRectangle.Height - size1.Height - size2.Height - pad * 4 - 6,
+            Math.Max(size1.Width, size2.Width) + pad * 2, size1.Height + size2.Height + pad * 2);
+        using (var bg = new SolidBrush(Color.FromArgb(170, 12, 12, 16)))
+            g.FillRectangle(bg, bgRect);
+
         using var brush = new SolidBrush(Color.Gainsboro);
-        int y = 4;
-        g.DrawString($"Out RMS {output.RmsDb:F1} dB  Peak {output.HeldPeakDb:F1} dB  TruePk {tp.HeldPeakDb:F1} dBTP", font, brush, 6, y);
-        y += 14;
-        g.DrawString($"Mode: {_mode}   Theme: {_theme}   {(_logFreq ? "Log" : "Lin")} freq   {(PeakHoldEnabled ? "Peak-hold" : "")}", font, brush, 6, y);
+        float y = bgRect.Y + pad;
+        g.DrawString(line1, font, brush, bgRect.X + pad, y);
+        g.DrawString(line2, font, brush, bgRect.X + pad, y + size1.Height + pad);
     }
 
     private void DrawCentered(Graphics g, string text)

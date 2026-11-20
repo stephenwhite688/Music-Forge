@@ -146,14 +146,15 @@ public partial class VisualiserRibbonControl : RibbonStripControl
         var m = MeterService.Instance;
         m.PreEq.SetFftParameters(size);
         m.PostEq.SetFftParameters(size);
+        m.Spectrogram.SetFftParameters(size, m.Spectrogram.Window);
     }
 
     private static void SetWindow(HelixAudio.DSP.Analysis.WindowType window)
     {
         var m = MeterService.Instance;
-        // SetFftParameters keeps current size when window changes via re-set
         m.PreEq.SetFftParameters(m.PreEq.FftSize, window);
         m.PostEq.SetFftParameters(m.PostEq.FftSize, window);
+        m.Spectrogram.SetFftParameters(m.Spectrogram.FftSize, window);
     }
 
     private RibbonGroupPanel BuildDisplayGroup()
@@ -185,6 +186,7 @@ public partial class VisualiserRibbonControl : RibbonStripControl
     {
         var menu = new ContextMenuStrip();
         AddItem(menu, "Export Image…", ExportImage);
+        AddItem(menu, "Test Tone (440 Hz)…", () => _ = AudioForge.UI.Services.PlaybackService.Instance.PlayTestToneAsync());
         AddItem(menu, "Copy Settings", CopySettings);
         AddItem(menu, "About Visualiser", () =>
             MessageBox.Show(

@@ -6,7 +6,6 @@ namespace AudioForge.UI.TransportBar;
 public partial class PlaybackControls : UserControl
 {
     public event EventHandler? PlayClicked;
-    public event EventHandler? PauseClicked;
     public event EventHandler? StopClicked;
     public event EventHandler? NextClicked;
     public event EventHandler? PreviousClicked;
@@ -18,11 +17,13 @@ public partial class PlaybackControls : UserControl
         InitializeComponent();
 
         playButtonControl.PlayClicked += (s, e) => PlayClicked?.Invoke(this, e);
-        pauseButtonControl.PauseClicked += (s, e) => PauseClicked?.Invoke(this, e);
         stopButtonControl.StopClicked += (s, e) => StopClicked?.Invoke(this, e);
         nextButtonControl.NextClicked += (s, e) => NextClicked?.Invoke(this, e);
         previousButtonControl.PreviousClicked += (s, e) => PreviousClicked?.Invoke(this, e);
         repeatButtonControl.RepeatClicked += (s, e) => RepeatClicked?.Invoke(this, e);
         shuffleButtonControl.ShuffleClicked += (s, e) => ShuffleClicked?.Invoke(this, e);
     }
+
+    /// <summary>Shows the pause icon while playback is paused, play icon otherwise.</summary>
+    public void SetPlayButtonPaused(bool paused) => playButtonControl.SetPausedState(paused);
 }
