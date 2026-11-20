@@ -1,12 +1,23 @@
-﻿using System;
+﻿using HelixAudio.Core;
+using System;
 
 namespace HelixAudio.Effects
 {
-    public class ReverbEffect : EffectBase
+    /// <summary>
+    /// Freeverb-style reverb as an <see cref="IAudioNode"/>: four parallel
+    /// feedback combs feed two series allpasses, mixed with the dry signal.
+    /// Processes in place with preallocated scratch - no per-block allocation.
+    /// </summary>
+    public class ReverbEffect : AudioNode
     {
         private readonly CombFilter[] _combs;
         private readonly AllpassFilter[] _allpasses;
         private float _mix;
+
+        // Scratch buffers, grown lazily to the largest block seen.
+        private float[] _src = Array.Empty<float>();
+        private float[] _wet = Array.Empty<float>();
+        private float[] _tmp = Array.Empty<float>();
 
         public float Mix
         {
@@ -14,12 +25,13 @@ namespace HelixAudio.Effects
             set => _mix = Math.Clamp(value, 0.0f, 1.0f);
         }
 
-        public ReverbEffect(int sampleRate, int channels, float mix = 0.5f)
-            : base(sampleRate, channels)
+        public ReverbEffect(int sampleRate, int channels, float mix = 0.5f, string name = "Reverb")
+            : base(sampleRate, channels, name)
         {
             _mix = Math.Clamp(mix, 0.0f, 1.0f);
 
-            int[] combDelays = {
+            int[] combDelays =
+            {
                 (int)(29.7f * sampleRate / 1000.0f),
                 (int)(37.1f * sampleRate / 1000.0f),
                 (int)(41.1f * sampleRate / 1000.0f),
@@ -30,56 +42,70 @@ namespace HelixAudio.Effects
 
             _combs = new CombFilter[4];
             for (int i = 0; i < 4; i++)
-                _combs[i] = new CombFilter(sampleRate, channels, combDelays[i], combGains[i]);
+                _combs[i] = new CombFilter(channels, combDelays[i], combGains[i]);
 
-            int[] allpassDelays = {
+            int[] allpassDelays =
+            {
                 (int)(5.0f * sampleRate / 1000.0f),
                 (int)(1.7f * sampleRate / 1000.0f)
             };
-            float allpassGain = 0.5f;
+            const float allpassGain = 0.5f;
 
             _allpasses = new AllpassFilter[2];
             for (int i = 0; i < 2; i++)
-                _allpasses[i] = new AllpassFilter(sampleRate, channels, allpassDelays[i], allpassGain);
+                _allpasses[i] = new AllpassFilter(channels, allpassDelays[i], allpassGain);
         }
 
-        public override float[] Process(float[] input)
+        private void EnsureScratch(int length)
         {
-            ValidateInput(input);
-
-            float[] output = new float[input.Length];
-            float[] wet = new float[input.Length];
-            float mix = _mix;
-            float oneMinusMix = 1.0f - mix;
-
-            for (int i = 0; i < _combs.Length; i++)
+            if (_src.Length < length)
             {
-                float[] combOutput = _combs[i].Process(input);
-                for (int j = 0; j < wet.Length; j++)
-                    wet[j] += combOutput[j];
+                _src = new float[length];
+                _wet = new float[length];
+                _tmp = new float[length];
             }
+        }
 
+        public override void Process(Span<float> buffer)
+        {
+            if (buffer.Length == 0) return;
+            EnsureScratch(buffer.Length);
+
+            int channels = Math.Max(1, Format?.Channels ?? Channels);
+            if (buffer.Length % channels != 0) return;
+
+            // Preserve the dry signal; the combs read from the copy so the
+            // input span stays intact for the final mix.
+            buffer.CopyTo(_src);
+            Array.Clear(_wet, 0, buffer.Length);
+
+            var wet = _wet.AsSpan(0, buffer.Length);
+            var tmp = _tmp.AsSpan(0, buffer.Length);
+            var src = _src.AsSpan(0, buffer.Length);
+
+            foreach (var comb in _combs)
+            {
+                comb.Process(src, tmp);
+                for (int i = 0; i < wet.Length; i++)
+                    wet[i] += tmp[i];
+            }
+            float invCombs = 1f / _combs.Length;
             for (int i = 0; i < wet.Length; i++)
-                wet[i] /= _combs.Length;
+                wet[i] *= invCombs;
 
             foreach (var allpass in _allpasses)
-                wet = allpass.Process(wet);
+                allpass.Process(wet, wet);
 
-            for (int i = 0; i < input.Length; i++)
-            {
-                float sample = input[i] * oneMinusMix + wet[i] * mix;
-                output[i] = ClampSample(sample);
-            }
-
-            return output;
+            float mix = _mix;
+            float oneMinusMix = 1f - mix;
+            for (int i = 0; i < buffer.Length; i++)
+                buffer[i] = Math.Clamp(src[i] * oneMinusMix + wet[i] * mix, -1f, 1f);
         }
 
         public override void Reset()
         {
-            foreach (var comb in _combs)
-                comb.Reset();
-            foreach (var allpass in _allpasses)
-                allpass.Reset();
+            foreach (var comb in _combs) comb.Reset();
+            foreach (var allpass in _allpasses) allpass.Reset();
         }
     }
 }

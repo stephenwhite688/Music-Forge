@@ -3,16 +3,17 @@
 namespace HelixAudio.Effects
 {
     /// <summary>
-    /// Internal helper class for comb filter used in reverb.
+    /// Internal helper: feedback comb filter used by <see cref="ReverbEffect"/>.
+    /// Output is the delayed tap; the delay line accumulates input + feedback.
     /// </summary>
-    internal class CombFilter
+    internal sealed class CombFilter
     {
         private readonly float[] _buffer;
         private int _writePos;
         private readonly float _feedback;
         private readonly int _channels;
 
-        public CombFilter(int sampleRate, int channels, int delaySamples, float feedback)
+        public CombFilter(int channels, int delaySamples, float feedback)
         {
             if (delaySamples <= 0)
                 throw new ArgumentException("Delay samples must be positive.", nameof(delaySamples));
@@ -22,15 +23,17 @@ namespace HelixAudio.Effects
             _channels = channels;
             _feedback = feedback;
             _buffer = new float[delaySamples * channels];
-            _writePos = 0;
         }
 
-        public float[] Process(float[] input)
+        /// <summary>
+        /// Processes interleaved audio. <paramref name="output"/> may alias
+        /// <paramref name="input"/> (in-place safe).
+        /// </summary>
+        public void Process(Span<float> input, Span<float> output)
         {
-            float[] output = new float[input.Length];
             int channels = _channels;
             float feedback = _feedback;
-            float[] buffer = _buffer;
+            var buffer = _buffer;
             int writePos = _writePos;
             int bufferLength = buffer.Length;
 
@@ -44,7 +47,7 @@ namespace HelixAudio.Effects
                     float delayed = buffer[bufferIndex];
                     float newSample = input[index] + delayed * feedback;
 
-                    buffer[bufferIndex] = newSample > 1.0f ? 1.0f : (newSample < -1.0f ? -1.0f : newSample);
+                    buffer[bufferIndex] = Math.Clamp(newSample, -1f, 1f);
                     output[index] = delayed;
                 }
 
@@ -54,7 +57,6 @@ namespace HelixAudio.Effects
             }
 
             _writePos = writePos;
-            return output;
         }
 
         public void Reset()

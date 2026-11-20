@@ -3,16 +3,16 @@
 namespace HelixAudio.Effects
 {
     /// <summary>
-    /// Internal helper class for allpass filter used in reverb.
+    /// Internal helper: allpass filter used by <see cref="ReverbEffect"/>.
     /// </summary>
-    internal class AllpassFilter
+    internal sealed class AllpassFilter
     {
         private readonly float[] _buffer;
         private int _writePos;
         private readonly float _gain;
         private readonly int _channels;
 
-        public AllpassFilter(int sampleRate, int channels, int delaySamples, float gain)
+        public AllpassFilter(int channels, int delaySamples, float gain)
         {
             if (delaySamples <= 0)
                 throw new ArgumentException("Delay samples must be positive.", nameof(delaySamples));
@@ -22,15 +22,17 @@ namespace HelixAudio.Effects
             _channels = channels;
             _gain = gain;
             _buffer = new float[delaySamples * channels];
-            _writePos = 0;
         }
 
-        public float[] Process(float[] input)
+        /// <summary>
+        /// Processes interleaved audio. <paramref name="output"/> may alias
+        /// <paramref name="input"/> (in-place safe).
+        /// </summary>
+        public void Process(Span<float> input, Span<float> output)
         {
-            float[] output = new float[input.Length];
             int channels = _channels;
             float gain = _gain;
-            float[] buffer = _buffer;
+            var buffer = _buffer;
             int writePos = _writePos;
             int bufferLength = buffer.Length;
 
@@ -44,10 +46,8 @@ namespace HelixAudio.Effects
                     float delayed = buffer[bufferIndex];
                     float newSample = input[index] + delayed * gain;
 
-                    buffer[bufferIndex] = newSample > 1.0f ? 1.0f : (newSample < -1.0f ? -1.0f : newSample);
-
-                    float outputSample = delayed - input[index] * gain;
-                    output[index] = outputSample > 1.0f ? 1.0f : (outputSample < -1.0f ? -1.0f : outputSample);
+                    buffer[bufferIndex] = Math.Clamp(newSample, -1f, 1f);
+                    output[index] = Math.Clamp(delayed - input[index] * gain, -1f, 1f);
                 }
 
                 writePos += channels;
@@ -56,7 +56,6 @@ namespace HelixAudio.Effects
             }
 
             _writePos = writePos;
-            return output;
         }
 
         public void Reset()
