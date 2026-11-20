@@ -282,6 +282,22 @@ public sealed class EqService
         list.Add(("Treble Cut", Curve(f => f > 3150 ? -4f : f > 1600 ? -2f : 0f)));
         list.Add(("Loudness", Curve(f => f < 63 ? +3f : f < 250 ? +1.5f : f > 8000 ? +2f : 0f)));
         list.Add(("Speech", Curve(f => f is >= 250 and <= 4000 ? +3f : f < 125 || f > 8000 ? -4f : 0f)));
+
+        // ---------- Genre presets (subjective starting points) ----------
+        list.Add(("Pop", Curve(f =>
+            f < 120 ? +3f : f is >= 2500 and <= 5000 ? +3f : f > 10000 ? +1.5f : 0f)));
+        list.Add(("Rock", Curve(f =>
+            f < 120 ? +4f : f is >= 200 and <= 400 ? +2f : f is >= 800 and <= 2000 ? -2f : f > 6000 ? +3f : 0f)));
+        list.Add(("Jazz", Curve(f =>
+            f < 200 ? +1.5f : f > 12000 ? -2f : 0f)));
+        list.Add(("Classical", Curve(f =>
+            f < 250 ? +1f : f is >= 2000 and <= 5000 ? +1f : f > 10000 ? -3f : 0f)));
+        list.Add(("Electronic", Curve(f =>
+            f < 80 ? +6f : f < 120 ? +3f : f is >= 250 and <= 500 ? -2f : f > 8000 ? +3f : 0f)));
+        list.Add(("Hip-Hop", Curve(f =>
+            f < 100 ? +6f : f is >= 150 and <= 300 ? -2f : f is >= 2000 and <= 5000 ? +2f : f > 8000 ? +1.5f : 0f)));
+        list.Add(("Acoustic", Curve(f =>
+            f < 60 ? -2f : f is >= 2000 and <= 5000 ? +3f : f > 8000 ? +2f : 0f)));
         return list;
     }
 

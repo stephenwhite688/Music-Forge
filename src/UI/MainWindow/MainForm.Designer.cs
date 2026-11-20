@@ -15,7 +15,6 @@ partial class MainForm
     private TabPage tabPageInternetRadio;
     private TabPage tabPageGraphicEqualizer;
     private TabPage tabPageVisualizer;
-    private TabPage tabPageMixer;
     private TabPage tabPageNetworkedSpeakers;
     private TabPage tabPagePlugins;
     private TabPage tabPageOptions;
@@ -24,7 +23,6 @@ partial class MainForm
     private InternetRadioRibbonControl internetRadioRibbonControl;
     private GraphicEqualiserRibbonControl graphicEqualiserRibbonControl;
     private VisualiserRibbonControl visualiserRibbonControl;
-    private MixerRibbonControl mixerRibbonControl;
     private NetworkedSpeakersRibbonControl networkedSpeakersRibbonControl;
     private PluginsRibbonControl pluginsRibbonControl;
     private OptionsRibbonControl optionsRibbonControl;
@@ -49,7 +47,6 @@ partial class MainForm
         this.tabPageInternetRadio = new System.Windows.Forms.TabPage();
         this.tabPageGraphicEqualizer = new System.Windows.Forms.TabPage();
         this.tabPageVisualizer = new System.Windows.Forms.TabPage();
-        this.tabPageMixer = new System.Windows.Forms.TabPage();
         this.tabPageNetworkedSpeakers = new System.Windows.Forms.TabPage();
         this.tabPagePlugins = new System.Windows.Forms.TabPage();
         this.tabPageOptions = new System.Windows.Forms.TabPage();
@@ -58,7 +55,6 @@ partial class MainForm
         this.internetRadioRibbonControl = new InternetRadioRibbonControl();
         this.graphicEqualiserRibbonControl = new GraphicEqualiserRibbonControl();
         this.visualiserRibbonControl = new VisualiserRibbonControl();
-        this.mixerRibbonControl = new MixerRibbonControl();
         this.networkedSpeakersRibbonControl = new NetworkedSpeakersRibbonControl();
         this.pluginsRibbonControl = new PluginsRibbonControl();
         this.optionsRibbonControl = new OptionsRibbonControl();
@@ -80,7 +76,6 @@ partial class MainForm
         this._mainTabControl.Controls.Add(this.tabPageInternetRadio);
         this._mainTabControl.Controls.Add(this.tabPageGraphicEqualizer);
         this._mainTabControl.Controls.Add(this.tabPageVisualizer);
-        this._mainTabControl.Controls.Add(this.tabPageMixer);
         this._mainTabControl.Controls.Add(this.tabPageNetworkedSpeakers);
         this._mainTabControl.Controls.Add(this.tabPagePlugins);
         this._mainTabControl.Controls.Add(this.tabPageOptions);
@@ -105,10 +100,6 @@ partial class MainForm
         this.tabPageVisualizer.Text = "Visualizer";
         this.tabPageVisualizer.Controls.Add(this.visualiserRibbonControl);
         this.visualiserRibbonControl.Dock = System.Windows.Forms.DockStyle.Top;
-
-        this.tabPageMixer.Text = "Mixer";
-        this.tabPageMixer.Controls.Add(this.mixerRibbonControl);
-        this.mixerRibbonControl.Dock = System.Windows.Forms.DockStyle.Top;
 
         this.tabPageNetworkedSpeakers.Text = "Networked Speakers";
         this.tabPageNetworkedSpeakers.Controls.Add(this.networkedSpeakersRibbonControl);
