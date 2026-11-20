@@ -50,8 +50,20 @@ public partial class GraphicEqualiserRibbonControl : RibbonStripControl
         foreach (var group in groups.Reverse())
         {
             group.Dock = DockStyle.Left;
+            group.Caption = string.Empty; // single ribbon-wide caption below
             RibbonPanel.Controls.Add(group);
         }
+
+        RibbonPanel.Controls.Add(new Label
+        {
+            Text = "Graphic Equalizer",
+            Dock = DockStyle.Bottom,
+            Height = 13,
+            TextAlign = ContentAlignment.MiddleCenter,
+            ForeColor = Color.Gainsboro,
+            BackColor = Color.FromArgb(51, 51, 55),
+            Font = new Font("Segoe UI", 7.5F)
+        });
     }
 
     private static ContextMenuStrip BuildMenu() => new();

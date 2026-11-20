@@ -42,8 +42,20 @@ public partial class InternetRadioRibbonControl : RibbonStripControl
         foreach (var group in new[] { informationGroup, favouritesGroup, playbackGroup, searchGroup, directoryGroup })
         {
             group.Dock = DockStyle.Left;
+            group.Caption = string.Empty; // single ribbon-wide caption below
             RibbonPanel.Controls.Add(group);
         }
+
+        RibbonPanel.Controls.Add(new Label
+        {
+            Text = "Internet Radio",
+            Dock = DockStyle.Bottom,
+            Height = 13,
+            TextAlign = ContentAlignment.MiddleCenter,
+            ForeColor = Color.Gainsboro,
+            BackColor = Color.FromArgb(51, 51, 55),
+            Font = new Font("Segoe UI", 7.5F)
+        });
     }
 
     private static ContextMenuStrip BuildMenu(params string[] items) => RibbonMenuFactory.Create(items);

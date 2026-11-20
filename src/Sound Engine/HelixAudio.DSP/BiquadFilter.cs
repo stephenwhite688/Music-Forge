@@ -17,7 +17,8 @@ namespace HelixAudio.DSP
     {
         private float _a0, _a1, _a2;
         private float _b1, _b2;
-        private float _z1, _z2;
+        private float _x1, _x2;   // input delay line
+        private float _y1, _y2;   // output delay line
         private float _frequency;
         private float _q;
         private float _gainDb;
@@ -74,8 +75,10 @@ namespace HelixAudio.DSP
             _frequency = 1000.0f;
             _q = 0.707f;
             _gainDb = 0.0f;
-            _z1 = 0.0f;
-            _z2 = 0.0f;
+            _x1 = 0.0f;
+            _x2 = 0.0f;
+            _y1 = 0.0f;
+            _y2 = 0.0f;
             UpdateCoefficients();
         }
 
@@ -89,9 +92,13 @@ namespace HelixAudio.DSP
 
         public float ProcessSample(float x)
         {
-            float y = _a0 * x + _a1 * _z1 + _a2 * _z2 - _b1 * _z1 - _b2 * _z2;
-            _z2 = _z1;
-            _z1 = y;
+            // Direct Form I: y = b0*x + b1*x1 + b2*x2 - a1*y1 - a2*y2
+            // (_a0.._a2 hold the normalised numerator, _b1/_b2 the denominator)
+            float y = _a0 * x + _a1 * _x1 + _a2 * _x2 - _b1 * _y1 - _b2 * _y2;
+            _x2 = _x1;
+            _x1 = x;
+            _y2 = _y1;
+            _y1 = y;
             return y;
         }
 
@@ -110,8 +117,10 @@ namespace HelixAudio.DSP
 
         public void Reset()
         {
-            _z1 = 0.0f;
-            _z2 = 0.0f;
+            _x1 = 0.0f;
+            _x2 = 0.0f;
+            _y1 = 0.0f;
+            _y2 = 0.0f;
         }
 
         private void UpdateCoefficients()
