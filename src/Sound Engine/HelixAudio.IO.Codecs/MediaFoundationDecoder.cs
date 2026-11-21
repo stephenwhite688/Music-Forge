@@ -40,6 +40,30 @@ internal static class MediaFoundationDecoder
         return stream;
     }
 
+    /// <summary>
+    /// Decodes a compressed audio stream (MP3/AAC/ADTS/WMA/ALAC) from any
+    /// seekable <see cref="Stream"/> - used by HLS segment decode where the
+    /// payload arrives as bytes rather than a file.
+    /// </summary>
+    public static AudioStream DecodeStream(Stream stream)
+    {
+        var reader = new NAudio.Wave.AudioFileReader(stream);
+        var wf = reader.WaveFormat;
+        int channels = wf.Channels;
+        long totalFrames = reader.Length / Math.Max(1, wf.BlockAlign);
+
+        var scratch = new byte[256 * 1024];
+        return AudioStream.CreateStreaming(
+            wf.SampleRate, channels, totalFrames,
+            (dest, count) => ReadFloats(reader, dest, count, channels, scratch),
+            frame =>
+            {
+                try { reader.Position = frame * wf.BlockAlign; return true; }
+                catch { return false; }
+            },
+            reader.Dispose);
+        }
+
     /// <summary>Pulls up to count frames of IEEE float32 from the reader.</summary>
     private static int ReadFloats(NAudio.Wave.AudioFileReader reader, float[] dest, int count, int channels, byte[] scratch)
     {

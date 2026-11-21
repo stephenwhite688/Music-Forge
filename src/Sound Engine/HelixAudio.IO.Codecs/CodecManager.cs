@@ -71,6 +71,14 @@ public static class CodecManager
     }
 
     /// <summary>
+    /// Decodes compressed audio from a stream using Media Foundation.
+    /// The stream must be seekable. Used for in-memory payloads such as
+    /// HLS segments where no file path exists.
+    /// </summary>
+    public static AudioStream DecodeStream(Stream stream)
+        => MediaFoundationDecoder.DecodeStream(stream);
+
+    /// <summary>
     /// Reads an audio file asynchronously using the appropriate codec for its extension.
     /// </summary>
     /// <param name="path">Path to the audio file.</param>
