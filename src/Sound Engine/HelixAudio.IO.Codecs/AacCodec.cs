@@ -22,11 +22,24 @@ public class AacCodec : AudioCodecBase
     public override string[] SupportedExtensions => new[] { ".aac", ".adts", ".m4a" };
 
     /// <summary>
-    /// Gets whether this codec can write audio files.
+    /// Gets whether this codec can write audio files. Only .m4a/.mp4 output
+    /// is supported (AAC-LC via Media Foundation SinkWriter).
     /// </summary>
-    public override bool CanWrite => false;
+    public override bool CanWrite => true;
     public override string DecoderBackend => "Media Foundation (OS decoder)";
     public override bool IsVerifiedDecoder => false;
+
+    /// <summary>
+    /// Writes an audio stream as AAC-LC in an MPEG-4 container (.m4a/.mp4).
+    /// Other extensions throw <see cref="NotSupportedException"/>.
+    /// </summary>
+    public override Task WriteAsync(string path, AudioStream stream, CancellationToken cancellationToken = default)
+    {
+        string ext = Path.GetExtension(path).ToLowerInvariant();
+        if (ext is not (".m4a" or ".mp4" or ".aac"))
+            throw new NotSupportedException($"AAC codec can only write .m4a/.mp4/.aac containers, got '{ext}'.");
+        return MediaFoundationAacEncoder.EncodeAsync(path, stream, cancellationToken: cancellationToken);
+    }
 
 
     /// <summary>
