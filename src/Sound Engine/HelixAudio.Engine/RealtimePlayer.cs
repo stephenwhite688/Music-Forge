@@ -77,6 +77,42 @@ public sealed class RealtimePlayer : IDisposable
     /// <summary>Total duration of the loaded file.</summary>
     public TimeSpan Duration { get; private set; }
 
+    /// <summary>
+    /// Seeks the underlying stream to <paramref name="position"/> while
+    /// playing. Returns false when the codec can't seek (e.g. forward-only
+    /// FLAC decode) or no file is loaded. Note: up to ~2s of already-queued
+    /// output may still play before the new position is heard.
+    /// </summary>
+    public bool TrySeek(TimeSpan position)
+    {
+        var s = _stream;
+        if (s is null || !IsPlaying) return false;
+        long frame = (long)(position.TotalSeconds * _sampleRate);
+        if (!s.TrySeek(frame)) return false;
+        _framesWritten = frame;
+        return true;
+    }
+
+    /// <summary>
+    /// Estimated end-to-end latency: node algorithmic delays + resampler
+    /// group delay + queued output buffer, in output-rate time.
+    /// </summary>
+    public TimeSpan Latency
+    {
+        get
+        {
+            if (_deviceRate <= 0) return TimeSpan.Zero;
+            double frames = 0;
+            foreach (var n in _nodes)
+                if (n is AudioNode an) frames += an.LatencyFrames;
+            if (_resampler is not null)
+                frames += _resampler.LatencyInputSamples * (double)_deviceRate / _sampleRate;
+            var bp = _device.BufferedWaveProvider;
+            if (bp is not null) frames += bp.BufferedDuration.TotalSeconds * _deviceRate;
+            return TimeSpan.FromSeconds(frames / _deviceRate);
+        }
+    }
+
     /// <summary>Sample rate of the loaded file.</summary>
     public int SampleRate => _sampleRate;
 

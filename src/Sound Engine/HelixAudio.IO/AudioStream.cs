@@ -17,6 +17,7 @@ namespace HelixAudio.IO
         private bool _disposed;
         private readonly byte[] _byteScratch = new byte[256 * 1024];
         private Func<float[], int, int>? _frameSource;
+        private Func<long, bool>? _seekSource;
         private Action? _disposeCallback;
 
         /// <summary>
@@ -86,7 +87,9 @@ namespace HelixAudio.IO
         /// </summary>
         public static AudioStream CreateStreaming(
             int sampleRate, int channels, long totalFrames,
-            Func<float[], int, int> readFrames, Action? onDispose = null)
+            Func<float[], int, int> readFrames,
+            Func<long, bool>? seek = null,
+            Action? onDispose = null)
         {
             var s = new AudioStream
             {
@@ -97,8 +100,30 @@ namespace HelixAudio.IO
                 TotalFrames = totalFrames
             };
             s._frameSource = readFrames;
+            s._seekSource = seek;
             s._disposeCallback = onDispose;
             return s;
+        }
+
+        /// <summary>
+        /// Attempts a sample-accurate seek to <paramref name="frame"/>.
+        /// Returns false when the backing source cannot seek (e.g. live
+        /// decode streams).
+        /// </summary>
+        public bool TrySeek(long frame)
+        {
+            if (_disposed || frame < 0 || frame > TotalFrames) return false;
+            if (_frameSource is not null)
+            {
+                if (_seekSource is null || !_seekSource(frame)) return false;
+                Position = frame;
+                return true;
+            }
+            if (!_stream.CanSeek) return false;
+            int bytesPerSample = _floatPcm ? 4 : Math.Max(1, _bitsPerSample / 8);
+            _stream.Position = frame * Channels * bytesPerSample;
+            Position = frame;
+            return true;
         }
 
         /// <summary>Reads up to count frames directly into dest starting at index 0. Returns frames read.</summary>

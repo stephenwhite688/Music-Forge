@@ -43,6 +43,7 @@ public class WavCodec : AudioCodecBase
         var stream = AudioStream.CreateStreaming(
             reader.SampleRate, reader.Channels, reader.TotalFrames,
             (dest, count) => reader.ReadFramesInto(dest, count),
+            frame => { reader.Seek(frame); return true; },
             reader.Dispose);
         return Task.FromResult<AudioStream?>(stream);
     }

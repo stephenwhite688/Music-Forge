@@ -23,6 +23,9 @@ public class Mp3Codec : AudioCodecBase
 
     /// <summary>
     /// Gets whether this codec can write audio files.
+    /// MP3 encoding requires an encoder dependency we don't ship yet
+    /// (NAudio 3.x removed MediaFoundationEncoder; a managed or LAME
+    /// interop encoder is future work).
     /// </summary>
     public override bool CanWrite => false;
     public override string DecoderBackend => "Media Foundation (OS decoder)";

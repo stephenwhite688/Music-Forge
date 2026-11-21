@@ -40,7 +40,7 @@ The engine is approximately **60% real / 25% scaffolded / 15% stubbed**.
 | `HelixAudio.Filters` | Partial — wrong abstraction | Same `FilterBase` non-node pattern |
 | `HelixAudio.Mixing` | Partial — fragmented | `StereoMixerNode` is real; `MixerNode.Process` is a pass-through stub; batch mixers allocate |
 | `HelixAudio.IO` | Real (PCM + float WAV) | `WavReader/Writer` int PCM **and IEEE float32** with TPDF dither; chunked `AudioStream` decode; no RF64 |
-| `HelixAudio.IO.Codecs` | Partial→improving | WAV R/W (float+int); **chunked decode** for WAV/MF/FLAC/OGG; FLAC/OGG managed-verified; MP3/AAC/WMA/ALAC via OS decoder (unverified); **Opus/DSD throw**; **WAV-only encode** |
+| `HelixAudio.IO.Codecs` | Partial→improving | WAV R/W (float+int); **chunked decode** for WAV/MF/FLAC/OGG; **sample-accurate seek** on WAV/MF/OGG streams; FLAC/OGG managed-verified; MP3/AAC/WMA/ALAC via OS decoder (unverified); **Opus/DSD throw**; **encode = WAV only** (no MP3/FLAC encoder dep yet) |
 | ~~`HelixAudio.MIDI`~~ | **REMOVED** | Scaffolded shells, no real MIDI parse or synth audio — deleted rather than shipped fake |
 | `HelixAudio.Analysis` | **Real — strongest project** | BS.1770/EBU R128 `LoudnessMeter`, `HumDetector`, `NoiseFloorEstimator`, `PitchTracker`, `SignalStatistics`, `PeakFileGenerator`, meter/tap nodes |
 | ~~`HelixAudio.Streaming`~~ | **REMOVED** | Thin `HttpClient` wrappers, no manifest/demux/decode — deleted; radio works via `MediaFoundationReader` in `RealtimePlayer` |

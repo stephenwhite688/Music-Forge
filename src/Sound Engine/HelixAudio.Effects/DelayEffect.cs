@@ -78,6 +78,9 @@ namespace HelixAudio.Effects
             EnsureDelayBuffer();
         }
 
+        /// <summary>Delay line length in frames - the wet path's algorithmic latency.</summary>
+        public override int LatencyFrames => _delaySamples + 1;
+
         public override IReadOnlyList<AudioParameterInfo> GetParameterInfo() => _params;
 
         private static readonly AudioParameterInfo[] _params =

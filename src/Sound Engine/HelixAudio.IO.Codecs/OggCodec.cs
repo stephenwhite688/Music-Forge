@@ -52,6 +52,15 @@ public class OggCodec : AudioCodecBase
                     int read = reader.ReadSamples(dest, 0, wanted);
                     return read / channels;
                 },
+                frame =>
+                {
+                    try
+                    {
+                        reader.SeekTo(TimeSpan.FromSeconds(frame / (double)reader.SampleRate), SeekOrigin.Begin);
+                        return true;
+                    }
+                    catch { return false; }
+                },
                 reader.Dispose);
             return stream;
         }, cancellationToken);

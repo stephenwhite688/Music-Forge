@@ -46,6 +46,9 @@ public sealed class LinearPhaseEqNode : AudioNode
     /// <summary>Group delay introduced by the FIR (samples).</summary>
     public int LatencySamples => (_kernelLen - 1) / 2;
 
+    /// <summary>FIR group delay in frames - feeds latency reporting/PDC.</summary>
+    public override int LatencyFrames => LatencySamples;
+
     public int KernelLength => _kernelLen;
     public int FftSize => _fftSize;
 

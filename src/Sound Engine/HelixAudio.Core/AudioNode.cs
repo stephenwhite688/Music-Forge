@@ -61,6 +61,13 @@ namespace HelixAudio.Core
         public virtual void Reset() { }
 
         /// <summary>
+        /// Algorithmic latency of this node in frames at the current format.
+        /// Nodes that delay, look ahead, or filter with group delay should
+        /// override. Used for latency reporting and (future) PDC.
+        /// </summary>
+        public virtual int LatencyFrames => 0;
+
+        /// <summary>
         /// Describes the automatable parameters this node exposes.
         /// Override to advertise parameters; default is none.
         /// </summary>

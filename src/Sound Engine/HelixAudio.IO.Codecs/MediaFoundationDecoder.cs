@@ -31,6 +31,11 @@ internal static class MediaFoundationDecoder
         var stream = AudioStream.CreateStreaming(
             wf.SampleRate, channels, totalFrames,
             (dest, count) => ReadFloats(reader, dest, count, channels, scratch),
+            frame =>
+            {
+                try { reader.Position = frame * wf.BlockAlign; return true; }
+                catch { return false; }
+            },
             reader.Dispose);
         return stream;
     }

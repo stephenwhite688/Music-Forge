@@ -60,6 +60,7 @@ public class FlacCodec : AudioCodecBase
             var stream = AudioStream.CreateStreaming(
                 sampleRate, channels, decoder.StreamInfo.TotalSamples,
                 (dest, count) => ReadFlacFrames(decoder, dest, count, channels, bytesPerSample, byteScratch),
+                null, // PureFlac decoder is forward-only - no seek
                 () => { decoder.Dispose(); file.Dispose(); });
             return stream;
         }, cancellationToken);
