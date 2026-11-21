@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace HelixAudio.Core
 {
@@ -57,6 +59,45 @@ namespace HelixAudio.Core
         /// Override this method to reset any per-node state variables before processing begins.
         /// </summary>
         public virtual void Reset() { }
+
+        /// <summary>
+        /// Describes the automatable parameters this node exposes.
+        /// Override to advertise parameters; default is none.
+        /// </summary>
+        public virtual IReadOnlyList<AudioParameterInfo> GetParameterInfo()
+            => Array.Empty<AudioParameterInfo>();
+
+        /// <summary>
+        /// Reads a parameter value by name. Returns false if unknown.
+        /// Safe to call from the control thread while processing.
+        /// </summary>
+        public virtual bool TryGetParameter(string name, out float value)
+        {
+            value = 0f;
+            return false;
+        }
+
+        /// <summary>
+        /// Writes a parameter value by name (clamped to the descriptor's range).
+        /// Returns false if the parameter is unknown or read-only.
+        /// Implementations must be safe to call while Process() is running.
+        /// </summary>
+        public virtual bool TrySetParameter(string name, float value)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// Serializes the node's full state (parameters + configuration) to JSON.
+        /// Used for presets, sessions and plugin state chunks. Default: empty object.
+        /// </summary>
+        public virtual JsonObject GetState() => new JsonObject();
+
+        /// <summary>
+        /// Restores state previously produced by <see cref="GetState"/>.
+        /// Unknown/missing fields are ignored; invalid values keep defaults.
+        /// </summary>
+        public virtual void SetState(JsonObject state) { }
 
         /// <summary>
         /// Processes an interleaved audio buffer in place.

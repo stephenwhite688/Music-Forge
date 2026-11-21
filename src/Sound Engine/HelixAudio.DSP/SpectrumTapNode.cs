@@ -1,6 +1,8 @@
 using HelixAudio.Core;
 using HelixAudio.DSP.Analysis;
 using System;
+using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace HelixAudio.DSP;
 
@@ -116,6 +118,62 @@ public sealed class SpectrumTapNode : AudioNode
 
     /// <summary>Hz per spectrum bin.</summary>
     public float BinWidthHz => (float)(Format?.SampleRate ?? SampleRate) / FftSize;
+
+    // ---- Parameter / state model (IAudioNode extensions) ----
+
+    public override IReadOnlyList<AudioParameterInfo> GetParameterInfo() => _params;
+
+    private static readonly AudioParameterInfo[] _params =
+    {
+        new("fft.size", 256f, 65536f, 2048f),
+        new("window", 0f, 3f, (float)WindowType.Hann),
+    };
+
+    public override bool TryGetParameter(string name, out float value)
+    {
+        value = name switch
+        {
+            "fft.size" => FftSize,
+            "window" => (float)Window,
+            _ => float.NaN,
+        };
+        return !float.IsNaN(value);
+    }
+
+    public override bool TrySetParameter(string name, float value)
+    {
+        switch (name)
+        {
+            case "fft.size":
+                int size = (int)value;
+                if (size < 256 || size > 65536 || (size & (size - 1)) != 0) return false;
+                SetFftParameters(size);
+                return true;
+            case "window":
+                if (value < 0f || value > 3f) return false;
+                SetFftParameters(FftSize, (WindowType)(int)value);
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public override JsonObject GetState() => new()
+    {
+        ["fftSize"] = FftSize,
+        ["window"] = (int)Window,
+    };
+
+    public override void SetState(JsonObject state)
+    {
+        if (state is null) return;
+        int size = FftSize;
+        WindowType win = Window;
+        if (state["fftSize"] is JsonValue fs) size = fs.GetValue<int>();
+        if (state["window"] is JsonValue w) win = (WindowType)w.GetValue<int>();
+        if (size != FftSize || win != Window)
+            SetFftParameters(size, win);
+    }
 
     /// <summary>True once at least one full FFT frame has been analysed.</summary>
     public bool HasData { get { lock (_gate) return _hasData; } }

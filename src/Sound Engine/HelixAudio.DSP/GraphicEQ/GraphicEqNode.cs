@@ -1,5 +1,7 @@
 using HelixAudio.Core;
 using System;
+using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace HelixAudio.DSP.GraphicEQ;
 
@@ -424,6 +426,139 @@ public sealed class GraphicEqNode : AudioNode
         }
         return totalDb;
     }
+    // ---- Parameter / state model (IAudioNode extensions) ----
+
+    private const string BandParamPrefix = "band.gain[";
+
+    public override IReadOnlyList<AudioParameterInfo> GetParameterInfo()
+    {
+        var list = new List<AudioParameterInfo>(BandCount + 6)
+        {
+            new("input.db", -24f, 24f, 0f, "dB"),
+            new("output.db", -24f, 24f, 0f, "dB"),
+            new("bandQ", 0.5f, 12f, ThirdOctaveQ),
+            new("bypass", 0f, 1f, 0f),
+            new("enabled", 0f, 1f, 1f),
+            new("channelLinked", 0f, 1f, 1f),
+        };
+        for (int b = 0; b < BandCount; b++)
+            list.Add(new AudioParameterInfo($"band.gain[{b}]", -MaxBandGainDb, MaxBandGainDb, 0f, "dB"));
+        return list;
+    }
+
+    /// <summary>Resolves "band.gain[i]" to a band index, or -1 for non-band names.</summary>
+    private static int TryParseBandParam(string name)
+    {
+        if (!name.StartsWith(BandParamPrefix, StringComparison.Ordinal)) return -1;
+        int close = name.IndexOf(']', BandParamPrefix.Length);
+        if (close < 0) return -1;
+        return int.TryParse(name.AsSpan(BandParamPrefix.Length, close - BandParamPrefix.Length), out int b) ? b : -1;
+    }
+
+    public override bool TryGetParameter(string name, out float value)
+    {
+        int band = TryParseBandParam(name);
+        if (band >= 0)
+        {
+            if (band >= BandCount) { value = 0f; return false; }
+            value = GetBandGains(0)[band];
+            return true;
+        }
+        value = name switch
+        {
+            "input.db" => InputGainDb,
+            "output.db" => OutputGainDb,
+            "bandQ" => BandQ,
+            "bypass" => Bypass ? 1f : 0f,
+            "enabled" => Enabled ? 1f : 0f,
+            "channelLinked" => ChannelLinked ? 1f : 0f,
+            _ => float.NaN,
+        };
+        return !float.IsNaN(value);
+    }
+
+    public override bool TrySetParameter(string name, float value)
+    {
+        int band = TryParseBandParam(name);
+        if (band >= 0)
+        {
+            if (band >= BandCount) return false;
+            // Linked mode: the shared curve drives all channels. Unlinked:
+            // parameters address channel 0 (per-channel automation can use
+            // the (channel,band) setters directly).
+            if (ChannelLinked) SetBandGain(band, value);
+            else SetBandGain(0, band, value);
+            return true;
+        }
+        switch (name)
+        {
+            case "input.db": InputGainDb = value; return true;
+            case "output.db": OutputGainDb = value; return true;
+            case "bandQ": BandQ = value; return true;
+            case "bypass": Bypass = value >= 0.5f; return true;
+            case "enabled": Enabled = value >= 0.5f; return true;
+            case "channelLinked": ChannelLinked = value >= 0.5f; return true;
+            default: return false;
+        }
+    }
+
+    public override JsonObject GetState()
+    {
+        var state = new JsonObject
+        {
+            ["inputGainDb"] = InputGainDb,
+            ["outputGainDb"] = OutputGainDb,
+            ["bandQ"] = BandQ,
+            ["bypass"] = Bypass,
+            ["enabled"] = Enabled,
+            ["channelLinked"] = ChannelLinked,
+        };
+
+        var enabledArr = new JsonArray();
+        foreach (var e in GetBandEnabled()) enabledArr.Add(e);
+        state["bandEnabled"] = enabledArr;
+
+        int channels = PreparedChannels;
+        var gainsArr = new JsonArray();
+        for (int ch = 0; ch < channels; ch++)
+        {
+            var chArr = new JsonArray();
+            foreach (var g in GetBandGains(ch)) chArr.Add(g);
+            gainsArr.Add(chArr);
+        }
+        state["gains"] = gainsArr;
+        return state;
+    }
+
+    public override void SetState(JsonObject state)
+    {
+        if (state is null) return;
+
+        // Restore link mode first so per-channel writes land correctly.
+        if (state["channelLinked"] is JsonValue cl) ChannelLinked = cl.GetValue<bool>();
+        if (state["inputGainDb"] is JsonValue ig) InputGainDb = ig.GetValue<float>();
+        if (state["outputGainDb"] is JsonValue og) OutputGainDb = og.GetValue<float>();
+        if (state["bandQ"] is JsonValue q) BandQ = q.GetValue<float>();
+        if (state["bypass"] is JsonValue bp) Bypass = bp.GetValue<bool>();
+        if (state["enabled"] is JsonValue en) Enabled = en.GetValue<bool>();
+
+        if (state["bandEnabled"] is JsonArray be)
+            for (int b = 0; b < Math.Min(be.Count, BandCount); b++)
+                SetBandEnabled(b, be[b]!.GetValue<bool>());
+
+        if (state["gains"] is JsonArray gains)
+            for (int ch = 0; ch < gains.Count && ch < PreparedChannels; ch++)
+            {
+                if (gains[ch] is not JsonArray chGains) continue;
+                for (int b = 0; b < Math.Min(chGains.Count, BandCount); b++)
+                {
+                    float g = chGains[b]!.GetValue<float>();
+                    if (ChannelLinked) SetBandGain(b, g);
+                    else SetBandGain(ch, b, g);
+                }
+            }
+    }
+
     private static float DbToLinear(float db) =>
         db == 0f ? 1f : (float)Math.Pow(10.0, db / 20.0);
 }

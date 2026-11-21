@@ -1,5 +1,7 @@
 ﻿using HelixAudio.Core;
 using System;
+using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace HelixAudio.Effects
 {
@@ -100,6 +102,33 @@ namespace HelixAudio.Effects
             float oneMinusMix = 1f - mix;
             for (int i = 0; i < buffer.Length; i++)
                 buffer[i] = Math.Clamp(src[i] * oneMinusMix + wet[i] * mix, -1f, 1f);
+        }
+
+        public override IReadOnlyList<AudioParameterInfo> GetParameterInfo() => _params;
+
+        private static readonly AudioParameterInfo[] _params =
+        {
+            new("mix", 0f, 1f, 0.5f),
+        };
+
+        public override bool TryGetParameter(string name, out float value)
+        {
+            value = name == "mix" ? Mix : float.NaN;
+            return !float.IsNaN(value);
+        }
+
+        public override bool TrySetParameter(string name, float value)
+        {
+            if (name != "mix") return false;
+            Mix = value;
+            return true;
+        }
+
+        public override JsonObject GetState() => new() { ["mix"] = Mix };
+
+        public override void SetState(JsonObject state)
+        {
+            if (state?["mix"] is JsonValue m) Mix = m.GetValue<float>();
         }
 
         public override void Reset()

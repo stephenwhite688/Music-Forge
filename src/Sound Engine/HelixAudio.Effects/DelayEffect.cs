@@ -1,5 +1,7 @@
 ﻿using HelixAudio.Core;
 using System;
+using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace HelixAudio.Effects
 {
@@ -74,6 +76,53 @@ namespace HelixAudio.Effects
         {
             _delaySamples = (int)((_delayMs / 1000f) * SampleRate);
             EnsureDelayBuffer();
+        }
+
+        public override IReadOnlyList<AudioParameterInfo> GetParameterInfo() => _params;
+
+        private static readonly AudioParameterInfo[] _params =
+        {
+            new("delay.ms", 0f, 5000f, 500f, "ms"),
+            new("feedback", 0f, 0.99f, 0.5f),
+            new("mix", 0f, 1f, 0.5f),
+        };
+
+        public override bool TryGetParameter(string name, out float value)
+        {
+            value = name switch
+            {
+                "delay.ms" => DelayMs,
+                "feedback" => Feedback,
+                "mix" => Mix,
+                _ => float.NaN,
+            };
+            return !float.IsNaN(value);
+        }
+
+        public override bool TrySetParameter(string name, float value)
+        {
+            switch (name)
+            {
+                case "delay.ms": DelayMs = value; return true;
+                case "feedback": Feedback = value; return true;
+                case "mix": Mix = value; return true;
+                default: return false;
+            }
+        }
+
+        public override JsonObject GetState() => new()
+        {
+            ["delayMs"] = DelayMs,
+            ["feedback"] = Feedback,
+            ["mix"] = Mix,
+        };
+
+        public override void SetState(JsonObject state)
+        {
+            if (state is null) return;
+            if (state["delayMs"] is JsonValue d) DelayMs = d.GetValue<float>();
+            if (state["feedback"] is JsonValue f) Feedback = f.GetValue<float>();
+            if (state["mix"] is JsonValue m) Mix = m.GetValue<float>();
         }
 
         public override void Prepare(AudioFormat format)

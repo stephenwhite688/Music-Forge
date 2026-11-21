@@ -1,5 +1,7 @@
 using HelixAudio.Core;
 using System;
+using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace HelixAudio.Mixing;
 
@@ -161,5 +163,96 @@ public sealed class StereoMixerNode : AudioNode
                 _rmsDb[c] = _rmsDb[c] < -119f ? rmsDb : _rmsDb[c] + 0.4f * (rmsDb - _rmsDb[c]);
             }
         }
+    }
+
+    // ---- Parameter / state model (IAudioNode extensions) ----
+
+    /// <summary>Parses "strip[{c}].{gain|mute|solo}"; returns (channel, field) or null.</summary>
+    private static (int Channel, string Field)? ParseStripParam(string name)
+    {
+        const string prefix = "strip[";
+        if (!name.StartsWith(prefix, StringComparison.Ordinal)) return null;
+        int close = name.IndexOf(']', prefix.Length);
+        if (close < 0 || close + 1 >= name.Length || name[close + 1] != '.') return null;
+        if (!int.TryParse(name.AsSpan(prefix.Length, close - prefix.Length), out int ch)) return null;
+        string field = name[(close + 2)..];
+        return field is "gain" or "mute" or "solo" ? (ch, field) : null;
+    }
+
+    public override IReadOnlyList<AudioParameterInfo> GetParameterInfo()
+    {
+        var list = new List<AudioParameterInfo>(_strips.Length * 3 + 1)
+        {
+            new("balance", -1f, 1f, 0f),
+        };
+        for (int c = 0; c < _strips.Length; c++)
+        {
+            list.Add(new AudioParameterInfo($"strip[{c}].gain", 0f, 2f, 1f));
+            list.Add(new AudioParameterInfo($"strip[{c}].mute", 0f, 1f, 0f));
+            list.Add(new AudioParameterInfo($"strip[{c}].solo", 0f, 1f, 0f));
+        }
+        return list;
+    }
+
+    public override bool TryGetParameter(string name, out float value)
+    {
+        if (name == "balance") { value = Balance; return true; }
+        var strip = ParseStripParam(name);
+        if (strip is null) { value = 0f; return false; }
+        var s = _strips[strip.Value.Channel];
+        value = strip.Value.Field switch
+        {
+            "gain" => s.Gain,
+            "mute" => s.Mute ? 1f : 0f,
+            "solo" => s.Solo ? 1f : 0f,
+            _ => float.NaN,
+        };
+        return !float.IsNaN(value);
+    }
+
+    public override bool TrySetParameter(string name, float value)
+    {
+        if (name == "balance") { Balance = value; return true; }
+        var strip = ParseStripParam(name);
+        if (strip is null) return false;
+        var s = _strips[strip.Value.Channel];
+        switch (strip.Value.Field)
+        {
+            case "gain": s.Gain = Math.Clamp(value, 0f, 2f); return true;
+            case "mute": s.Mute = value >= 0.5f; return true;
+            case "solo": s.Solo = value >= 0.5f; return true;
+            default: return false;
+        }
+    }
+
+    public override JsonObject GetState()
+    {
+        var strips = new JsonArray();
+        foreach (var s in _strips)
+            strips.Add(new JsonObject
+            {
+                ["gain"] = s.Gain,
+                ["mute"] = s.Mute,
+                ["solo"] = s.Solo,
+            });
+        return new JsonObject
+        {
+            ["balance"] = Balance,
+            ["strips"] = strips,
+        };
+    }
+
+    public override void SetState(JsonObject state)
+    {
+        if (state is null) return;
+        if (state["balance"] is JsonValue b) Balance = b.GetValue<float>();
+        if (state["strips"] is JsonArray strips)
+            for (int c = 0; c < Math.Min(strips.Count, _strips.Length); c++)
+            {
+                if (strips[c] is not JsonObject so) continue;
+                if (so["gain"] is JsonValue g) _strips[c].Gain = g.GetValue<float>();
+                if (so["mute"] is JsonValue m) _strips[c].Mute = m.GetValue<bool>();
+                if (so["solo"] is JsonValue s) _strips[c].Solo = s.GetValue<bool>();
+            }
     }
 }
