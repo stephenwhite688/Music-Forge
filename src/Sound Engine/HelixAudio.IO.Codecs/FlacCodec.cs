@@ -41,29 +41,53 @@ public class FlacCodec : AudioCodecBase
     public override Task<AudioStream?> ReadAsync(string path, CancellationToken cancellationToken = default) =>
         Task.Run(() =>
         {
-            using var file = File.OpenRead(path);
-            using var decoder = new PureFlac.FlacStreamDecoder(file, true);
+            var file = File.OpenRead(path);
+            var decoder = new PureFlac.FlacStreamDecoder(file, true);
 
             int sampleRate = decoder.SampleRate;
             int channels = decoder.Channels;
             int bitsPerSample = decoder.BitsPerSample;
             int bytesPerSample = decoder.BytesPerSample;
             if (bytesPerSample is not (2 or 3 or 4))
-                throw new NotSupportedException($"Unsupported FLAC bit depth: {bitsPerSample}");
-
-            using var pcm = new MemoryStream();
-            var buffer = new byte[8192 * channels * bytesPerSample];
-            int read;
-            while ((read = decoder.Read(buffer, 0, buffer.Length)) > 0)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                pcm.Write(buffer, 0, read);
+                decoder.Dispose();
+                file.Dispose();
+                throw new NotSupportedException($"Unsupported FLAC bit depth: {bitsPerSample}");
             }
 
-            pcm.Position = 0;
-            float[] samples = PcmBytesToFloats(pcm.ToArray(), channels, bytesPerSample);
-            return PcmStreamBuilder.FromFloats(sampleRate, channels, samples);
+            // Chunked decode: pull PCM frames from the decoder on demand.
+            var byteScratch = new byte[256 * 1024];
+            var stream = AudioStream.CreateStreaming(
+                sampleRate, channels, decoder.StreamInfo.TotalSamples,
+                (dest, count) => ReadFlacFrames(decoder, dest, count, channels, bytesPerSample, byteScratch),
+                () => { decoder.Dispose(); file.Dispose(); });
+            return stream;
         }, cancellationToken);
+
+    /// <summary>Decodes up to count frames of FLAC PCM into interleaved floats.</summary>
+    private static int ReadFlacFrames(PureFlac.FlacStreamDecoder decoder, float[] dest, int count,
+        int channels, int bytesPerSample, byte[] byteScratch)
+    {
+        int frameBytes = channels * bytesPerSample;
+        int wanted = Math.Min(count * frameBytes, byteScratch.Length / frameBytes * frameBytes);
+        int got = decoder.Read(byteScratch, 0, wanted);
+        if (got <= 0) return 0;
+
+        int frames = got / frameBytes;
+        int sampleCount = frames * channels;
+        for (int i = 0; i < sampleCount; i++)
+        {
+            int offset = i * bytesPerSample;
+            dest[i] = bytesPerSample switch
+            {
+                2 => BinaryPrimitives.ReadInt16LittleEndian(byteScratch.AsSpan(offset, 2)) / 32768f,
+                3 => ReadInt24LittleEndian(byteScratch, offset) / 8388608f,
+                4 => BinaryPrimitives.ReadInt32LittleEndian(byteScratch.AsSpan(offset, 4)) / 2147483648f,
+                _ => 0f
+            };
+        }
+        return frames;
+    }
 
     private static float[] PcmBytesToFloats(byte[] pcm, int channels, int bytesPerSample)
     {

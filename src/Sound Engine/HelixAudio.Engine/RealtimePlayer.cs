@@ -33,6 +33,11 @@ public sealed class RealtimePlayer : IDisposable
     private long _framesWritten;
     private int _sampleRate;
     private int _channels;
+    private int _deviceRate;
+    private HelixAudio.DSP.Resampler? _resampler;
+    private float[]? _resampleOut;
+    private int _resampleOutCapacity;
+    private bool _resampleFlushed;
     private bool _disposed;
 
     /// <summary>Raised on the feed thread when playback reaches end of stream.</summary>
@@ -120,7 +125,8 @@ public sealed class RealtimePlayer : IDisposable
         _paused = false;
         int id = ++_playbackId;
 
-        _device.Initialize(_sampleRate, _channels);
+        SetupResampler(blockFrames);
+        _device.Initialize(_deviceRate, _channels);
         _device.Start();
         IsPlaying = true;
 
@@ -162,7 +168,8 @@ public sealed class RealtimePlayer : IDisposable
         _paused = false;
         int id = ++_playbackId;
 
-        _device.Initialize(_sampleRate, _channels);
+        SetupResampler(blockFrames);
+        _device.Initialize(_deviceRate, _channels);
         _device.Start();
         IsPlaying = true;
 
@@ -203,6 +210,29 @@ public sealed class RealtimePlayer : IDisposable
         _streamReader = null;
     }
 
+    /// <summary>
+    /// Queries the output endpoint's real mix rate and prepares the streaming
+    /// resampler when the source rate differs. The device is always fed at
+    /// <see cref="_deviceRate"/>; nodes still run at source rate.
+    /// </summary>
+    private void SetupResampler(int blockFrames)
+    {
+        _deviceRate = _device.GetOutputSampleRate(_sampleRate);
+        if (_deviceRate == _sampleRate)
+        {
+            _resampler = null;
+            _resampleOut = null;
+            _resampleOutCapacity = 0;
+        }
+        else
+        {
+            _resampler = new HelixAudio.DSP.Resampler(_sampleRate, _deviceRate, _channels);
+            _resampleOutCapacity = (int)Math.Ceiling(blockFrames * (double)_deviceRate / _sampleRate) + 64;
+            _resampleOut = new float[_resampleOutCapacity * _channels];
+        }
+        _resampleFlushed = false;
+    }
+
     private void FeedLoop(object? state, int id, int blockFrames, int ch, AudioStream? file, MediaFoundationReader? reader)
     {
         try
@@ -231,20 +261,35 @@ public sealed class RealtimePlayer : IDisposable
                 int frames = reader is not null
                     ? ReadStreamFrames(reader, ch, buffer, blockFrames, byteScratch!)
                     : ReadFramesInto(file!, buffer, blockFrames);
-                if (frames == 0) break; // end of stream
+
+                if (frames == 0)
+                {
+                    // File EOS with active resampler: drain the kernel tail,
+                    // then finish. Live streams end immediately.
+                    if (_resampler is null || _resampleFlushed || reader is not null) break;
+                    int flushed = _resampler.Flush(_resampleOut!, _resampleOutCapacity);
+                    if (flushed == 0) { _resampleFlushed = true; break; }
+                    _device.Write(_resampleOut!, flushed * ch);
+                    continue;
+                }
 
                 int validSamples = frames * ch;
-                float[] proc = buffer;
-                if (validSamples < buffer.Length)
-                {
-                    // Final partial block - shrink once (cold path, once per track)
-                    Array.Resize(ref buffer, validSamples);
-                    proc = buffer;
-                }
+                // Slice rather than resize: a short read can happen mid-stream
+                // (chunked codecs) and the full-size buffer must stay intact.
+                var proc = buffer.AsSpan(0, validSamples);
                 foreach (var node in _nodes)
                     node.Process(proc);
 
-                _device.Write(proc, validSamples);
+                if (_resampler is null)
+                {
+                    _device.Write(buffer, validSamples);
+                }
+                else
+                {
+                    int outFrames = _resampler.ProcessBlock(buffer, frames, _resampleOut!, _resampleOutCapacity);
+                    if (outFrames > 0)
+                        _device.Write(_resampleOut!, outFrames * ch);
+                }
                 _framesWritten += frames;
             }
 

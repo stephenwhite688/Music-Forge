@@ -40,19 +40,19 @@ public class OggCodec : AudioCodecBase
     public override Task<AudioStream?> ReadAsync(string path, CancellationToken cancellationToken = default) =>
         Task.Run(() =>
         {
-            using var reader = new NVorbis.VorbisReader(path);
+            // Chunked decode: VorbisReader pulls and decodes on demand.
+            var reader = new NVorbis.VorbisReader(path);
             int channels = reader.Channels;
-            int sampleRate = reader.SampleRate;
-
-            var floats = new List<float>(1 << 20);
-            var buffer = new float[8192];
-            int read;
-            while ((read = reader.ReadSamples(buffer, 0, buffer.Length)) > 0)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                floats.AddRange(new ReadOnlySpan<float>(buffer, 0, read));
-            }
-
-            return PcmStreamBuilder.FromFloats(sampleRate, channels, floats.ToArray());
+            var stream = AudioStream.CreateStreaming(
+                reader.SampleRate, channels, reader.TotalSamples,
+                (dest, count) =>
+                {
+                    int wanted = Math.Min(count * channels, dest.Length);
+                    wanted -= wanted % channels;
+                    int read = reader.ReadSamples(dest, 0, wanted);
+                    return read / channels;
+                },
+                reader.Dispose);
+            return stream;
         }, cancellationToken);
 }

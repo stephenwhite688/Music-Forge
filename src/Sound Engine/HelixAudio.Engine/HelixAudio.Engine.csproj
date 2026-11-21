@@ -17,6 +17,7 @@
     <ProjectReference Include="..\HelixAudio.IO\HelixAudio.IO.csproj" />
     <ProjectReference Include="..\HelixAudio.IO.Codecs\HelixAudio.IO.Codecs.csproj" />
     <ProjectReference Include="..\HelixAudio.Backend.Wasapi\HelixAudio.Backend.Wasapi.csproj" />
+    <ProjectReference Include="..\HelixAudio.DSP\HelixAudio.DSP.csproj" />
     <PackageReference Include="NAudio" Version="3.3.0" />
   </ItemGroup>
 </Project>

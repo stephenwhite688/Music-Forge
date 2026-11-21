@@ -16,6 +16,8 @@ namespace HelixAudio.IO
         private readonly bool _floatPcm;
         private bool _disposed;
         private readonly byte[] _byteScratch = new byte[256 * 1024];
+        private Func<float[], int, int>? _frameSource;
+        private Action? _disposeCallback;
 
         /// <summary>
         /// Gets the sample rate of the audio stream in Hz.
@@ -76,10 +78,39 @@ namespace HelixAudio.IO
             TotalFrames = stream.Length / (channels * (bitsPerSample / 8));
         }
 
+        /// <summary>
+        /// Creates a read-only stream backed by an on-demand frame decoder
+        /// (chunked decode - no whole-file buffering). The delegate writes up
+        /// to <paramref name="count"/> frames of interleaved floats into
+        /// <c>dest</c> and returns the frames actually produced.
+        /// </summary>
+        public static AudioStream CreateStreaming(
+            int sampleRate, int channels, long totalFrames,
+            Func<float[], int, int> readFrames, Action? onDispose = null)
+        {
+            var s = new AudioStream
+            {
+                _stream = Stream.Null,
+                _bitsPerSample = 32,
+                SampleRate = sampleRate,
+                Channels = channels,
+                TotalFrames = totalFrames
+            };
+            s._frameSource = readFrames;
+            s._disposeCallback = onDispose;
+            return s;
+        }
+
         /// <summary>Reads up to count frames directly into dest starting at index 0. Returns frames read.</summary>
         public int ReadFramesInto(float[] dest, int count)
         {
             if (_disposed) throw new ObjectDisposedException(nameof(AudioStream));
+            if (_frameSource is not null)
+            {
+                int f = _frameSource(dest, count);
+                Position += f;
+                return f;
+            }
             if (count <= 0 || dest.Length < count * Channels) return 0;
 
             int maxSamples = count * Channels;
@@ -130,6 +161,15 @@ namespace HelixAudio.IO
         public float[] ReadFrames(int count)
         {
             if (_disposed) throw new ObjectDisposedException(nameof(AudioStream));
+            if (_frameSource is not null)
+            {
+                if (count <= 0) return new float[0];
+                var buf = new float[count * Channels];
+                int f = _frameSource(buf, count);
+                if (f < count) Array.Resize(ref buf, f * Channels);
+                Position += f;
+                return buf;
+            }
             if (count <= 0) return new float[0];
 
             if (_floatPcm)
@@ -179,6 +219,8 @@ namespace HelixAudio.IO
         public void WriteFrames(float[] buffer)
         {
             if (_disposed) throw new ObjectDisposedException(nameof(AudioStream));
+            if (_frameSource is not null)
+                throw new NotSupportedException("Streaming sources are read-only.");
             if (buffer == null || buffer.Length == 0) return;
 
             int bytesPerSample = _bitsPerSample / 8;
@@ -216,6 +258,7 @@ namespace HelixAudio.IO
                 _writer?.Dispose();
                 _stream?.Dispose();
                 _disposed = true;
+                _disposeCallback?.Invoke();
             }
         }
     }

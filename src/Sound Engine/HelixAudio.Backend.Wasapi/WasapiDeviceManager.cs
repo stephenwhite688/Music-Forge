@@ -122,6 +122,29 @@ public class WasapiDeviceManager : IAudioDeviceManager
                 TimeSpan.FromSeconds(2));
     }
 
+    /// <summary>
+    /// The mix-format sample rate Windows will actually render at for the
+    /// selected output endpoint. Returns <paramref name="fallback"/> when the
+    /// endpoint can't be queried (e.g. no device). Used to decide whether the
+    /// engine must resample source audio before handing it to WASAPI.
+    /// </summary>
+    public int GetOutputSampleRate(int fallback)
+    {
+        try
+        {
+            using var en = new MMDeviceEnumerator();
+            MMDevice? dev = null;
+            if (!string.IsNullOrEmpty(_outId))
+            {
+                foreach (var d in en.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active))
+                    if (d.ID == _outId) { dev = d; break; }
+            }
+            dev ??= en.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            return dev.AudioClient.MixFormat.SampleRate;
+        }
+        catch { return fallback; }
+    }
+
     /// <summary>All active render endpoints Windows can output to
     /// (speakers, headphones, Bluetooth, USB DACs, HDMI...).</summary>
     public static IReadOnlyList<(string Id, string Name)> EnumerateOutputDevices()

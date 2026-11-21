@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 
@@ -94,18 +94,29 @@ namespace HelixAudio.IO
         /// <returns>Array of interleaved samples (float values -1.0 to 1.0).</returns>
         public float[] ReadFrames(int count)
         {
-            if (count <= 0)
+            if (count <= 0 || _disposed || Position >= TotalFrames)
                 return new float[0];
 
-            if (_disposed)
-                throw new ObjectDisposedException(nameof(WavReader));
+            int frames = (int)Math.Min(count, TotalFrames - Position);
+            var samples = new float[frames * Channels];
+            ReadFramesInto(samples, count);
+            return samples;
+        }
 
-            if (Position >= TotalFrames)
-                return new float[0];
+        /// <summary>
+        /// Reads up to <paramref name="count"/> frames directly into
+        /// <paramref name="dest"/> (which must hold at least
+        /// frames*Channels samples). Zero-allocation chunked decode.
+        /// Returns frames actually read.
+        /// </summary>
+        public int ReadFramesInto(float[] dest, int count)
+        {
+            if (count <= 0 || _disposed || Position >= TotalFrames || dest.Length < Channels)
+                return 0;
 
             int framesToRead = (int)Math.Min(count, TotalFrames - Position);
             int samplesToRead = framesToRead * Channels;
-            float[] samples = new float[samplesToRead];
+            if (dest.Length < samplesToRead) return 0;
 
             long bytesToRead = framesToRead * Channels * (BitsPerSample / 8);
             
@@ -122,7 +133,7 @@ namespace HelixAudio.IO
                 for (int i = 0; i < samplesToRead; i++)
                 {
                     byte sample = _reader.ReadByte();
-                    samples[i] = (sample / 127.5f) - 1.0f; // Convert 0-255 to -1.0 to 1.0
+                    dest[i] = (sample / 127.5f) - 1.0f; // Convert 0-255 to -1.0 to 1.0
                 }
             }
             else if (BitsPerSample == 16)
@@ -130,7 +141,7 @@ namespace HelixAudio.IO
                 for (int i = 0; i < samplesToRead; i++)
                 {
                     short sample = _reader.ReadInt16();
-                    samples[i] = sample / 32768.0f; // Convert -32768 to 32767 to -1.0 to 1.0
+                    dest[i] = sample / 32768.0f; // Convert -32768 to 32767 to -1.0 to 1.0
                 }
             }
             else if (BitsPerSample == 24)
@@ -138,20 +149,20 @@ namespace HelixAudio.IO
                 for (int i = 0; i < samplesToRead; i++)
                 {
                     int sample = Read24BitInt();
-                    samples[i] = sample / 8388608.0f; // Convert -8388608 to 8388607 to -1.0 to 1.0
+                    dest[i] = sample / 8388608.0f; // Convert -8388608 to 8388607 to -1.0 to 1.0
                 }
             }
             else if (BitsPerSample == 32 && _isFloat)
             {
                 for (int i = 0; i < samplesToRead; i++)
-                    samples[i] = _reader.ReadSingle();
+                    dest[i] = _reader.ReadSingle();
             }
             else if (BitsPerSample == 32)
             {
                 for (int i = 0; i < samplesToRead; i++)
                 {
                     int sample = _reader.ReadInt32();
-                    samples[i] = sample / 2147483648.0f; // Convert to -1.0 to 1.0
+                    dest[i] = sample / 2147483648.0f; // Convert to -1.0 to 1.0
                 }
             }
             else
@@ -160,7 +171,7 @@ namespace HelixAudio.IO
             }
 
             Position += framesToRead;
-            return samples;
+            return framesToRead;
         }
 
         /// <summary>

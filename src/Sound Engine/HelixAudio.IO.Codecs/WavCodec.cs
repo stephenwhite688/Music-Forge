@@ -35,15 +35,16 @@ public class WavCodec : AudioCodecBase
     /// <param name="path">Path to the WAV audio file.</param>
     /// <param name="cancellationToken">A token to allow cancellation of the operation.</param>
     /// <returns>The decoded audio stream with sample rate, channels, and bit depth extracted from the header.</returns>
-    public override async Task<AudioStream?> ReadAsync(string path, CancellationToken cancellationToken = default)
+    public override Task<AudioStream?> ReadAsync(string path, CancellationToken cancellationToken = default)
     {
-        return await Task.Run(() =>
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            using var reader = new WavReader(path);
-            float[] samples = reader.ReadAll();
-            return PcmStreamBuilder.FromFloats(reader.SampleRate, reader.Channels, samples);
-        }, cancellationToken);
+        // Chunked decode: keep the WAV file open and pull frames on demand
+        // instead of buffering the whole file as float PCM in memory.
+        var reader = new WavReader(path);
+        var stream = AudioStream.CreateStreaming(
+            reader.SampleRate, reader.Channels, reader.TotalFrames,
+            (dest, count) => reader.ReadFramesInto(dest, count),
+            reader.Dispose);
+        return Task.FromResult<AudioStream?>(stream);
     }
 
     /// <summary>
