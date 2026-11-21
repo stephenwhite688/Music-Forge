@@ -14,6 +14,7 @@ namespace HelixAudio.IO
         private bool _disposed;
         private long _dataStartPosition;
         private long _dataLength;
+        private bool _isFloat;
 
         /// <summary>
         /// Gets the sample rate in Hz.
@@ -140,6 +141,11 @@ namespace HelixAudio.IO
                     samples[i] = sample / 8388608.0f; // Convert -8388608 to 8388607 to -1.0 to 1.0
                 }
             }
+            else if (BitsPerSample == 32 && _isFloat)
+            {
+                for (int i = 0; i < samplesToRead; i++)
+                    samples[i] = _reader.ReadSingle();
+            }
             else if (BitsPerSample == 32)
             {
                 for (int i = 0; i < samplesToRead; i++)
@@ -237,8 +243,20 @@ namespace HelixAudio.IO
             ushort blockAlign = _reader.ReadUInt16();
             BitsPerSample = _reader.ReadUInt16();
 
-            if (audioFormat != 1) // PCM
-                throw new NotSupportedException("Only PCM WAV files are supported.");
+            if (audioFormat == 1) // PCM integer
+            {
+                _isFloat = false;
+            }
+            else if (audioFormat == 3) // IEEE float
+            {
+                _isFloat = true;
+                if (BitsPerSample != 32)
+                    throw new NotSupportedException("Only 32-bit IEEE float WAV is supported.");
+            }
+            else
+            {
+                throw new NotSupportedException($"WAV format tag {audioFormat} not supported (PCM or IEEE float only).");
+            }
 
             // Skip any extra format data
             if (chunkSize > 16)

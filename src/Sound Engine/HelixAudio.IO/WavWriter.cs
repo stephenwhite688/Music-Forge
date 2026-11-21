@@ -4,8 +4,17 @@ using System.Text;
 
 namespace HelixAudio.IO
 {
+    /// <summary>Dither mode applied when writing integer PCM from float.</summary>
+    public enum DitherMode
+    {
+        /// <summary>No dither - plain rounding (audible quantization noise).</summary>
+        None,
+        /// <summary>Triangular probability density, ±1 LSB - standard for 16/24-bit delivery.</summary>
+        Tpdf
+    }
+
     /// <summary>
-    /// Writes WAV (RIFF/WAVE) audio files.
+    /// Writes WAV (RIFF/WAVE) audio files - integer PCM or IEEE float32.
     /// </summary>
     public class WavWriter : IDisposable
     {
@@ -17,6 +26,14 @@ namespace HelixAudio.IO
         private long _dataStartPosition;
         private long _frameCount;
         private int _bitsPerSample;
+        private readonly bool _isFloat;
+        private readonly Random _ditherRng = new();
+
+        /// <summary>True when writing IEEE float32 samples (format tag 3).</summary>
+        public bool IsFloat => _isFloat;
+
+        /// <summary>Dither applied on integer output. Default None.</summary>
+        public DitherMode Dither { get; set; } = DitherMode.None;
 
         /// <summary>
         /// Gets the sample rate in Hz.
@@ -45,13 +62,15 @@ namespace HelixAudio.IO
         /// <param name="sampleRate">Sample rate in Hz.</param>
         /// <param name="channels">Number of audio channels.</param>
         /// <param name="bitsPerSample">Bits per sample (8, 16, 24, or 32).</param>
-        public WavWriter(string path, int sampleRate, int channels, int bitsPerSample = 16)
+        /// <param name="isFloat">Write IEEE float32 (format tag 3). Forces 32 bits.</param>
+        public WavWriter(string path, int sampleRate, int channels, int bitsPerSample = 16, bool isFloat = false)
         {
             if (string.IsNullOrEmpty(path))
                 throw new ArgumentException("Path cannot be null or empty.", nameof(path));
 
             _stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
-            Initialize(sampleRate, channels, bitsPerSample);
+            _isFloat = isFloat;
+            Initialize(sampleRate, channels, isFloat ? 32 : bitsPerSample);
         }
 
         /// <summary>
@@ -61,7 +80,8 @@ namespace HelixAudio.IO
         /// <param name="sampleRate">Sample rate in Hz.</param>
         /// <param name="channels">Number of audio channels.</param>
         /// <param name="bitsPerSample">Bits per sample (8, 16, 24, or 32).</param>
-        public WavWriter(Stream stream, int sampleRate, int channels, int bitsPerSample = 16)
+        /// <param name="isFloat">Write IEEE float32 (format tag 3). Forces 32 bits.</param>
+        public WavWriter(Stream stream, int sampleRate, int channels, int bitsPerSample = 16, bool isFloat = false)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
@@ -70,7 +90,8 @@ namespace HelixAudio.IO
                 throw new ArgumentException("Stream must be writable.", nameof(stream));
 
             _stream = stream;
-            Initialize(sampleRate, channels, bitsPerSample);
+            _isFloat = isFloat;
+            Initialize(sampleRate, channels, isFloat ? 32 : bitsPerSample);
         }
 
         /// <summary>
@@ -94,37 +115,42 @@ namespace HelixAudio.IO
             if (buffer.Length % samplesPerFrame != 0)
                 throw new ArgumentException("Buffer length must be a multiple of channel count.");
 
+            if (_isFloat)
+            {
+                for (int i = 0; i < buffer.Length; i++)
+                    _writer.Write(buffer[i]);
+                _frameCount += frameCount;
+                return;
+            }
+
             // Write samples based on bit depth
             if (_bitsPerSample == 8)
             {
                 for (int i = 0; i < buffer.Length; i++)
                 {
-                    byte sample = (byte)((buffer[i] + 1.0f) * 127.5f);
-                    _writer.Write(sample);
+                    long v = (long)QuantizeToInt(buffer[i], 128.0) + 128;
+                    _writer.Write((byte)Math.Clamp(v, 0, 255));
                 }
             }
             else if (_bitsPerSample == 16)
             {
                 for (int i = 0; i < buffer.Length; i++)
-                {
-                    short sample = (short)(buffer[i] * 32767.0f);
-                    _writer.Write(sample);
-                }
+                    _writer.Write((short)Math.Clamp((long)QuantizeToInt(buffer[i], 32768.0), -32768, 32767));
             }
             else if (_bitsPerSample == 24)
             {
                 for (int i = 0; i < buffer.Length; i++)
                 {
-                    int sample = (int)(buffer[i] * 8388607.0f);
-                    Write24BitInt(sample);
+                    long v = (long)QuantizeToInt(buffer[i], 8388608.0);
+                    Write24BitInt((int)Math.Clamp(v, -8388608, 8388607));
                 }
             }
             else if (_bitsPerSample == 32)
             {
                 for (int i = 0; i < buffer.Length; i++)
                 {
-                    int sample = (int)(buffer[i] * 2147483647.0f);
-                    _writer.Write(sample);
+                    long v = (long)QuantizeToInt(buffer[i], 2147483648.0);
+                    _writer.Write((int)Math.Clamp(v, int.MinValue, int.MaxValue));
                 }
             }
             else
@@ -133,6 +159,18 @@ namespace HelixAudio.IO
             }
 
             _frameCount += frameCount;
+        }
+
+        /// <summary>
+        /// Quantizes a float sample to an integer grid of the given scale
+        /// (e.g. 32768 for 16-bit), applying ±1 LSB TPDF dither when enabled.
+        /// </summary>
+        private double QuantizeToInt(float sample, double scale)
+        {
+            double v = Math.Clamp(sample, -1.0, 1.0) * scale;
+            if (Dither == DitherMode.Tpdf)
+                v += _ditherRng.NextDouble() + _ditherRng.NextDouble() - 1.0;
+            return Math.Round(v, MidpointRounding.AwayFromZero);
         }
 
         /// <summary>
@@ -207,7 +245,7 @@ namespace HelixAudio.IO
         private void WriteHeader()
         {
             int bytesPerSample = _bitsPerSample / 8;
-            short audioFormat = 1; // PCM
+            short audioFormat = (short)(_isFloat ? 3 : 1); // 3 = IEEE float, 1 = PCM
 
             // RIFF header
             _writer.Write(Encoding.ASCII.GetBytes("RIFF"));
