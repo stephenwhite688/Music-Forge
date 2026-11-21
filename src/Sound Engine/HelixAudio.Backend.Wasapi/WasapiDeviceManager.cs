@@ -7,7 +7,7 @@ using NAudio.CoreAudioApi;
 public class WasapiDeviceManager : IAudioDeviceManager
 {
     private int _sr, _ch;
-    private bool _init, _run;
+    private bool _init, _run, _exclusive;
     private string _outId, _inId;
     private WasapiOut? _wasapiOut;
     private BufferedWaveProvider? _bufferedWaveProvider;
@@ -19,6 +19,19 @@ public class WasapiDeviceManager : IAudioDeviceManager
     public int Channels => _ch;
     public string CurrentOutputDeviceId { get => _outId; set => _outId = value; }
     public string CurrentInputDeviceId { get => _inId; set => _inId = value; }
+
+    /// <summary>
+    /// Exclusive-mode WASAPI output. When true, Start() opens the endpoint in
+    /// AUDCLNT_SHAREMODE_EXCLUSIVE with a ~10ms buffer and float32 at the
+    /// device's native mix format — required for pro audio (low stable latency,
+    /// no other app can steal the device). The engine must feed audio at the
+    /// device's native sample rate; resample upstream via StreamingResampler.
+    /// </summary>
+    public bool ExclusiveMode
+    {
+        get => _exclusive;
+        set => _exclusive = value;
+    }
     
     // Expose buffered wave provider for buffer level checking
     public BufferedWaveProvider? BufferedWaveProvider => _bufferedWaveProvider;
@@ -57,12 +70,27 @@ public class WasapiDeviceManager : IAudioDeviceManager
             if (device is null)
                 AudioDiagnostics.Log("WASAPI", $"Output device '{_outId}' not found - using default");
         }
+        var shareMode = _exclusive
+            ? NAudio.CoreAudioApi.AudioClientShareMode.Exclusive
+            : NAudio.CoreAudioApi.AudioClientShareMode.Shared;
         _wasapiOut = device is null
-            ? new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 100)
-            : new WasapiOut(device, NAudio.CoreAudioApi.AudioClientShareMode.Shared, false, 100);
+            ? new WasapiOut(shareMode, _exclusive ? 10 : 100)
+            : new WasapiOut(device, shareMode, false, _exclusive ? 10 : 100);
         
-        // Create a buffered wave provider with the actual stream format
-        var waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(_sr, _ch);
+        // Create a buffered wave provider with the actual stream format.
+        // Exclusive mode must use the device's native mix format exactly.
+        WaveFormat waveFormat;
+        if (_exclusive && device is not null)
+        {
+            var mix = device.AudioClient.MixFormat;
+            _sr = mix.SampleRate;
+            _ch = mix.Channels;
+            waveFormat = mix;
+        }
+        else
+        {
+            waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(_sr, _ch);
+        }
         _bufferedWaveProvider = new BufferedWaveProvider(waveFormat, TimeSpan.FromSeconds(5.0))
         {
             DiscardOnBufferOverflow = true

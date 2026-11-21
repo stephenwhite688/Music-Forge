@@ -35,12 +35,28 @@ public sealed class WasapiInputCapture : IDisposable
     /// Starts capture on <paramref name="deviceId"/> (NAudio MMDevice ID or
     /// friendly name), or the default capture endpoint when null.
     /// </summary>
-    public void Start(string? deviceId = null)
+    /// <param name="exclusive">Use exclusive-mode WASAPI (AUDCLNT_SHAREMODE_EXCLUSIVE)
+    /// at the device's native format — lower, stable latency for pro recording.
+    /// Other apps cannot use the device while exclusive capture runs.</param>
+    public void Start(string? deviceId = null, bool exclusive = false)
     {
         Stop();
-        var capture = deviceId is null
+        MMDevice? device = deviceId is null ? null : FindDevice(deviceId);
+        if (exclusive && device is null)
+        {
+            using var en = new MMDeviceEnumerator();
+            device = en.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console);
+        }
+        var capture = device is null
             ? new WasapiCapture()
-            : new WasapiCapture(FindDevice(deviceId));
+            : new WasapiCapture(device);
+        if (exclusive)
+        {
+            capture.ShareMode = AudioClientShareMode.Exclusive;
+            // Force the device's native mix format - exclusive mode does no
+            // automatic PCM conversion, so the format must match exactly.
+            capture.WaveFormat = device!.AudioClient.MixFormat;
+        }
 
         var fmt = capture.WaveFormat;
         bool isFloat = fmt.Encoding == WaveFormatEncoding.IeeeFloat && fmt.BitsPerSample == 32;
