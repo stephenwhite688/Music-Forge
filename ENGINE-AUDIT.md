@@ -50,7 +50,7 @@ The engine is approximately **60% real / 25% scaffolded / 15% stubbed**.
 | ~~`HelixAudio.Backend.Alsa` / `.CoreAudio`~~ | **REMOVED** | Empty csproj shells for non-Windows platforms — deleted |
 | `HelixAudio.PluginHost` | Partial — managed-DLL only | Reflection-based `IAudioPlugin` load/scan/unload; **no state blobs, no buses, no crash isolation, stringly-typed params** |
 | ~~`HelixAudio.PluginHost.VST3`~~ | **REMOVED** | `NotImplementedException` stub — deleted; real VST3 hosting deferred to DAW phase |
-| ~~`HelixAudio.PluginHost.CLAP`~~ | **REMOVED** | `NotImplementedException` stub — deleted; same deferral |
+| `HelixAudio.PluginHost.CLAP` | **REAL — verified working** | Full CLAP 1.2.x host: native load/`clap_entry`/factory/descriptor enumeration, activate/process/deactivate/destroy lifecycle, `clap.audio-ports`, `clap.params` (info/get_value/value_to_text/text_to_value/flush via param_value events), `clap.state` save/load. `ClapPluginNode` bridges to `AudioNode`. Verified end-to-end against a compiled C test plugin (`tests/gain.c`) — enumeration, param automation, and DSP output all pass. No plugin GUI, no note/MIDI events yet |
 | `AudioForge.SoundEngine` | Real, small | Clean facade: `RealtimePlayer` + meter/EQ/tap chain + `OutputTaps` + loopback processor |
 
 ---
@@ -59,9 +59,8 @@ The engine is approximately **60% real / 25% scaffolded / 15% stubbed**.
 
 These were stated during development and are **false at code level**:
 
-1. **"VST3/CLAP hosting exists"** — both host classes are 24-line stubs.
-   Only the managed-`IAudioPlugin` DLL host is real. There is no native
-   plugin hosting of any kind.
+1. **"VST3/CLAP hosting exists"** — ~~both stubs~~ now corrected: the CLAP
+   host is a real, verified native host. VST3 hosting still does not exist.
 2. **"Streaming/HLS/DASH"** — wrappers only; no adaptive-stream logic.
 3. **"MIDI support"** — data types exist; file/synth/I/O are empty.
 4. **"Compressor/reverb/delay processors"** — real DSP exists but as
@@ -143,7 +142,7 @@ Spec §11 claimed several items "already present" — audit shows otherwise:
 | Reverb/delay/chorus nodes | DSP exists in Effects/Core, **not nodes** |
 | Pitch shift / time stretch / warp | **Nothing exists** — no phase vocoder, WSOLA, or PSOLA |
 | Clip/region/session model, automation, take lanes | **Nothing engine-side** |
-| VST3/CLAP hosting | **Stubs** — biggest gap vs "plugin ecosystem" strategy |
+| VST3 hosting | **Not implemented** — CLAP host is real and verified; VST3 remains deferred to DAW phase |
 | Multichannel tracks | `ChannelLayout` enum only; `SurroundNode` naive |
 | PDC / monitoring latency compensation | Absent |
 | Export | `OfflineRenderer` real but **WAV-only**; no MP3/FLAC encode |
