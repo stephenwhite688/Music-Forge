@@ -35,16 +35,16 @@ The engine is approximately **60% real / 25% scaffolded / 15% stubbed**.
 | `HelixAudio.Core` | Partial / fragmented | Real `IAudioNode`/`AudioNode`/`AudioFormat`; ~15 effect classes are **not** nodes; `WASAPIBackend.cs` is a placeholder (real backend lives in `Backend.Wasapi`) |
 | `HelixAudio.Engine` | Partial — mostly real | `ProcessingGraph` allocates heavily per block; `EngineController` pipelines are stubs |
 | `HelixAudio.DSP` | Mostly real | Biquads, FIR/IIR, FFT, EQ, dynamics processors, taps; resampler is naive |
-| `HelixAudio.DSP.3D` | Mostly stubs | `BinauralNode`/`SpatialAudioNode` pass-throughs; `SurroundNode` naive upmix; `AmbisonicNode` mostly bypass |
+| ~~`HelixAudio.DSP.3D`~~ → `HelixAudio.DSP.Spatial` | **REAL — verified** | Old pass-through stubs deleted; new `BinauralPannerNode` does real ITD (fractional-delay)/ILD/distance spatialisation, impulse-verified. HRTF convolution is the planned upgrade |
 | `HelixAudio.Effects` | Partial — wrong abstraction | Real Freeverb-style DSP but `EffectBase.Process` allocates per block; **not `IAudioNode`** |
 | `HelixAudio.Filters` | Partial — wrong abstraction | Same `FilterBase` non-node pattern |
 | `HelixAudio.Mixing` | Partial — fragmented | `StereoMixerNode` is real; `MixerNode.Process` is a pass-through stub; batch mixers allocate |
 | `HelixAudio.IO` | Real (PCM + float WAV) | `WavReader/Writer` int PCM **and IEEE float32** with TPDF dither; chunked `AudioStream` decode; no RF64 |
 | `HelixAudio.IO.Codecs` | Partial→improving | WAV R/W (float+int); **chunked decode** for WAV/MF/FLAC/OGG; **sample-accurate seek** on WAV/MF/OGG streams; FLAC/OGG managed-verified; MP3/AAC/WMA/ALAC via OS decoder (unverified); **Opus/DSD throw**; **encode = WAV only** (no MP3/FLAC encoder dep yet) |
-| ~~`HelixAudio.MIDI`~~ | **REMOVED** | Scaffolded shells, no real MIDI parse or synth audio — deleted rather than shipped fake |
+| `HelixAudio.MIDI` | **REAL — verified** | SMF parser (format 0/1, tempo map, running status, all channel voice events) + `MidiSynthNode` polyphonic synth (ADSR, per-channel vol/pan/pitch-bend, sample-accurate, zero-alloc). Verified against generated SMF. No MIDI file *writing* or device I/O yet |
 | `HelixAudio.Analysis` | **Real — strongest project** | BS.1770/EBU R128 `LoudnessMeter`, `HumDetector`, `NoiseFloorEstimator`, `PitchTracker`, `SignalStatistics`, `PeakFileGenerator`, meter/tap nodes |
-| ~~`HelixAudio.Streaming`~~ | **REMOVED** | Thin `HttpClient` wrappers, no manifest/demux/decode — deleted; radio works via `MediaFoundationReader` in `RealtimePlayer` |
-| ~~`HelixAudio.Visualization`~~ | **REMOVED** | Empty project — deleted |
+| `HelixAudio.Streaming` | **REAL — verified** | HLS client: m3u8 master/media parse (variants, EXTINF, media sequence), AES-128-CBC segment decrypt, MF stream decode via `CodecManager.DecodeStream`, pull-based `AudioStream` with prefetch + live playlist refresh. Verified vs public test stream. DASH still absent |
+| ~~`HelixAudio.Visualization`~~ | **NOT NEEDED** | Capability lives elsewhere: `SpectrumTapNode`/`WaveformTapNode`/`SpectrogramTapNode`/`LevelMeterNode`/`TruePeakNode` in DSP/Analysis, wired via `MeterService.Chain()` into playback and consumed by `VisualiserDisplayControl` (6 modes + plugin system). Empty shell correctly not recreated |
 | `HelixAudio.Benchmarks` | Empty project (kept) | Retained for Phase 4 benchmark suite |
 | `HelixAudio.Backend.Wasapi` | Real — output + loopback + **input** | Device enum, `WasapiOut`, `SystemLoopbackCapture`, `WasapiInputCapture` (added: mic/line-in float capture) |
 | ~~`HelixAudio.Backend.Alsa` / `.CoreAudio`~~ | **REMOVED** | Empty csproj shells for non-Windows platforms — deleted |
