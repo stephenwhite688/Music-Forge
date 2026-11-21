@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\HelixAudio.IO\HelixAudio.IO.csproj" />
     <ProjectReference Include="..\HelixAudio.Core\HelixAudio.Core.csproj" />
+    <ProjectReference Include="..\HelixAudio.Analysis\HelixAudio.Analysis.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NAudio" Version="3.3.0" />
