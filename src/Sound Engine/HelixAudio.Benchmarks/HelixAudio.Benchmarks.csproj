@@ -1,16 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <OutputType>Exe</OutputType>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>HelixAudio.Benchmarks</RootNamespace>
     <AssemblyName>HelixAudio.Benchmarks</AssemblyName>
-    <Description>HelixBassAudio - Performance Benchmarks</Description>
+    <Description>HelixAudio - Performance Benchmarks</Description>
     <Version>1.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\HelixAudio.Core\HelixAudio.Core.csproj" />
-    <ProjectReference Include="..\HelixAudio.DSP.3D\HelixAudio.DSP.3D.csproj" />
+    <ProjectReference Include="..\HelixAudio.DSP\HelixAudio.DSP.csproj" />
+    <ProjectReference Include="..\HelixAudio.Effects\HelixAudio.Effects.csproj" />
+    <ProjectReference Include="..\HelixAudio.Mixing\HelixAudio.Mixing.csproj" />
+    <ProjectReference Include="..\HelixAudio.Analysis\HelixAudio.Analysis.csproj" />
     <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
   </ItemGroup>
 </Project>

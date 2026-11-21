@@ -57,7 +57,8 @@ public sealed class StereoMixerNode : AudioNode
 
     /// <summary>
     /// Stereo balance -1 (left only) .. 0 (centre) .. +1 (right only).
-    /// Equal-power law; ignored for non-stereo input.
+    /// Linear law: unity at centre, the opposite side fades. Ignored for
+    /// non-stereo input.
     /// </summary>
     public float Balance
     {
@@ -119,12 +120,13 @@ public sealed class StereoMixerNode : AudioNode
             }
         }
 
-        // Stereo balance (equal-power)
+        // Stereo balance (linear): unity at centre, opposite side fades.
+        // Equal-power would give -3dB at centre - wrong for a balance knob.
         if (ch == 2)
         {
             float t = (_balance + 1f) * 0.5f;
-            float leftAmt = (float)Math.Cos(t * MathF.PI / 2f);
-            float rightAmt = (float)Math.Sin(t * MathF.PI / 2f);
+            float leftAmt = t <= 0.5f ? 1f : 2f * (1f - t);
+            float rightAmt = t >= 0.5f ? 1f : 2f * t;
             for (int f = 0; f < frames; f++)
             {
                 int offset = f * 2;
