@@ -39,18 +39,18 @@ The engine is approximately **60% real / 25% scaffolded / 15% stubbed**.
 | `HelixAudio.Effects` | Partial — wrong abstraction | Real Freeverb-style DSP but `EffectBase.Process` allocates per block; **not `IAudioNode`** |
 | `HelixAudio.Filters` | Partial — wrong abstraction | Same `FilterBase` non-node pattern |
 | `HelixAudio.Mixing` | Partial — fragmented | `StereoMixerNode` is real; `MixerNode.Process` is a pass-through stub; batch mixers allocate |
-| `HelixAudio.IO` | Real (PCM WAV only) | `WavReader/Writer` PCM-int only — **rejects float WAV, no RF64**; `Mp3/Flac/Ogg` decoders here are dead stubs (real codecs in `IO.Codecs`) |
-| `HelixAudio.IO.Codecs` | Partial | WAV R/W; FLAC/OGG managed-verified; MP3/AAC/WMA/ALAC via OS decoder (unverified); **Opus/DSD throw**; whole-file decode into memory; **WAV-only encode** |
-| `HelixAudio.MIDI` | Almost entirely scaffolded | `MIDIFile.cs` **empty**; I/O shells sleep-loop; `Synthesizer` tracks notes but **produces no audio** |
+| `HelixAudio.IO` | Real (PCM + float WAV) | `WavReader/Writer` int PCM **and IEEE float32** with TPDF dither; chunked `AudioStream` decode; no RF64 |
+| `HelixAudio.IO.Codecs` | Partial→improving | WAV R/W (float+int); **chunked decode** for WAV/MF/FLAC/OGG; FLAC/OGG managed-verified; MP3/AAC/WMA/ALAC via OS decoder (unverified); **Opus/DSD throw**; **WAV-only encode** |
+| ~~`HelixAudio.MIDI`~~ | **REMOVED** | Scaffolded shells, no real MIDI parse or synth audio — deleted rather than shipped fake |
 | `HelixAudio.Analysis` | **Real — strongest project** | BS.1770/EBU R128 `LoudnessMeter`, `HumDetector`, `NoiseFloorEstimator`, `PitchTracker`, `SignalStatistics`, `PeakFileGenerator`, meter/tap nodes |
-| `HelixAudio.Streaming` | Partial / misleading | `HTTP/HLS/DASH/ShoutcastStream` are thin `HttpClient` wrappers — **no manifest parsing, demux, or decode**. Real radio path is NAudio `MediaFoundationReader` inside `RealtimePlayer` |
-| `HelixAudio.Visualization` | **Empty project** | csproj only |
-| `HelixAudio.Benchmarks` | **Empty project** | csproj + BenchmarkDotNet ref only |
-| `HelixAudio.Backend.Wasapi` | Partial — output only | Real device enum + `WasapiOut`/`BufferedWaveProvider`, loopback capture; **`Read()` returns silence — no input path** |
-| `HelixAudio.Backend.Alsa` / `.CoreAudio` | Empty shells | csproj only |
+| ~~`HelixAudio.Streaming`~~ | **REMOVED** | Thin `HttpClient` wrappers, no manifest/demux/decode — deleted; radio works via `MediaFoundationReader` in `RealtimePlayer` |
+| ~~`HelixAudio.Visualization`~~ | **REMOVED** | Empty project — deleted |
+| `HelixAudio.Benchmarks` | Empty project (kept) | Retained for Phase 4 benchmark suite |
+| `HelixAudio.Backend.Wasapi` | Real — output + loopback + **input** | Device enum, `WasapiOut`, `SystemLoopbackCapture`, `WasapiInputCapture` (added: mic/line-in float capture) |
+| ~~`HelixAudio.Backend.Alsa` / `.CoreAudio`~~ | **REMOVED** | Empty csproj shells for non-Windows platforms — deleted |
 | `HelixAudio.PluginHost` | Partial — managed-DLL only | Reflection-based `IAudioPlugin` load/scan/unload; **no state blobs, no buses, no crash isolation, stringly-typed params** |
-| `HelixAudio.PluginHost.VST3` | **Stub** | `LoadPlugin` → `NotImplementedException` |
-| `HelixAudio.PluginHost.CLAP` | **Stub** | `LoadPlugin` → `NotImplementedException` |
+| ~~`HelixAudio.PluginHost.VST3`~~ | **REMOVED** | `NotImplementedException` stub — deleted; real VST3 hosting deferred to DAW phase |
+| ~~`HelixAudio.PluginHost.CLAP`~~ | **REMOVED** | `NotImplementedException` stub — deleted; same deferral |
 | `AudioForge.SoundEngine` | Real, small | Clean facade: `RealtimePlayer` + meter/EQ/tap chain + `OutputTaps` + loopback processor |
 
 ---
