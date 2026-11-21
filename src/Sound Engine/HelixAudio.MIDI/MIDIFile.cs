@@ -140,6 +140,83 @@ public static class MidiFile
         return new MidiSequence(events, division, maxTime, nTracks);
     }
 
+    /// <summary>
+    /// Writes a <see cref="MidiSequence"/> as a format-0 Standard MIDI File
+    /// at 120 BPM (events' TimeSeconds are converted to ticks).
+    /// </summary>
+    public static void Write(string path, MidiSequence sequence)
+    {
+        using var fs = new FileStream(path, FileMode.Create, FileAccess.Write);
+        using var w = new BinaryWriter(fs);
+
+        int tpq = sequence.TicksPerQuarter;
+        double secPerTick = 0.5 / tpq; // 120 BPM
+
+        // Build track events: delta ticks + bytes.
+        var track = new MemoryStream();
+        using (var tw = new BinaryWriter(track, System.Text.Encoding.ASCII, true))
+        {
+            // Tempo meta: 500000 µs per quarter note.
+            WriteVarLen(tw, 0);
+            tw.Write((byte)0xFF); tw.Write((byte)0x51); WriteVarLen(tw, 3);
+            tw.Write((byte)0x07); tw.Write((byte)0xA1); tw.Write((byte)0x20); // 500000
+
+            long lastTick = 0;
+            var sorted = new List<MidiEvent>(sequence.Events);
+            sorted.Sort((a, b) => a.TimeSeconds.CompareTo(b.TimeSeconds));
+            foreach (var e in sorted)
+            {
+                long tick = (long)Math.Round(e.TimeSeconds / secPerTick);
+                WriteVarLen(tw, (ulong)Math.Max(0, tick - lastTick));
+                lastTick = tick;
+
+                byte status = (byte)((byte)e.Type | (byte)(e.Channel & 0x0F));
+                switch (e.Type)
+                {
+                    case MidiEventType.ProgramChange:
+                    case MidiEventType.ChannelPressure:
+                        tw.Write(status); tw.Write((byte)e.Data1);
+                        break;
+                    default:
+                        tw.Write(status); tw.Write((byte)e.Data1); tw.Write((byte)e.Data2);
+                        break;
+                }
+            }
+            WriteVarLen(tw, 0);
+            tw.Write((byte)0xFF); tw.Write((byte)0x2F); WriteVarLen(tw, 0); // EOT
+        }
+
+        byte[] trackBytes = track.ToArray();
+
+        // Header: MThd, len 6, format 0, 1 track, tpq.
+        w.Write(System.Text.Encoding.ASCII.GetBytes("MThd"));
+        WriteBE32(w, 6);
+        WriteBE16(w, 0);
+        WriteBE16(w, 1);
+        WriteBE16(w, (ushort)tpq);
+
+        // Track: MTrk, len, data.
+        w.Write(System.Text.Encoding.ASCII.GetBytes("MTrk"));
+        WriteBE32(w, (uint)trackBytes.Length);
+        w.Write(trackBytes);
+    }
+
+    private static void WriteVarLen(BinaryWriter w, ulong value)
+    {
+        var buf = new byte[8];
+        int n = 0;
+        buf[n++] = (byte)(value & 0x7F);
+        value >>= 7;
+        while (value > 0) { buf[n++] = (byte)((value & 0x7F) | 0x80); value >>= 7; }
+        while (n > 0) w.Write(buf[--n]);
+    }
+
+    private static void WriteBE16(BinaryWriter w, ushort v) { w.Write((byte)(v >> 8)); w.Write((byte)v); }
+    private static void WriteBE32(BinaryWriter w, uint v)
+    {
+        w.Write((byte)(v >> 24)); w.Write((byte)(v >> 16)); w.Write((byte)(v >> 8)); w.Write((byte)v);
+    }
+
     private readonly record struct RawEvent(long Tick, int Kind, int Channel, int D1, int D2);
 
     private static void RequireAscii(byte[] d, int pos, string magic)
