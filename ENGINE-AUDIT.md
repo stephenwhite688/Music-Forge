@@ -1,4 +1,4 @@
-# HelixAudio Engine — Foundation Audit
+﻿# HelixAudio Engine — Foundation Audit
 
 **Date:** 2026 (pre-SDK-extraction audit)
 **Scope:** `src/Sound Engine/HelixAudio.*` (21 projects) + `src/AudioForge.SoundEngine`
@@ -35,22 +35,22 @@ The engine is approximately **60% real / 25% scaffolded / 15% stubbed**.
 | `HelixAudio.Core` | Partial / fragmented | Real `IAudioNode`/`AudioNode`/`AudioFormat`; ~15 effect classes are **not** nodes; `WASAPIBackend.cs` is a placeholder (real backend lives in `Backend.Wasapi`) |
 | `HelixAudio.Engine` | Partial — mostly real | `ProcessingGraph` allocates heavily per block; `EngineController` pipelines are stubs |
 | `HelixAudio.DSP` | Mostly real | Biquads, FIR/IIR, FFT, EQ, dynamics processors, taps; resampler is naive |
-| ~~`HelixAudio.DSP.3D`~~ → `HelixAudio.DSP.Spatial` | **REAL — verified** | Old pass-through stubs deleted; new `BinauralPannerNode` does real ITD (fractional-delay)/ILD/distance spatialisation, impulse-verified. HRTF convolution is the planned upgrade |
+| ~~`HelixAudio.DSP.3D`~~ → `HelixAudio.DSP.Spatial` | **REAL - verified** | Old pass-through stubs deleted; new `BinauralPannerNode` does real ITD (fractional-delay)/ILD/distance spatialisation, impulse-verified. HRTF convolution is the planned upgrade |
 | `HelixAudio.Effects` | Partial — wrong abstraction | Real Freeverb-style DSP but `EffectBase.Process` allocates per block; **not `IAudioNode`** |
 | `HelixAudio.Filters` | Partial — wrong abstraction | Same `FilterBase` non-node pattern |
 | `HelixAudio.Mixing` | Partial — fragmented | `StereoMixerNode` is real; `MixerNode.Process` is a pass-through stub; batch mixers allocate |
 | `HelixAudio.IO` | Real (PCM + float WAV) | `WavReader/Writer` int PCM **and IEEE float32** with TPDF dither; chunked `AudioStream` decode; no RF64 |
 | `HelixAudio.IO.Codecs` | Partial→improving | WAV R/W (float+int); **chunked decode** for WAV/MF/FLAC/OGG; **sample-accurate seek** on WAV/MF/OGG streams; FLAC/OGG managed-verified; MP3/AAC/WMA/ALAC via OS decoder (unverified); **Opus/DSD throw**; **encode = WAV only** (no MP3/FLAC encoder dep yet) |
-| `HelixAudio.MIDI` | **REAL — verified** | SMF parser (format 0/1, tempo map, running status, all channel voice events) + `MidiSynthNode` polyphonic synth (ADSR, per-channel vol/pan/pitch-bend, sample-accurate, zero-alloc). Verified against generated SMF. No MIDI file *writing* or device I/O yet |
+| `HelixAudio.MIDI` | **REAL - verified** | SMF parser (format 0/1, tempo map, running status, all channel voice events) + `MidiSynthNode` polyphonic synth (ADSR, per-channel vol/pan/pitch-bend, sample-accurate, zero-alloc). Verified against generated SMF. No MIDI file *writing* or device I/O yet |
 | `HelixAudio.Analysis` | **Real — strongest project** | BS.1770/EBU R128 `LoudnessMeter`, `HumDetector`, `NoiseFloorEstimator`, `PitchTracker`, `SignalStatistics`, `PeakFileGenerator`, meter/tap nodes |
-| `HelixAudio.Streaming` | **REAL — verified** | HLS client: m3u8 master/media parse (variants, EXTINF, media sequence), AES-128-CBC segment decrypt, MF stream decode via `CodecManager.DecodeStream`, pull-based `AudioStream` with prefetch + live playlist refresh. Verified vs public test stream. DASH still absent |
-| ~~`HelixAudio.Visualization`~~ | **NOT NEEDED** | Capability lives elsewhere: `SpectrumTapNode`/`WaveformTapNode`/`SpectrogramTapNode`/`LevelMeterNode`/`TruePeakNode` in DSP/Analysis, wired via `MeterService.Chain()` into playback and consumed by `VisualiserDisplayControl` (6 modes + plugin system). Empty shell correctly not recreated |
+| `HelixAudio.Streaming` | **REAL - verified** | HLS client: m3u8 master/media parse (variants, EXTINF, media sequence), AES-128-CBC segment decrypt, MF stream decode via `CodecManager.DecodeStream`, pull-based `AudioStream` with prefetch + live playlist refresh. Verified vs public test stream. DASH still absent |
+| `HelixAudio.Visualization` | **REAL - verified** | Engine-side visual backend: `VisualFrameProducer` owns spectrum/waveform/spectrogram/meter taps and emits `EngineVisualFrame` (UI-free data); `EqResponseCalculator` computes full EQ curves incl. trims/bypass/channel. Verified: 440Hz tone peaks correctly, EQ curve matches gains. UI consumes equivalent engine tap data via MeterService |
 | `HelixAudio.Benchmarks` | Empty project (kept) | Retained for Phase 4 benchmark suite |
 | `HelixAudio.Backend.Wasapi` | Real — output + loopback + **input** | Device enum, `WasapiOut`, `SystemLoopbackCapture`, `WasapiInputCapture` (added: mic/line-in float capture) |
 | ~~`HelixAudio.Backend.Alsa` / `.CoreAudio`~~ | **REMOVED** | Empty csproj shells for non-Windows platforms — deleted |
 | `HelixAudio.PluginHost` | Partial — managed-DLL only | Reflection-based `IAudioPlugin` load/scan/unload; **no state blobs, no buses, no crash isolation, stringly-typed params** |
 | ~~`HelixAudio.PluginHost.VST3`~~ | **REMOVED** | `NotImplementedException` stub — deleted; real VST3 hosting deferred to DAW phase |
-| `HelixAudio.PluginHost.CLAP` | **REAL — verified working** | Full CLAP 1.2.x host: native load/`clap_entry`/factory/descriptor enumeration, activate/process/deactivate/destroy lifecycle, `clap.audio-ports`, `clap.params` (info/get_value/value_to_text/text_to_value/flush via param_value events), `clap.state` save/load. `ClapPluginNode` bridges to `AudioNode`. Verified end-to-end against a compiled C test plugin (`tests/gain.c`) — enumeration, param automation, and DSP output all pass. No plugin GUI, no note/MIDI events yet |
+| `HelixAudio.PluginHost.CLAP` | **REAL - verified working** | Full CLAP 1.2.x host: native load/`clap_entry`/factory/descriptor enumeration, activate/process/deactivate/destroy lifecycle, `clap.audio-ports`, `clap.params` (info/get_value/value_to_text/text_to_value/flush via param_value events), `clap.state` save/load. `ClapPluginNode` bridges to `AudioNode`. Verified end-to-end against a compiled C test plugin (`tests/gain.c`) — enumeration, param automation, and DSP output all pass. No plugin GUI, no note/MIDI events yet |
 | `AudioForge.SoundEngine` | Real, small | Clean facade: `RealtimePlayer` + meter/EQ/tap chain + `OutputTaps` + loopback processor |
 
 ---

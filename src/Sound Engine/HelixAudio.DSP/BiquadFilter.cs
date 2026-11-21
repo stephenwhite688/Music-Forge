@@ -115,6 +115,42 @@ namespace HelixAudio.DSP
             return output;
         }
 
+        /// <summary>
+        /// Returns the normalised coefficients in Direct-Form-I layout:
+        /// numerator (b0,b1,b2), denominator (1,a1,a2). Used for
+        /// frequency-response evaluation without running audio through
+        /// the filter.
+        /// </summary>
+        public void GetNormalizedCoefficients(out float b0, out float b1, out float b2, out float a1, out float a2)
+        {
+            b0 = _a0; b1 = _a1; b2 = _a2;
+            a1 = _b1; a2 = _b2;
+        }
+
+        /// <summary>
+        /// Magnitude response |H(e^jw)| at <paramref name="frequency"/> Hz.
+        /// </summary>
+        public float MagnitudeResponse(float frequency)
+        {
+            double w = 2.0 * Math.PI * frequency / _sampleRate;
+            double cosW = Math.Cos(w), sinW = Math.Sin(w);
+            // H = (b0 + b1 e^-jw + b2 e^-j2w) / (1 + a1 e^-jw + a2 e^-j2w)
+            double numRe = _a0 + _a1 * cosW + _a2 * Math.Cos(2 * w);
+            double numIm = -_a1 * sinW - _a2 * Math.Sin(2 * w);
+            double denRe = 1.0 + _b1 * cosW + _b2 * Math.Cos(2 * w);
+            double denIm = -_b1 * sinW - _b2 * Math.Sin(2 * w);
+            double mag = Math.Sqrt(numRe * numRe + numIm * numIm)
+                       / Math.Sqrt(denRe * denRe + denIm * denIm);
+            return (float)mag;
+        }
+
+        /// <summary>Magnitude response in dB at <paramref name="frequency"/> Hz.</summary>
+        public float MagnitudeResponseDb(float frequency)
+        {
+            float mag = MagnitudeResponse(frequency);
+            return mag > 1e-7f ? 20f * MathF.Log10(mag) : -120f;
+        }
+
         public void Reset()
         {
             _x1 = 0.0f;
