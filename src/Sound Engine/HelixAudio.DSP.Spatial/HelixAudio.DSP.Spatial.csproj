@@ -10,5 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\HelixAudio.Core\HelixAudio.Core.csproj" />
+    <ProjectReference Include="..\HelixAudio.DSP\HelixAudio.DSP.csproj" />
   </ItemGroup>
 </Project>

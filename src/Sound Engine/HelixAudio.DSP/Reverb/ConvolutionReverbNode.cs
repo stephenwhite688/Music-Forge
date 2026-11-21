@@ -56,6 +56,7 @@ public sealed class ConvolutionReverbNode : AudioNode
         public float DampingState;
     }
     private ChannelState[] _ch = Array.Empty<ChannelState>();
+    private float[][]? _pendingIr;
 
     private int _sampleRate;
     private bool _irLoaded, _prepared;
@@ -88,6 +89,12 @@ public sealed class ConvolutionReverbNode : AudioNode
             s.IfftIm ??= new float[FftSize];
         }
         _prepared = true;
+        if (_pendingIr != null)
+        {
+            var pending = _pendingIr;
+            _pendingIr = null;
+            SetImpulseResponse(pending);
+        }
     }
 
     public override void Reset()
@@ -108,6 +115,8 @@ public sealed class ConvolutionReverbNode : AudioNode
     /// </summary>
     public void SetImpulseResponse(float[][]? irs)
     {
+        _pendingIr = irs;
+        if (!_prepared || _ch.Length == 0) return; // applied on Prepare
         if (irs == null || irs.Length == 0 || (irs[0]?.Length ?? 0) == 0)
         {
             _irLoaded = false;
@@ -223,6 +232,7 @@ public sealed class ConvolutionReverbNode : AudioNode
 
     private void ProcessChannelBlock(ChannelState s, Span<float> block, int ch, int channel)
     {
+        if (s.PartitionCount == 0) return; // no IR loaded for this channel -> dry
         // Deinterleave PartitionSize frames into the input fifo, through
         // optional pre-delay line.
         int delaySamples = (int)(_preDelayMs * 0.001f * _sampleRate);
