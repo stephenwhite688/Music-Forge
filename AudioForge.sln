@@ -49,6 +49,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelixAudio.MIDI", "src\Soun
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelixAudio.Streaming", "src\Sound Engine\HelixAudio.Streaming\HelixAudio.Streaming.csproj", "{4D7A7084-C156-4E9A-8309-E4C2AA85EC59}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelixAudio.DSP.Spatial", "src\Sound Engine\HelixAudio.DSP.Spatial\HelixAudio.DSP.Spatial.csproj", "{F3372D48-F35E-4471-B920-BEFDF963D5CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -299,6 +301,18 @@ Global
 		{4D7A7084-C156-4E9A-8309-E4C2AA85EC59}.Release|x64.Build.0 = Release|Any CPU
 		{4D7A7084-C156-4E9A-8309-E4C2AA85EC59}.Release|x86.ActiveCfg = Release|Any CPU
 		{4D7A7084-C156-4E9A-8309-E4C2AA85EC59}.Release|x86.Build.0 = Release|Any CPU
+		{F3372D48-F35E-4471-B920-BEFDF963D5CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3372D48-F35E-4471-B920-BEFDF963D5CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3372D48-F35E-4471-B920-BEFDF963D5CC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F3372D48-F35E-4471-B920-BEFDF963D5CC}.Debug|x64.Build.0 = Debug|Any CPU
+		{F3372D48-F35E-4471-B920-BEFDF963D5CC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F3372D48-F35E-4471-B920-BEFDF963D5CC}.Debug|x86.Build.0 = Debug|Any CPU
+		{F3372D48-F35E-4471-B920-BEFDF963D5CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3372D48-F35E-4471-B920-BEFDF963D5CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3372D48-F35E-4471-B920-BEFDF963D5CC}.Release|x64.ActiveCfg = Release|Any CPU
+		{F3372D48-F35E-4471-B920-BEFDF963D5CC}.Release|x64.Build.0 = Release|Any CPU
+		{F3372D48-F35E-4471-B920-BEFDF963D5CC}.Release|x86.ActiveCfg = Release|Any CPU
+		{F3372D48-F35E-4471-B920-BEFDF963D5CC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -322,5 +336,6 @@ Global
 		{68E7CCD5-E2FC-491F-9E80-6580EF5F4216} = {CE122C33-08DD-8605-11AB-D2FF338A96E6}
 		{76BA8851-D3F4-4074-9DE2-78A0EB69EBB5} = {CE122C33-08DD-8605-11AB-D2FF338A96E6}
 		{4D7A7084-C156-4E9A-8309-E4C2AA85EC59} = {CE122C33-08DD-8605-11AB-D2FF338A96E6}
+		{F3372D48-F35E-4471-B920-BEFDF963D5CC} = {CE122C33-08DD-8605-11AB-D2FF338A96E6}
 	EndGlobalSection
 EndGlobal
