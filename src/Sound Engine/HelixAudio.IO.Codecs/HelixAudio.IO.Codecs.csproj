@@ -16,5 +16,6 @@
     <PackageReference Include="NAudio" Version="3.3.0" />
     <PackageReference Include="NVorbis" Version="0.10.5" />
     <PackageReference Include="PureFlac" Version="1.0.0" />
+    <PackageReference Include="TagLibSharp" Version="2.3.0" />
   </ItemGroup>
 </Project>
