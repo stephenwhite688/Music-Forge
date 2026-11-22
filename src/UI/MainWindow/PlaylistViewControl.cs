@@ -52,6 +52,10 @@ public sealed class PlaylistViewControl : UserControl
 
         // Right-click a track -> remove it from the playlist
         var trackMenu = new ContextMenuStrip();
+        var propsItem = new ToolStripMenuItem("Properties…");
+        propsItem.Click += (s, e) => ShowProperties();
+        trackMenu.Items.Add(propsItem);
+        trackMenu.Items.Add(new ToolStripSeparator());
         var removeItem = new ToolStripMenuItem("Remove from Playlist");
         removeItem.Click += (s, e) => RemoveSelected();
         trackMenu.Items.Add(removeItem);
@@ -97,6 +101,14 @@ public sealed class PlaylistViewControl : UserControl
         }
         _tracks.EndUpdate();
         _count.Text = $"{_tracks.Items.Count} track(s)";
+    }
+
+    private void ShowProperties()
+    {
+        if (_tracks.SelectedItems.Count == 0) return;
+        if (_tracks.SelectedItems[0].Tag is not LibraryRepository.LibraryTrack t) return;
+        using var dlg = new Dialogs.TrackPropertiesDialog(t.FilePath);
+        dlg.ShowDialog(FindForm());
     }
 
     private void RemoveSelected()

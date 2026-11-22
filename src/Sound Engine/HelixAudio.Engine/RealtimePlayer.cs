@@ -144,9 +144,36 @@ public sealed class RealtimePlayer : IDisposable
         Stop();
         _stream?.Dispose();
         _stream = await CodecManager.ReadAsync(path);
-        _sampleRate = _stream.SampleRate;
-        _channels = _stream.Channels;
-        Duration = TimeSpan.FromSeconds((double)_stream.TotalFrames / _sampleRate);
+        StartStreamPlayback(_stream, nodes, blockFrames);
+    }
+
+    /// <summary>
+    /// Plays an already-open <see cref="AudioStream"/> (e.g. produced by
+    /// <c>HelixAudio.Streaming</c> HLS/DASH clients) through the same device,
+    /// node chain, and feed loop as file playback. The player takes ownership
+    /// and disposes the stream on stop/replace.
+    /// </summary>
+    public void PlayAudioStream(
+        AudioStream stream,
+        IEnumerable<IAudioNode>? nodes = null,
+        int blockFrames = 512)
+    {
+        Stop();
+        _stream?.Dispose();
+        _stream = stream;
+        StartStreamPlayback(stream, nodes, blockFrames);
+    }
+
+    private void StartStreamPlayback(
+        AudioStream stream,
+        IEnumerable<IAudioNode>? nodes,
+        int blockFrames)
+    {
+        _sampleRate = stream.SampleRate;
+        _channels = stream.Channels;
+        Duration = stream.TotalFrames >= 0
+            ? TimeSpan.FromSeconds((double)stream.TotalFrames / _sampleRate)
+            : TimeSpan.Zero; // unknown-length stream (live/radio)
         _nodes = nodes is null ? new List<IAudioNode>() : new List<IAudioNode>(nodes);
 
         var format = new AudioFormat(_sampleRate, _channels, isFloat: true, bitsPerSample: 32);

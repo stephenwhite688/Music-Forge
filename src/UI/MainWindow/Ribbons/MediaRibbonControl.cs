@@ -488,6 +488,12 @@ public partial class MediaRibbonControl : RibbonStripControl
     private RibbonGroupPanel BuildToolsGroup()
     {
         var menu = new ContextMenuStrip();
+        AddMenuItem(menu, "Open Stream URL…", OpenStreamUrl);
+        menu.Items.Add(new ToolStripSeparator());
+        AddMenuItem(menu, "Convert / Export Audio…", ShowConvertDialog);
+        AddMenuItem(menu, "Track Properties…", ShowTrackProperties);
+        AddMenuItem(menu, "MIDI Devices…", ShowMidiDevices);
+        menu.Items.Add(new ToolStripSeparator());
         AddMenuItem(menu, "Library Statistics", ShowStatistics);
         AddMenuItem(menu, "Compact Database", CompactDatabase);
         AddMenuItem(menu, "Backup Library…", ExportBackup);
@@ -496,6 +502,47 @@ public partial class MediaRibbonControl : RibbonStripControl
         var group = new RibbonGroupPanel("Tools") { ContextMenuStrip = menu };
         group.AddButton("Tools", menu);
         return group;
+    }
+
+    private void OpenStreamUrl()
+    {
+        string? url = InputDialog.Show(FindForm(),
+            "Enter stream URL (.m3u8 HLS, .mpd DASH, or direct stream):", "Open Stream");
+        if (string.IsNullOrWhiteSpace(url)) return;
+        url = url.Trim();
+        if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
+            !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            MessageBox.Show("Only http/https stream URLs are supported.", "Media",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+        _ = AudioForge.UI.Services.PlaybackService.Instance.PlayUrlAsync(url);
+    }
+
+    private void ShowConvertDialog()
+    {
+        using var dlg = new ConvertDialog();
+        dlg.ShowDialog(FindForm());
+    }
+
+    private void ShowTrackProperties()
+    {
+        string? path = AudioForge.UI.Services.PlaybackService.Instance.CurrentTrackPath;
+        if (path is null)
+        {
+            MessageBox.Show("No track is playing.", "Properties",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+        using var dlg = new TrackPropertiesDialog(path);
+        dlg.ShowDialog(FindForm());
+    }
+
+    private void ShowMidiDevices()
+    {
+        using var dlg = new MidiDevicesDialog();
+        dlg.ShowDialog(FindForm());
     }
 
     private void ShowStatistics()

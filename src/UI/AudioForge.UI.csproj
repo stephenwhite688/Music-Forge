@@ -44,6 +44,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Sound Engine\HelixAudio.Engine\HelixAudio.Engine.csproj" />
     <ProjectReference Include="..\Sound Engine\HelixAudio.DSP\HelixAudio.DSP.csproj" />
+    <ProjectReference Include="..\Sound Engine\HelixAudio.Streaming\HelixAudio.Streaming.csproj" />
+    <ProjectReference Include="..\Sound Engine\HelixAudio.MIDI\HelixAudio.MIDI.csproj" />
   </ItemGroup>
 
   <ItemGroup>

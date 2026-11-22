@@ -117,6 +117,51 @@ public sealed class PlaybackService : IDisposable
         }
     }
 
+    /// <summary>
+    /// Plays a media URL through the engine: HLS (.m3u8) via
+    /// <see cref="HelixAudio.Streaming.HlsStream"/>, DASH (.mpd) via
+    /// <see cref="HelixAudio.Streaming.DashStream"/>, anything else via the
+    /// Media Foundation live-stream path. All go through the same node chain
+    /// and output device as file playback.
+    /// </summary>
+    public async Task PlayUrlAsync(string url)
+    {
+        _stationName = System.IO.Path.GetFileName(new Uri(url).AbsolutePath) is { Length: > 0 } n ? n : url;
+        if (_stationName.EndsWith(".m3u8", StringComparison.OrdinalIgnoreCase) ||
+            _stationName.EndsWith(".mpd", StringComparison.OrdinalIgnoreCase))
+            _stationName = new Uri(url).Host;
+        _stationUrl = url;
+        _stationUnavailable = false;
+        _queue.Clear();
+        _index = -1;
+        try
+        {
+            var path = new Uri(url).AbsolutePath;
+            HelixAudio.IO.AudioStream stream;
+            if (path.EndsWith(".m3u8", StringComparison.OrdinalIgnoreCase))
+                stream = await HelixAudio.Streaming.HlsStream.OpenAsync(url);
+            else if (path.EndsWith(".mpd", StringComparison.OrdinalIgnoreCase))
+                stream = await HelixAudio.Streaming.DashStream.OpenAsync(url);
+            else
+            {
+                _player.PlayStream(url, nodes: MeterService.Instance.Chain());
+                if (!string.IsNullOrEmpty(_stationName))
+                    TrackChanged?.Invoke(this, EventArgs.Empty);
+                return;
+            }
+            _player.PlayAudioStream(stream, MeterService.Instance.Chain());
+            TrackChanged?.Invoke(this, EventArgs.Empty);
+        }
+        catch (Exception ex)
+        {
+            _stationName = null;
+            _stationUrl = null;
+            Log($"STREAM PLAY FAILED {url} err={ex.Message}");
+            MessageBox.Show($"Could not play stream:\n{url}\n\n{ex.Message}",
+                "Playback", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
     /// <summary>Path to the spoken "station not available" clip shipped in Assets.</summary>
     private static string UnavailableClipPath => Path.Combine(
         AppContext.BaseDirectory, "Assets", "InternetRadio", "station is not available.mp3");
