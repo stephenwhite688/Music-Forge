@@ -1,7 +1,7 @@
 using System;
 using System.Drawing;
 
-namespace AudioForge.UI.TransportBar;
+namespace MusicForge.UI.TransportBar;
 
 /// <summary>Draws an oscilloscope trace from real waveform tap data.</summary>
 public class OscilloscopeRenderer

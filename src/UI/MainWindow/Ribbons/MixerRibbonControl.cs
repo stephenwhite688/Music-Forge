@@ -1,7 +1,7 @@
-using AudioForge.UI.Mixer;
+using MusicForge.UI.Mixer;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.MainWindow.Ribbons;
+namespace MusicForge.UI.MainWindow.Ribbons;
 
 public partial class MixerRibbonControl : RibbonStripControl
 {

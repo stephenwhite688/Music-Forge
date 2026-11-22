@@ -2,15 +2,15 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using AudioForge.UI.Shared;
-using AudioForge.UI.MainWindow.Ribbons;
+using MusicForge.UI.Shared;
+using MusicForge.UI.MainWindow.Ribbons;
 
-namespace AudioForge.UI.MainWindow;
+namespace MusicForge.UI.MainWindow;
 
 public partial class MainForm : Form
 {
     /// <summary>The docked transport bar - used to show long-operation progress.</summary>
-    public AudioForge.UI.TransportBar.TransportBarControl TransportBar => _dockedTransportBar;
+    public MusicForge.UI.TransportBar.TransportBarControl TransportBar => _dockedTransportBar;
 
     public MainForm()
     {

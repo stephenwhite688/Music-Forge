@@ -1,4 +1,4 @@
-﻿namespace AudioForge.UI.TransportBar;
+namespace MusicForge.UI.TransportBar;
 
 partial class PlaybackControls
 {

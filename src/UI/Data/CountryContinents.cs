@@ -1,4 +1,4 @@
-namespace AudioForge.UI.Data;
+namespace MusicForge.UI.Data;
 
 /// <summary>
 /// Maps ISO 3166-1 alpha-2 country codes to continents.

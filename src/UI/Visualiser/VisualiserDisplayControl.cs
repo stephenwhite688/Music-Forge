@@ -1,10 +1,10 @@
-using AudioForge.UI.Services;
+using MusicForge.UI.Services;
 using AudioForge.Visualizer.Contracts;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.Visualiser;
+namespace MusicForge.UI.Visualiser;
 
 /// <summary>Available realtime display modes.</summary>
 public enum VizMode

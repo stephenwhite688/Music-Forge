@@ -1,9 +1,9 @@
 #nullable enable
 
 using System.Windows.Forms;
-using AudioForge.UI.MainWindow.Ribbons;
+using MusicForge.UI.MainWindow.Ribbons;
 
-namespace AudioForge.UI.MainWindow.Options.ThemeOptions
+namespace MusicForge.UI.MainWindow.Options.ThemeOptions
 {
     public partial class OptionsRibbonControl : RibbonStripControl
     {

@@ -6,7 +6,7 @@
 using System;
 using System.Drawing;
 
-namespace AudioForge.UI.Shared;
+namespace MusicForge.UI.Shared;
 
 public static class ThemeManager
 {

@@ -3,7 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.TransportBar;
+namespace MusicForge.UI.TransportBar;
 
 /// <summary>Shuffle toggle button with an active-state highlight.</summary>
 public partial class ShuffleButtonControl : UserControl

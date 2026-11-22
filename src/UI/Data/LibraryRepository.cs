@@ -5,7 +5,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AudioForge.UI.Data;
+namespace MusicForge.UI.Data;
 
 /// <summary>
 /// Repository for the media library: libraries, sources, tracks, playlists.
@@ -26,7 +26,7 @@ public sealed class LibraryRepository
     /// <summary>Returns the Id of the default library, creating it if needed.</summary>
     public int EnsureDefaultLibrary()
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using (var cmd = connection.CreateCommand())
         {
             cmd.CommandText = "SELECT Id FROM Libraries WHERE LibraryName = $name LIMIT 1;";
@@ -55,7 +55,7 @@ public sealed class LibraryRepository
         string fullPath = Path.GetFullPath(folderPath);
         string drive = Path.GetPathRoot(fullPath) ?? string.Empty;
 
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = @"INSERT INTO LibrarySources (LibraryId, DriveLetter, FolderPath, SourceType, DateAdded)
                             VALUES ($lib, $drive, $path, 'Folder', $date);
@@ -70,7 +70,7 @@ public sealed class LibraryRepository
     /// <summary>Removes ALL configured source folders (tracks/playlists are kept).</summary>
     public void ClearSources()
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = "DELETE FROM LibrarySources;";
         cmd.ExecuteNonQuery();
@@ -80,7 +80,7 @@ public sealed class LibraryRepository
     public List<string> GetSourcePaths()
     {
         var paths = new List<string>();
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = @"SELECT s.FolderPath FROM LibrarySources s
                             JOIN Libraries l ON l.Id = s.LibraryId
@@ -110,7 +110,7 @@ public sealed class LibraryRepository
             // held - TagLib file I/O is slow and must not keep the DB locked.
             var pending = new List<(string Path, TrackMeta Meta, long Size)>();
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            using (var readConnection = AudioForgeDatabase.Instance.OpenConnection())
+            using (var readConnection = MusicForgeDatabase.Instance.OpenConnection())
             {
                 foreach (string source in sources)
                 {
@@ -146,7 +146,7 @@ public sealed class LibraryRepository
 
             // Phase 2: write in small batches so UI writes get windows.
             int added = 0;
-            using var connection = AudioForgeDatabase.Instance.OpenConnection();
+            using var connection = MusicForgeDatabase.Instance.OpenConnection();
             const int BatchSize = 200;
             int sinceCommit = 0;
             var tx = connection.BeginTransaction();
@@ -272,7 +272,7 @@ public sealed class LibraryRepository
     /// <summary>Ensures a single audio file exists in Tracks; returns its Id.</summary>
     public int EnsureTrackId(string filePath)
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var tx = connection.BeginTransaction();
         int id = EnsureTrackRow(connection, tx, filePath);
         tx.Commit();
@@ -296,7 +296,7 @@ public sealed class LibraryRepository
             .Where(f => AudioExtensions.Contains(Path.GetExtension(f)))
             .ToList();
 
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var tx = connection.BeginTransaction();
         int added = 0;
         foreach (string file in files)
@@ -316,7 +316,7 @@ public sealed class LibraryRepository
     /// <summary>Adds a single audio file to the library and playlist.</summary>
     public int AddFileToPlaylist(int playlistId, string filePath)
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var tx = connection.BeginTransaction();
         int trackId = EnsureTrackRow(connection, tx, filePath);
         AddTrackToPlaylistOn(connection, tx, playlistId, trackId);
@@ -403,7 +403,7 @@ public sealed class LibraryRepository
     /// <summary>Total track count in the library.</summary>
     public int GetTrackCount()
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = "SELECT COUNT(*) FROM Tracks;";
         return (int)(long)cmd.ExecuteScalar()!;
@@ -416,7 +416,7 @@ public sealed class LibraryRepository
     /// </summary>
     public void RecordPlay(string filePath)
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = @"UPDATE Tracks SET PlayCount = PlayCount + 1, LastPlayed = $now
                             WHERE FilePath = $path;";
@@ -428,7 +428,7 @@ public sealed class LibraryRepository
     public List<string> GetTrackPaths(int limit = 100)
     {
         var paths = new List<string>();
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = "SELECT FilePath FROM Tracks ORDER BY Title LIMIT $limit;";
         cmd.Parameters.AddWithValue("$limit", limit);
@@ -442,7 +442,7 @@ public sealed class LibraryRepository
     public List<LibraryTrack> GetAllTracks()
     {
         var tracks = new List<LibraryTrack>();
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = @"SELECT t.Id, t.Title, t.FilePath, t.FileSize,
                 t.DurationSeconds, t.TrackNumber, t.Year,
@@ -480,7 +480,7 @@ public sealed class LibraryRepository
     public int CreatePlaylist(string name)
     {
         string now = DateTime.UtcNow.ToString("o");
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = @"INSERT INTO Playlists (PlaylistName, CreationDate, ModifiedDate)
                             VALUES ($name, $now, $now);
@@ -493,7 +493,7 @@ public sealed class LibraryRepository
     /// <summary>Deletes a playlist and its track entries.</summary>
     public void DeletePlaylist(int playlistId)
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var tx = connection.BeginTransaction();
         foreach (var sql in new[]
         {
@@ -514,7 +514,7 @@ public sealed class LibraryRepository
     public List<(int Id, string Name)> GetPlaylists()
     {
         var list = new List<(int, string)>();
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = "SELECT Id, PlaylistName FROM Playlists ORDER BY PlaylistName;";
         using var reader = cmd.ExecuteReader();
@@ -526,7 +526,7 @@ public sealed class LibraryRepository
     /// <summary>Adds a track to the end of a playlist.</summary>
     public void AddTrackToPlaylist(int playlistId, int trackId)
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var tx = connection.BeginTransaction();
 
         int position;
@@ -565,7 +565,7 @@ public sealed class LibraryRepository
     public List<string> GetPlaylistTrackPaths(int playlistId)
     {
         var paths = new List<string>();
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = @"SELECT t.FilePath FROM PlaylistTracks pt
                             JOIN Tracks t ON t.Id = pt.TrackId
@@ -582,7 +582,7 @@ public sealed class LibraryRepository
     public List<(int TrackId, string Title, string FilePath)> GetPlaylistTracks(int playlistId)
     {
         var tracks = new List<(int, string, string)>();
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = @"SELECT t.Id, t.Title, t.FilePath FROM PlaylistTracks pt
                             JOIN Tracks t ON t.Id = pt.TrackId
@@ -599,7 +599,7 @@ public sealed class LibraryRepository
     public List<LibraryTrack> GetPlaylistTrackDetails(int playlistId)
     {
         var tracks = new List<LibraryTrack>();
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = @"SELECT t.Id, t.Title, t.FilePath, t.FileSize,
                 t.DurationSeconds, t.TrackNumber, t.Year,
@@ -631,7 +631,7 @@ public sealed class LibraryRepository
     /// <summary>Removes a track from a playlist and re-packs positions.</summary>
     public void RemoveTrackFromPlaylist(int playlistId, int trackId)
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var tx = connection.BeginTransaction();
 
         using (var cmd = connection.CreateCommand())
@@ -672,7 +672,7 @@ public sealed class LibraryRepository
     public List<(int Id, string Title, string FilePath)> SearchTracks(string text, int limit = 200)
     {
         var results = new List<(int, string, string)>();
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = @"SELECT Id, Title, FilePath FROM Tracks
                             WHERE Title LIKE $q OR FilePath LIKE $q

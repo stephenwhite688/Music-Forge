@@ -1,14 +1,14 @@
-using AudioForge.UI.Services;
-using AudioForge.UI.Dialogs;
+using MusicForge.UI.Services;
+using MusicForge.UI.Dialogs;
 using HelixAudio.DSP;
-using AudioForge.UI.Shared;
+using MusicForge.UI.Shared;
 using System;
 using System.Drawing;
 using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.MainWindow.GraphicEqualizer;
+namespace MusicForge.UI.MainWindow.GraphicEqualizer;
 
 /// <summary>
 /// Graphic equaliser display: global controls (enable/bypass/flat, in/out
@@ -352,7 +352,7 @@ public partial class GraphicEqualiserDisplayControl : UserControl
             }
             _channelLabel.Text = _editChannel < 0 ? "CH: LINKED" : $"CH: {(_editChannel == 0 ? "LEFT" : "RIGHT")}";
             _channelLabel.ForeColor = _editChannel < 0 ? DimText : Color.FromArgb(220, 180, 60);
-            _qLabel.Text = $"Q {_eq.BandQ:0.##}{(_eq.Mode == AudioForge.UI.Services.EqFilterMode.LinearPhase ? " LP" : "")}";
+            _qLabel.Text = $"Q {_eq.BandQ:0.##}{(_eq.Mode == MusicForge.UI.Services.EqFilterMode.LinearPhase ? " LP" : "")}";
         }
         finally { _suppress = false; }
     }

@@ -2,7 +2,7 @@ using System;
 using SpeakerForge;
 using HelixAudio.Core;
 
-namespace AudioForge.UI.Services;
+namespace MusicForge.UI.Services;
 
 /// <summary>
 /// Transparent <see cref="AudioNode"/> that taps the processed audio stream and

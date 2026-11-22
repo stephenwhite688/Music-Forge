@@ -2,7 +2,7 @@ using HelixAudio.Core;
 using HelixAudio.DSP;
 using System.Collections.Generic;
 
-namespace AudioForge.UI.Services;
+namespace MusicForge.UI.Services;
 
 /// <summary>
 /// Owns the meter and spectrum tap nodes that sit in the playback chain

@@ -2,7 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.MainWindow.Ribbons;
+namespace MusicForge.UI.MainWindow.Ribbons;
 
 /// <summary>
 /// A labeled ribbon group: a row of ribbon-style buttons (icon area on top,

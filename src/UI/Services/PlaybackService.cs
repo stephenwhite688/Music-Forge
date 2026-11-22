@@ -1,4 +1,4 @@
-using AudioForge.UI.Data;
+using MusicForge.UI.Data;
 using HelixAudio.Engine;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.Services;
+namespace MusicForge.UI.Services;
 
 /// <summary>
 /// UI-facing playback service: owns the engine's <see cref="RealtimePlayer"/>,
@@ -333,7 +333,7 @@ public sealed class PlaybackService : IDisposable
     {
         try
         {
-            string path = Path.Combine(Path.GetTempPath(), "audioforge-playback.log");
+            string path = Path.Combine(Path.GetTempPath(), "musicforge-playback.log");
             File.AppendAllText(path, $"{DateTime.Now:HH:mm:ss.fff} {message}\n");
         }
         catch { }

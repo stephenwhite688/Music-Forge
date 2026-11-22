@@ -1,11 +1,11 @@
-using AudioForge.UI.Services;
+using MusicForge.UI.Services;
 using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.MainWindow.Ribbons;
+namespace MusicForge.UI.MainWindow.Ribbons;
 
 /// <summary>
 /// CLAP plugin tab: loads .clap files through the engine's CLAP host,

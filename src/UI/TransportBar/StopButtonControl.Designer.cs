@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace AudioForge.UI.TransportBar;
+namespace MusicForge.UI.TransportBar;
 
 partial class StopButtonControl
 {

@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.TransportBar;
+namespace MusicForge.UI.TransportBar;
 
 public partial class PlaybackControls : UserControl
 {

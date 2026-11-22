@@ -1,4 +1,4 @@
-using AudioForge.UI.Data;
+using MusicForge.UI.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AudioForge.UI.Services;
+namespace MusicForge.UI.Services;
 
 /// <summary>Progress snapshot while the radio directory is being downloaded.</summary>
 public sealed class RadioLoadProgress

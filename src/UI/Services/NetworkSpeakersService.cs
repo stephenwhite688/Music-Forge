@@ -1,7 +1,7 @@
 using SpeakerForge;
 using System;
 
-namespace AudioForge.UI.Services;
+namespace MusicForge.UI.Services;
 
 /// <summary>
 /// UI-facing singleton over the standalone SpeakerForge engine.

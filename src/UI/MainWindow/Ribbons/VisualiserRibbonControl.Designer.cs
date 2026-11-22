@@ -1,4 +1,4 @@
-namespace AudioForge.UI.MainWindow.Ribbons;
+namespace MusicForge.UI.MainWindow.Ribbons;
 
 partial class VisualiserRibbonControl
 {

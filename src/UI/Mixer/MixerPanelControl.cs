@@ -1,10 +1,10 @@
-using AudioForge.UI.Services;
+using MusicForge.UI.Services;
 using HelixAudio.Mixing;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.Mixer;
+namespace MusicForge.UI.Mixer;
 
 /// <summary>
 /// Stereo mixer panel: per-channel gain slider, mute/solo, live level meter,

@@ -1,5 +1,5 @@
-using AudioForge.UI.Services;
-using AudioForge.UI.Visualiser;
+using MusicForge.UI.Services;
+using MusicForge.UI.Visualiser;
 using AudioForge.Visualizer.Contracts;
 using System;
 using System.Drawing;
@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.MainWindow.Ribbons;
+namespace MusicForge.UI.MainWindow.Ribbons;
 
 public partial class VisualiserRibbonControl : RibbonStripControl
 {
@@ -186,7 +186,7 @@ public partial class VisualiserRibbonControl : RibbonStripControl
     {
         var menu = new ContextMenuStrip();
         AddItem(menu, "Export Image…", ExportImage);
-        AddItem(menu, "Test Tone (440 Hz)…", () => _ = AudioForge.UI.Services.PlaybackService.Instance.PlayTestToneAsync());
+        AddItem(menu, "Test Tone (440 Hz)…", () => _ = MusicForge.UI.Services.PlaybackService.Instance.PlayTestToneAsync());
         AddItem(menu, "Copy Settings", CopySettings);
         AddItem(menu, "About Visualiser", () =>
             MessageBox.Show(

@@ -1,12 +1,12 @@
-using AudioForge.UI.Data;
-using AudioForge.UI.Dialogs;
+using MusicForge.UI.Data;
+using MusicForge.UI.Dialogs;
 using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.MainWindow;
+namespace MusicForge.UI.MainWindow;
 
 /// <summary>
 /// Explorer-style folder tree + audio file list. Right-click a folder to add

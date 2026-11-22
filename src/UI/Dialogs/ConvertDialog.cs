@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.Dialogs;
+namespace MusicForge.UI.Dialogs;
 
 /// <summary>
 /// Batch audio converter. Decodes each source through

@@ -1,8 +1,8 @@
-﻿using AudioForge.UI.MainWindow.Options.ThemeOptions;
-using AudioForge.UI.MainWindow.Ribbons;
-using AudioForge.UI.TransportBar;
+using MusicForge.UI.MainWindow.Options.ThemeOptions;
+using MusicForge.UI.MainWindow.Ribbons;
+using MusicForge.UI.TransportBar;
 
-namespace AudioForge.UI.MainWindow;
+namespace MusicForge.UI.MainWindow;
 
 partial class MainForm
 {
@@ -127,7 +127,7 @@ partial class MainForm
         this.Controls.Add(this._dockedTransportBar);
         this.ClientSize = new System.Drawing.Size(1024, 768);
         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-        this.Text = "Audio Forge with Helix Sound Engine";
+        this.Text = "MusicForge";
 
         this.mainContentPanel.ResumeLayout(false);
         this._mainTabControl.ResumeLayout(false);

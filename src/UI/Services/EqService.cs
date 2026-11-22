@@ -1,4 +1,4 @@
-using AudioForge.UI.Data;
+using MusicForge.UI.Data;
 using HelixAudio.Core;
 using HelixAudio.DSP;
 using HelixAudio.DSP.GraphicEQ;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AudioForge.UI.Services;
+namespace MusicForge.UI.Services;
 
 /// <summary>EQ filter topology.</summary>
 public enum EqFilterMode { MinimumPhase, LinearPhase }

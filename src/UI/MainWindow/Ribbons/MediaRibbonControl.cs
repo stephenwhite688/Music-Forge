@@ -1,12 +1,12 @@
-using AudioForge.UI.Data;
-using AudioForge.UI.Dialogs;
+using MusicForge.UI.Data;
+using MusicForge.UI.Dialogs;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.MainWindow.Ribbons;
+namespace MusicForge.UI.MainWindow.Ribbons;
 
 public partial class MediaRibbonControl : RibbonStripControl
 {
@@ -221,7 +221,7 @@ public partial class MediaRibbonControl : RibbonStripControl
         int tracks = _library.GetTrackCount();
         int playlists = _library.GetPlaylists().Count;
         MessageBox.Show(
-            $"Library: Default Library\n\nSources: {sources}\nTracks: {tracks}\nPlaylists: {playlists}\n\nDatabase: {AudioForgeDatabase.Instance.DatabasePath}",
+            $"Library: Default Library\n\nSources: {sources}\nTracks: {tracks}\nPlaylists: {playlists}\n\nDatabase: {MusicForgeDatabase.Instance.DatabasePath}",
             "Library Properties", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
@@ -236,7 +236,7 @@ public partial class MediaRibbonControl : RibbonStripControl
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         try
         {
-            AudioForgeDatabase.Instance.Backup(dialog.FileName);
+            MusicForgeDatabase.Instance.Backup(dialog.FileName);
             MessageBox.Show($"Backup saved to:\n{dialog.FileName}", "Media",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -290,7 +290,7 @@ public partial class MediaRibbonControl : RibbonStripControl
         }
         using var picker = new PlaylistPickerDialog("Play playlist");
         if (picker.ShowDialog(FindForm()) == DialogResult.OK && picker.SelectedPlaylistId >= 0)
-            _ = AudioForge.UI.Services.PlaybackService.Instance.PlayPlaylistAsync(picker.SelectedPlaylistId);
+            _ = MusicForge.UI.Services.PlaybackService.Instance.PlayPlaylistAsync(picker.SelectedPlaylistId);
     }
 
     private void DeletePlaylist()
@@ -383,7 +383,7 @@ public partial class MediaRibbonControl : RibbonStripControl
     /// <summary>Strips embedded pictures from the currently playing track's file.</summary>
     private void RemoveArtwork()
     {
-        string? path = AudioForge.UI.Services.PlaybackService.Instance.CurrentTrackPath;
+        string? path = MusicForge.UI.Services.PlaybackService.Instance.CurrentTrackPath;
         if (path is null)
         {
             MessageBox.Show("No track is playing.", "Artwork",
@@ -453,7 +453,7 @@ public partial class MediaRibbonControl : RibbonStripControl
         RefreshOutputDevices(combo);
         combo.SelectedIndexChanged += (_, _) =>
         {
-            var pb = AudioForge.UI.Services.PlaybackService.Instance;
+            var pb = MusicForge.UI.Services.PlaybackService.Instance;
             pb.OutputDeviceId = combo.SelectedItem is OutputDeviceItem item ? item.Id : null;
         };
         group.AddControl(combo);
@@ -462,15 +462,15 @@ public partial class MediaRibbonControl : RibbonStripControl
 
     private static void RefreshOutputDevices(ComboBox combo)
     {
-        var current = AudioForge.UI.Services.PlaybackService.Instance.OutputDeviceId;
+        var current = MusicForge.UI.Services.PlaybackService.Instance.OutputDeviceId;
         combo.Items.Clear();
         combo.Items.Add(new OutputDeviceItem(null, "System Default"));
-        foreach (var (id, name) in AudioForge.UI.Services.PlaybackService.Instance.OutputDevices)
+        foreach (var (id, name) in MusicForge.UI.Services.PlaybackService.Instance.OutputDevices)
             combo.Items.Add(new OutputDeviceItem(id, name));
         int sel = 0;
         if (current is not null)
         {
-            var devices = AudioForge.UI.Services.PlaybackService.Instance.OutputDevices;
+            var devices = MusicForge.UI.Services.PlaybackService.Instance.OutputDevices;
             for (int i = 0; i < devices.Count; i++)
                 if (devices[i].Id == current) { sel = i + 1; break; }
         }
@@ -517,7 +517,7 @@ public partial class MediaRibbonControl : RibbonStripControl
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
-        _ = AudioForge.UI.Services.PlaybackService.Instance.PlayUrlAsync(url);
+        _ = MusicForge.UI.Services.PlaybackService.Instance.PlayUrlAsync(url);
     }
 
     private void ShowConvertDialog()
@@ -528,7 +528,7 @@ public partial class MediaRibbonControl : RibbonStripControl
 
     private void ShowTrackProperties()
     {
-        string? path = AudioForge.UI.Services.PlaybackService.Instance.CurrentTrackPath;
+        string? path = MusicForge.UI.Services.PlaybackService.Instance.CurrentTrackPath;
         if (path is null)
         {
             MessageBox.Show("No track is playing.", "Properties",
@@ -551,11 +551,11 @@ public partial class MediaRibbonControl : RibbonStripControl
         int tracks = _library.GetTrackCount();
         int playlists = _library.GetPlaylists().Count;
         long dbSize = 0;
-        try { dbSize = new FileInfo(AudioForgeDatabase.Instance.DatabasePath).Length; }
+        try { dbSize = new FileInfo(MusicForgeDatabase.Instance.DatabasePath).Length; }
         catch { }
         MessageBox.Show(
             $"Sources: {sources}\nTracks: {tracks}\nPlaylists: {playlists}\n" +
-            $"Database size: {dbSize / 1024.0 / 1024:F1} MB\n\n{AudioForgeDatabase.Instance.DatabasePath}",
+            $"Database size: {dbSize / 1024.0 / 1024:F1} MB\n\n{MusicForgeDatabase.Instance.DatabasePath}",
             "Library Statistics", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
@@ -563,8 +563,8 @@ public partial class MediaRibbonControl : RibbonStripControl
     {
         try
         {
-            using var connection = AudioForgeDatabase.Instance.OpenConnection();
-            AudioForgeDatabase.Execute(connection, "VACUUM;");
+            using var connection = MusicForgeDatabase.Instance.OpenConnection();
+            MusicForgeDatabase.Execute(connection, "VACUUM;");
             MessageBox.Show("Database compacted.", "Tools",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }

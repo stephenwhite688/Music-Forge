@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
-using AudioForge.UI.Data;
-using AudioForge.UI.MainWindow;
+using MusicForge.UI.Data;
+using MusicForge.UI.MainWindow;
 
-namespace AudioForge.UI;
+namespace MusicForge.UI;
 
 internal static class Program
 {
@@ -11,7 +11,7 @@ internal static class Program
     static void Main()
     {
         ApplicationConfiguration.Initialize();
-        AudioForgeDatabase.Instance.Initialize();
+        MusicForgeDatabase.Instance.Initialize();
         Application.Run(new MainForm());
     }
 }

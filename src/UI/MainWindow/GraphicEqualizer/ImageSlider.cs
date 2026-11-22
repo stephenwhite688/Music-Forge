@@ -4,7 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.MainWindow.GraphicEqualizer;
+namespace MusicForge.UI.MainWindow.GraphicEqualizer;
 
 /// <summary>
 /// Owner-drawn slider using the same slider3.png thumb as the transport

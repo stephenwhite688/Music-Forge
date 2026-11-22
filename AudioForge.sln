@@ -1,9 +1,9 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.11.12328.437
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudioForge.UI", "src\UI\AudioForge.UI.csproj", "{A8FDB46A-1234-4ABC-9DEF-112233445566}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicForge.UI", "src\UI\MusicForge.UI.csproj", "{A8FDB46A-1234-4ABC-9DEF-112233445566}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelixAudio.Analysis", "src\Sound Engine\HelixAudio.Analysis\HelixAudio.Analysis.csproj", "{A5B3C5FA-BDC3-3AC2-AB2F-12A50D5857CC}"
 EndProject

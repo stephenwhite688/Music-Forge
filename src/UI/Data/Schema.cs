@@ -1,4 +1,4 @@
-namespace AudioForge.UI.Data;
+namespace MusicForge.UI.Data;
 
 /// <summary>
 /// Full SQLite schema for AudioForge. Stores metadata, references, paths and

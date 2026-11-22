@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.TransportBar;
+namespace MusicForge.UI.TransportBar;
 
 public partial class MiniVisualizerControl : UserControl
 {
@@ -35,7 +35,7 @@ public partial class MiniVisualizerControl : UserControl
     {
         base.OnPaint(e);
 
-        var meters = AudioForge.UI.Services.MeterService.Instance;
+        var meters = MusicForge.UI.Services.MeterService.Instance;
         if (UseBars)
         {
             barRenderer.Draw(e.Graphics, ClientRectangle, meters.PostEq.SpectrumDb, 24);

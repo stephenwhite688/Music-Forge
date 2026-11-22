@@ -1,4 +1,4 @@
-namespace AudioForge.UI.MainWindow.GraphicEqualizer;
+namespace MusicForge.UI.MainWindow.GraphicEqualizer;
 
 partial class GraphicEqualiserDisplayControl
 {

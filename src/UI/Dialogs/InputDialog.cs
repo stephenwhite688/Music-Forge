@@ -1,7 +1,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.Dialogs;
+namespace MusicForge.UI.Dialogs;
 
 /// <summary>
 /// Minimal modal text-input dialog (WinForms has no built-in InputBox).

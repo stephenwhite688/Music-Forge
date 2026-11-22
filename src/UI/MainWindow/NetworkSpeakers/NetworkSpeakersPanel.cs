@@ -1,12 +1,12 @@
 using SpeakerForge;
-using AudioForge.UI.Services;
+using MusicForge.UI.Services;
 using System;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.MainWindow.NetworkSpeakers;
+namespace MusicForge.UI.MainWindow.NetworkSpeakers;
 
 /// <summary>
 /// Content panel for the Networked Speakers tab: one list of output targets

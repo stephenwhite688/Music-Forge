@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 
-namespace AudioForge.UI.Data;
+namespace MusicForge.UI.Data;
 
 /// <summary>A stored graphic-EQ preset (31 band gains + trims).</summary>
 public sealed class EqPresetRecord
@@ -41,7 +41,7 @@ public sealed class EqRepository
     public List<EqPresetRecord> GetAll()
     {
         var list = new List<EqPresetRecord>();
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = "SELECT Id, PresetName, EqConfiguration FROM EqPresets ORDER BY PresetName;";
         using var r = cmd.ExecuteReader();
@@ -73,7 +73,7 @@ public sealed class EqRepository
             OutputGainDb = outputGainDb
         });
 
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         // Update if a preset with this name exists, else insert
         using (var check = connection.CreateCommand())
         {
@@ -98,7 +98,7 @@ public sealed class EqRepository
 
     public void Delete(int id)
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = "DELETE FROM EqPresets WHERE Id = $id;";
         cmd.Parameters.AddWithValue("$id", id);
@@ -121,7 +121,7 @@ public sealed class EqRepository
             ChannelLinked = node.ChannelLinked,
             Mode = mode,
         };
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = "CREATE TABLE IF NOT EXISTS EqState (Id INTEGER PRIMARY KEY CHECK (Id = 1), StateJson TEXT NOT NULL); INSERT INTO EqState (Id, StateJson) VALUES (1, @json) ON CONFLICT(Id) DO UPDATE SET StateJson = excluded.StateJson;";
         cmd.Parameters.AddWithValue("@json", JsonSerializer.Serialize(state));
@@ -131,7 +131,7 @@ public sealed class EqRepository
     public string? LoadState(HelixAudio.DSP.GraphicEQ.GraphicEqNode node)
     {
         string? json;
-        using (var connection = AudioForgeDatabase.Instance.OpenConnection())
+        using (var connection = MusicForgeDatabase.Instance.OpenConnection())
         using (var cmd = connection.CreateCommand())
         {
             cmd.CommandText = "SELECT StateJson FROM EqState WHERE Id = 1;";

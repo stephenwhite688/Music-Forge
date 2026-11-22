@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace AudioForge.UI.MainWindow.Options.ThemeOptions;
+namespace MusicForge.UI.MainWindow.Options.ThemeOptions;
 
 partial class OptionsRibbonControl
 {

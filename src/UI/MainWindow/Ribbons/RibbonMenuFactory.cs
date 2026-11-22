@@ -1,6 +1,6 @@
 using System.Windows.Forms;
 
-namespace AudioForge.UI.MainWindow.Ribbons;
+namespace MusicForge.UI.MainWindow.Ribbons;
 
 internal static class RibbonMenuFactory
 {

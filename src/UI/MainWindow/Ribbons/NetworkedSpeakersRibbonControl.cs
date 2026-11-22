@@ -1,12 +1,12 @@
 using SpeakerForge;
-using AudioForge.UI.MainWindow.NetworkSpeakers;
-using AudioForge.UI.Services;
+using MusicForge.UI.MainWindow.NetworkSpeakers;
+using MusicForge.UI.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.MainWindow.Ribbons;
+namespace MusicForge.UI.MainWindow.Ribbons;
 
 public partial class NetworkedSpeakersRibbonControl : RibbonStripControl
 {

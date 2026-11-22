@@ -1,10 +1,10 @@
-using AudioForge.UI.Data;
-using AudioForge.UI.Services;
+using MusicForge.UI.Data;
+using MusicForge.UI.Services;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.Dialogs;
+namespace MusicForge.UI.Dialogs;
 
 /// <summary>
 /// Shows a playlist's tracks with add/remove support. Add opens the

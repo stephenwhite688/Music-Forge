@@ -1,11 +1,11 @@
-using AudioForge.UI.Services;
+using MusicForge.UI.Services;
 using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.MainWindow;
+namespace MusicForge.UI.MainWindow;
 
 /// <summary>
 /// Right-side artwork pane for the Media tab. Follows the currently playing

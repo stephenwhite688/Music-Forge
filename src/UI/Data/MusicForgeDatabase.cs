@@ -2,28 +2,28 @@ using System;
 using System.IO;
 using Microsoft.Data.Sqlite;
 
-namespace AudioForge.UI.Data;
+namespace MusicForge.UI.Data;
 
 /// <summary>
-/// SQLite database manager for AudioForge. Singleton — call
+/// SQLite database manager for MusicForge. Singleton — call
 /// <see cref="Instance"/> then <see cref="Initialize"/> once at startup.
-/// Database lives at %LOCALAPPDATA%\AudioForge\audioforge.db.
+/// Database lives at %LOCALAPPDATA%\MusicForge\musicforge.db.
 /// </summary>
-public sealed class AudioForgeDatabase
+public sealed class MusicForgeDatabase
 {
-    public static AudioForgeDatabase Instance { get; } = new AudioForgeDatabase();
+    public static MusicForgeDatabase Instance { get; } = new MusicForgeDatabase();
 
     public string DatabasePath { get; }
     private readonly string _connectionString;
 
-    private AudioForgeDatabase()
+    private MusicForgeDatabase()
     {
         string directory = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "AudioForge");
+            "MusicForge");
         Directory.CreateDirectory(directory);
 
-        DatabasePath = Path.Combine(directory, "audioforge.db");
+        DatabasePath = Path.Combine(directory, "musicforge.db");
 
         var builder = new SqliteConnectionStringBuilder
         {

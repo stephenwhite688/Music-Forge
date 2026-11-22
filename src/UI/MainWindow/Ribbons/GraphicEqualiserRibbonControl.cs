@@ -4,12 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Windows.Forms;
-using AudioForge.UI.Dialogs;
-using AudioForge.UI.MainWindow.GraphicEqualizer;
-using AudioForge.UI.Services;
+using MusicForge.UI.Dialogs;
+using MusicForge.UI.MainWindow.GraphicEqualizer;
+using MusicForge.UI.Services;
 using HelixAudio.DSP.GraphicEQ;
 
-namespace AudioForge.UI.MainWindow.Ribbons;
+namespace MusicForge.UI.MainWindow.Ribbons;
 
 public partial class GraphicEqualiserRibbonControl : RibbonStripControl
 {
@@ -133,9 +133,9 @@ public partial class GraphicEqualiserRibbonControl : RibbonStripControl
         var modeMenu = new ToolStripMenuItem("Filter Mode");
         var minItem = new ToolStripMenuItem("Minimum Phase (low latency)");
         var linItem = new ToolStripMenuItem("Linear Phase (constant delay, ~85 ms)");
-        minItem.Click += (_, _) => _eq.Mode = AudioForge.UI.Services.EqFilterMode.MinimumPhase;
-        linItem.Click += (_, _) => _eq.Mode = AudioForge.UI.Services.EqFilterMode.LinearPhase;
-        menu.Opening += (_, _) => { minItem.Checked = _eq.Mode == AudioForge.UI.Services.EqFilterMode.MinimumPhase; linItem.Checked = _eq.Mode == AudioForge.UI.Services.EqFilterMode.LinearPhase; };
+        minItem.Click += (_, _) => _eq.Mode = MusicForge.UI.Services.EqFilterMode.MinimumPhase;
+        linItem.Click += (_, _) => _eq.Mode = MusicForge.UI.Services.EqFilterMode.LinearPhase;
+        menu.Opening += (_, _) => { minItem.Checked = _eq.Mode == MusicForge.UI.Services.EqFilterMode.MinimumPhase; linItem.Checked = _eq.Mode == MusicForge.UI.Services.EqFilterMode.LinearPhase; };
         modeMenu.DropDownItems.Add(minItem);
         modeMenu.DropDownItems.Add(linItem);
         menu.Items.Add(modeMenu);
@@ -310,7 +310,7 @@ public partial class GraphicEqualiserRibbonControl : RibbonStripControl
         _eq.SavePreset(name.Trim());
     }
 
-    private void RenamePreset(AudioForge.UI.Data.EqPresetRecord rec)
+    private void RenamePreset(MusicForge.UI.Data.EqPresetRecord rec)
     {
         string? name = InputDialog.Show(_display.FindForm(), "Enter new preset name:", "Rename EQ Preset", rec.Name);
         if (string.IsNullOrWhiteSpace(name) || name.Trim() == rec.Name) return;

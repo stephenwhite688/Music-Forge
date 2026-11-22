@@ -1,5 +1,5 @@
-using AudioForge.UI.Data;
-using AudioForge.UI.Services;
+using MusicForge.UI.Data;
+using MusicForge.UI.Services;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.MainWindow.Ribbons;
+namespace MusicForge.UI.MainWindow.Ribbons;
 
 public partial class InternetRadioRibbonControl : RibbonStripControl
 {

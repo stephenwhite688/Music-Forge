@@ -1,7 +1,7 @@
 using System;
 using System.Drawing;
 
-namespace AudioForge.UI.TransportBar;
+namespace MusicForge.UI.TransportBar;
 
 /// <summary>Draws a spectrum bar display from real FFT tap data (dBFS).</summary>
 public class BarVisualizerRenderer

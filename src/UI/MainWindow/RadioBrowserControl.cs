@@ -1,5 +1,5 @@
-using AudioForge.UI.Data;
-using AudioForge.UI.Services;
+using MusicForge.UI.Data;
+using MusicForge.UI.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,7 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.MainWindow;
+namespace MusicForge.UI.MainWindow;
 
 /// <summary>
 /// Internet radio directory panel: Continent -> Country -> stations tree on

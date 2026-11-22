@@ -4,7 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.TransportBar;
+namespace MusicForge.UI.TransportBar;
 
 /// <summary>
 /// Custom volume slider - WinForms TrackBar cannot use image thumbs, so the

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AudioForge.UI.Data;
+namespace MusicForge.UI.Data;
 
 /// <summary>A station record as stored in the Stations table.</summary>
 public sealed class StationRecord
@@ -38,7 +38,7 @@ public sealed class RadioRepository
 
     private static void EnsureSchema()
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         // Stations table predates country codes - add the column if missing
         using (var check = connection.CreateCommand())
         {
@@ -77,7 +77,7 @@ public sealed class RadioRepository
 
     public DateTime? GetLastRefresh()
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = "SELECT Value FROM RadioDirectoryMeta WHERE Key = 'LastRefresh';";
         var raw = cmd.ExecuteScalar() as string;
@@ -86,7 +86,7 @@ public sealed class RadioRepository
 
     public void SetLastRefresh(DateTime utc)
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = @"INSERT INTO RadioDirectoryMeta (Key, Value) VALUES ('LastRefresh', $v)
                              ON CONFLICT(Key) DO UPDATE SET Value = $v;";
@@ -99,7 +99,7 @@ public sealed class RadioRepository
     /// <summary>Inserts or updates a station keyed on StreamUrl + StationName.</summary>
     public void UpsertStation(StationRecord s)
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = @"INSERT INTO Stations
             (StationName, StreamUrl, HomepageUrl, Country, CountryCode, Language, GenreTags, Codec, Bitrate, ReliabilityScore, LogoUrl)
@@ -126,7 +126,7 @@ public sealed class RadioRepository
     /// <summary>Bulk-upserts stations inside one transaction. Returns rows written.</summary>
     public int UpsertStations(IEnumerable<StationRecord> stations)
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var tx = connection.BeginTransaction();
         int count = 0;
         foreach (var s in stations)
@@ -187,7 +187,7 @@ public sealed class RadioRepository
     public List<StationRecord> GetStations(int limit = 5000)
     {
         var list = new List<StationRecord>();
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = StationSelect + " ORDER BY s.ReliabilityScore DESC LIMIT $limit;";
         cmd.Parameters.AddWithValue("$limit", limit);
@@ -200,7 +200,7 @@ public sealed class RadioRepository
     public List<StationRecord> GetStationsByCountry(string? countryCode, int limit = 2000)
     {
         var list = new List<StationRecord>();
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = StationSelect + " WHERE s.CountryCode = $cc ORDER BY s.ReliabilityScore DESC LIMIT $limit;";
         cmd.Parameters.AddWithValue("$cc", countryCode ?? "");
@@ -214,7 +214,7 @@ public sealed class RadioRepository
     public List<StationRecord> SearchStations(string term, int limit = 1000)
     {
         var list = new List<StationRecord>();
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = StationSelect + @" WHERE s.StationName LIKE $q OR s.Country LIKE $q
             OR s.GenreTags LIKE $q OR s.Codec LIKE $q OR s.Language LIKE $q
@@ -230,7 +230,7 @@ public sealed class RadioRepository
     public List<StationRecord> GetStationsByLanguage(string? language, int limit = 2000)
     {
         var list = new List<StationRecord>();
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = StationSelect + " WHERE s.Language = $lang ORDER BY s.ReliabilityScore DESC LIMIT $limit;";
         cmd.Parameters.AddWithValue("$lang", language ?? "");
@@ -244,7 +244,7 @@ public sealed class RadioRepository
     public List<StationRecord> GetStationsByGenre(string tag, int limit = 2000)
     {
         var list = new List<StationRecord>();
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = StationSelect + " WHERE s.GenreTags LIKE $tag ORDER BY s.ReliabilityScore DESC LIMIT $limit;";
         cmd.Parameters.AddWithValue("$tag", "%" + tag + "%");
@@ -258,7 +258,7 @@ public sealed class RadioRepository
     public List<StationRecord> GetRecentlyAdded(int limit = 500)
     {
         var list = new List<StationRecord>();
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = StationSelect + " ORDER BY s.Id DESC LIMIT $limit;";
         cmd.Parameters.AddWithValue("$limit", limit);
@@ -271,7 +271,7 @@ public sealed class RadioRepository
     public Dictionary<string, int> GetLanguageCounts()
     {
         var result = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = "SELECT COALESCE(NULLIF(Language,''),'(unknown)'), COUNT(*) FROM Stations GROUP BY Language;";
         using var r = cmd.ExecuteReader();
@@ -283,7 +283,7 @@ public sealed class RadioRepository
     public Dictionary<string, int> GetTopGenres(int maxGenres = 100)
     {
         var counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = "SELECT GenreTags FROM Stations WHERE GenreTags IS NOT NULL AND GenreTags <> '';";
         using var r = cmd.ExecuteReader();
@@ -304,7 +304,7 @@ public sealed class RadioRepository
     public List<StationRecord> GetFavourites()
     {
         var list = new List<StationRecord>();
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = StationSelect + " WHERE f.StationId IS NOT NULL ORDER BY s.StationName;";
         using var r = cmd.ExecuteReader();
@@ -316,7 +316,7 @@ public sealed class RadioRepository
     public Dictionary<string, Dictionary<string, int>> GetDirectoryTreeCounts()
     {
         var result = new Dictionary<string, Dictionary<string, int>>(StringComparer.OrdinalIgnoreCase);
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = @"SELECT COALESCE(NULLIF(CountryCode,''),'--'), COALESCE(NULLIF(Country,''),'(unknown)'), COUNT(*)
                              FROM Stations GROUP BY CountryCode, Country;";
@@ -338,7 +338,7 @@ public sealed class RadioRepository
 
     public int StationCount()
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = "SELECT COUNT(*) FROM Stations;";
         return Convert.ToInt32(cmd.ExecuteScalar());
@@ -348,7 +348,7 @@ public sealed class RadioRepository
 
     public void ToggleFavourite(int stationId)
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = "SELECT COUNT(*) FROM RadioFavourites WHERE StationId = $id;";
         cmd.Parameters.AddWithValue("$id", stationId);
@@ -373,7 +373,7 @@ public sealed class RadioRepository
     /// <summary>Records a station play. Keeps at most 1000 rows (oldest pruned).</summary>
     public void RecordPlay(int stationId, string name, string streamUrl)
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = @"INSERT INTO RadioPlayHistory (StationId, StationName, StreamUrl, PlayedAt)
                              VALUES ($id, $name, $url, $at);
@@ -390,7 +390,7 @@ public sealed class RadioRepository
     public List<StationRecord> GetRecentlyPlayed(int limit = 200)
     {
         var list = new List<StationRecord>();
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = StationSelect + @" WHERE s.Id IN (
                                 SELECT StationId FROM RadioPlayHistory GROUP BY StationId
@@ -413,7 +413,7 @@ public sealed class RadioRepository
     /// <summary>Deletes all play history.</summary>
     public void ClearPlayHistory()
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = "DELETE FROM RadioPlayHistory;";
         cmd.ExecuteNonQuery();
@@ -422,7 +422,7 @@ public sealed class RadioRepository
     /// <summary>Returns the CountryCode for a station Id (for lookups).</summary>
     public string? GetStationCountryCode(int stationId)
     {
-        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var connection = MusicForgeDatabase.Instance.OpenConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = "SELECT CountryCode FROM Stations WHERE Id = $id;";
         cmd.Parameters.AddWithValue("$id", stationId);

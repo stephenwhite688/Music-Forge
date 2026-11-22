@@ -1,8 +1,8 @@
-using AudioForge.UI.Data;
+using MusicForge.UI.Data;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.Dialogs;
+namespace MusicForge.UI.Dialogs;
 
 /// <summary>Simple dialog that lets the user pick one of their playlists.</summary>
 public sealed class PlaylistPickerDialog : Form

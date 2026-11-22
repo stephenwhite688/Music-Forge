@@ -1,10 +1,10 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using AudioForge.UI.Services;
-using AudioForge.UI.Shared;
+using MusicForge.UI.Services;
+using MusicForge.UI.Shared;
 
-namespace AudioForge.UI.TransportBar;
+namespace MusicForge.UI.TransportBar;
 
 public partial class TransportBarControl : UserControl
 {

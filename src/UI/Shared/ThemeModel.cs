@@ -5,7 +5,7 @@
 
 using System.Drawing;
 
-namespace AudioForge.UI.Shared;
+namespace MusicForge.UI.Shared;
 
 public class ThemeModel
 {

@@ -6,7 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.Dialogs;
+namespace MusicForge.UI.Dialogs;
 
 /// <summary>
 /// Track properties editor: reads/writes tags through the engine's

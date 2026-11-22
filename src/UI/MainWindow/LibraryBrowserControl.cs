@@ -1,6 +1,6 @@
-using AudioForge.UI.Data;
-using AudioForge.UI.Dialogs;
-using AudioForge.UI.Services;
+using MusicForge.UI.Data;
+using MusicForge.UI.Dialogs;
+using MusicForge.UI.Services;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.MainWindow;
+namespace MusicForge.UI.MainWindow;
 
 /// <summary>
 /// Foobar-style media library panel: Album List tree (Artist -> Album ->

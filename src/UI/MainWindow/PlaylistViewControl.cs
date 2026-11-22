@@ -1,10 +1,10 @@
-using AudioForge.UI.Data;
-using AudioForge.UI.Services;
+using MusicForge.UI.Data;
+using MusicForge.UI.Services;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace AudioForge.UI.MainWindow;
+namespace MusicForge.UI.MainWindow;
 
 /// <summary>
 /// Playlist contents shown in the Media tab space (replaces the folder tree /

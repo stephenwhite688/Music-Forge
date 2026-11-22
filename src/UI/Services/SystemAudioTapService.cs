@@ -2,7 +2,7 @@ using AudioForge.SoundEngine;
 using HelixAudio.Backend.Wasapi;
 using System;
 
-namespace AudioForge.UI.Services;
+namespace MusicForge.UI.Services;
 
 /// <summary>
 /// "System audio" source for network speakers: captures everything Windows
