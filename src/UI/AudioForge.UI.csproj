@@ -46,6 +46,7 @@
     <ProjectReference Include="..\Sound Engine\HelixAudio.DSP\HelixAudio.DSP.csproj" />
     <ProjectReference Include="..\Sound Engine\HelixAudio.Streaming\HelixAudio.Streaming.csproj" />
     <ProjectReference Include="..\Sound Engine\HelixAudio.MIDI\HelixAudio.MIDI.csproj" />
+    <ProjectReference Include="..\Sound Engine\HelixAudio.PluginHost.CLAP\HelixAudio.PluginHost.CLAP.csproj" />
   </ItemGroup>
 
   <ItemGroup>

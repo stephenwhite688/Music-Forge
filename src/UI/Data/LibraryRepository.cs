@@ -410,6 +410,21 @@ public sealed class LibraryRepository
     }
 
     /// <summary>First N track file paths (for quick playback testing).</summary>
+    /// <summary>
+    /// Records a play of a file-backed track: increments PlayCount and sets
+    /// LastPlayed. No-op when the path isn't in the library.
+    /// </summary>
+    public void RecordPlay(string filePath)
+    {
+        using var connection = AudioForgeDatabase.Instance.OpenConnection();
+        using var cmd = connection.CreateCommand();
+        cmd.CommandText = @"UPDATE Tracks SET PlayCount = PlayCount + 1, LastPlayed = $now
+                            WHERE FilePath = $path;";
+        cmd.Parameters.AddWithValue("$now", DateTime.UtcNow.ToString("o"));
+        cmd.Parameters.AddWithValue("$path", filePath);
+        cmd.ExecuteNonQuery();
+    }
+
     public List<string> GetTrackPaths(int limit = 100)
     {
         var paths = new List<string>();

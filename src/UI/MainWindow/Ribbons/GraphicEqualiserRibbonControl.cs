@@ -39,6 +39,7 @@ public partial class GraphicEqualiserRibbonControl : RibbonStripControl
             BuildTargetGroup(),
             BuildEqControlGroup(),
             BuildBandModeGroup(),
+            BuildChannelsGroup(),
             BuildDisplayGroup(),
             BuildLevelsGroup(),
             BuildPresetsGroup(),

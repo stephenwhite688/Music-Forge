@@ -26,4 +26,10 @@ public partial class PlaybackControls : UserControl
 
     /// <summary>Shows the pause icon while playback is paused, play icon otherwise.</summary>
     public void SetPlayButtonPaused(bool paused) => playButtonControl.SetPausedState(paused);
+
+    /// <summary>Repeat visual state: 0=off, 1=all, 2=one.</summary>
+    public void SetRepeatMode(int mode) => repeatButtonControl.SetMode(mode);
+
+    /// <summary>Highlights the shuffle button while enabled.</summary>
+    public void SetShuffleActive(bool active) => shuffleButtonControl.SetActive(active);
 }

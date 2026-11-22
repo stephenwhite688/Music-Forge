@@ -22,6 +22,27 @@ public partial class TransportBarControl : UserControl
         playbackControls.StopClicked += (s, e) => playback.Stop();
         playbackControls.NextClicked += (s, e) => playback.Next();
         playbackControls.PreviousClicked += (s, e) => playback.Previous();
+        playbackControls.ShuffleClicked += (s, e) =>
+        {
+            playbackControls.SetShuffleActive(playback.ToggleShuffle());
+        };
+        playbackControls.RepeatClicked += (s, e) =>
+        {
+            var mode = playback.CycleRepeat();
+            playbackControls.SetRepeatMode(mode switch
+            {
+                PlaybackService.RepeatMode.All => 1,
+                PlaybackService.RepeatMode.One => 2,
+                _ => 0
+            });
+        };
+        playbackControls.SetShuffleActive(playback.ShuffleEnabled);
+        playbackControls.SetRepeatMode(playback.Repeat switch
+        {
+            PlaybackService.RepeatMode.All => 1,
+            PlaybackService.RepeatMode.One => 2,
+            _ => 0
+        });
         volumeControl.VolumeChanged += (s, v) => playback.SetVolume(v / 100f);
         playback.SetVolume(volumeControl.Volume / 100f);
 

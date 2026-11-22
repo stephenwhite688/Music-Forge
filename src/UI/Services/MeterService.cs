@@ -25,8 +25,21 @@ public sealed class MeterService
     private MeterService() { }
 
     /// <summary>Full processing chain: input meter -> pre spectrum -> EQ ->
-    /// post spectrum -> output meter. The EQ node stays in the chain and
-    /// short-circuits on bypass/disable so toggling works live mid-playback.</summary>
+    /// post spectrum -> CLAP plugins -> mixer -> output meter -> taps.
+    /// The EQ node stays in the chain and short-circuits on bypass/disable
+    /// so toggling works live mid-playback.</summary>
     public IEnumerable<IAudioNode> Chain()
-        => new IAudioNode[] { Input, PreEq, EqService.Instance.ActiveNode, PostEq, Mixer, Output, TruePeak, Waveform, Spectrogram, NetworkSpeakersService.Instance.BroadcastNode };
+    {
+        var chain = new List<IAudioNode>
+        {
+            Input, PreEq, EqService.Instance.ActiveNode, PostEq
+        };
+        chain.AddRange(PluginService.Instance.ActiveNodes);
+        chain.AddRange(new IAudioNode[]
+        {
+            Mixer, Output, TruePeak, Waveform, Spectrogram,
+            NetworkSpeakersService.Instance.BroadcastNode
+        });
+        return chain;
+    }
 }

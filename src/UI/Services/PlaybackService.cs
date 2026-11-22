@@ -36,6 +36,32 @@ public sealed class PlaybackService : IDisposable
     /// <summary>Raised when playback completes or stops.</summary>
     public event EventHandler? PlaybackStopped;
 
+    /// <summary>Repeat modes for queue playback.</summary>
+    public enum RepeatMode { Off, All, One }
+
+    private readonly Random _rng = new();
+
+    /// <summary>When true, queues are shuffled on load. Toggled via <see cref="ToggleShuffle"/>.</summary>
+    public bool ShuffleEnabled { get; private set; }
+
+    /// <summary>Current repeat mode. Cycled via <see cref="CycleRepeat"/>.</summary>
+    public RepeatMode Repeat { get; private set; } = RepeatMode.All;
+
+    /// <summary>Toggles shuffle; returns the new state.</summary>
+    public bool ToggleShuffle() { ShuffleEnabled = !ShuffleEnabled; return ShuffleEnabled; }
+
+    /// <summary>Cycles repeat Off -> All -> One -> Off; returns the new mode.</summary>
+    public RepeatMode CycleRepeat()
+    {
+        Repeat = Repeat switch
+        {
+            RepeatMode.Off => RepeatMode.All,
+            RepeatMode.All => RepeatMode.One,
+            _ => RepeatMode.Off
+        };
+        return Repeat;
+    }
+
     public bool IsPlaying => _player.IsPlaying;
     public bool IsPaused => _player.IsPaused;
     public string? CurrentTrackPath => _index >= 0 && _index < _queue.Count ? _queue[_index] : null;
@@ -83,6 +109,16 @@ public sealed class PlaybackService : IDisposable
         StopInternal();
         _stationName = null;
         _queue = new List<string>(paths);
+        if (ShuffleEnabled && _queue.Count > 1)
+        {
+            // Fisher-Yates: the queue itself is permuted so Next/Previous
+            // walk the shuffled order.
+            for (int i = _queue.Count - 1; i > 0; i--)
+            {
+                int j = _rng.Next(i + 1);
+                (_queue[i], _queue[j]) = (_queue[j], _queue[i]);
+            }
+        }
         _index = Math.Clamp(startIndex, 0, _queue.Count - 1);
         Log($"Queue loaded: {paths.Count} tracks, startIndex={startIndex} -> {_index}");
         for (int i = 0; i < paths.Count; i++)
@@ -200,6 +236,7 @@ public sealed class PlaybackService : IDisposable
     public void Next()
     {
         if (_queue.Count == 0) return;
+        if (_index >= _queue.Count - 1 && Repeat == RepeatMode.Off) { Stop(); return; }
         _index = (_index + 1) % _queue.Count;
         _ = PlayCurrentAsync();
     }
@@ -280,6 +317,7 @@ public sealed class PlaybackService : IDisposable
         try
         {
             await _player.PlayAsync(_queue[_index], MeterService.Instance.Chain());
+            new LibraryRepository().RecordPlay(_queue[_index]);
             TrackChanged?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception ex)
@@ -326,10 +364,21 @@ public sealed class PlaybackService : IDisposable
                 _ = PlayUnavailableLoopAsync();
                 return;
             }
-            // Auto-advance to next track; stop at end of queue
+            // Repeat-one replays the current track
+            if (Repeat == RepeatMode.One && _index >= 0)
+            {
+                _ = PlayCurrentAsync();
+                return;
+            }
+            // Auto-advance; wrap only in repeat-all, else stop at end
             if (_index >= 0 && _index < _queue.Count - 1)
             {
                 _index++;
+                _ = PlayCurrentAsync();
+            }
+            else if (Repeat == RepeatMode.All && _queue.Count > 0)
+            {
+                _index = 0;
                 _ = PlayCurrentAsync();
             }
             else
