@@ -63,6 +63,8 @@ public class ThemeModel
 
     // --- GLOBAL UX BEHAVIOUR OPTIONS ---
     public bool GlobalToolTipsEnabled { get; set; } = true;
+    /// <summary>When false, buttons/controls show no hover highlight.</summary>
+    public bool MouseOverEffectsEnabled { get; set; } = true;
     public int ToolTipInitialDelayMs { get; set; } = 500;
     public int ToolTipAutoPopDelayMs { get; set; } = 5000;
 }

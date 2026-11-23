@@ -17,6 +17,8 @@ public static class ThemeApplier
         ApplyTo(root, theme);
         foreach (Control child in root.Controls)
             ApplyRecursive(child, theme);
+
+        UiTooltips.Apply(root);
     }
 
     private static void ApplyRecursive(Control c, ThemeModel theme)
@@ -51,8 +53,16 @@ public static class ThemeApplier
                 {
                     btn.FlatAppearance.BorderColor = theme.BorderColor;
                     btn.FlatAppearance.BorderSize = Math.Max(1, theme.BorderThickness);
-                    btn.FlatAppearance.MouseOverBackColor = theme.ControlHoverSurface;
-                    btn.FlatAppearance.MouseDownBackColor = theme.ControlPressedSurface;
+                    if (theme.MouseOverEffectsEnabled)
+                    {
+                        btn.FlatAppearance.MouseOverBackColor = theme.ControlHoverSurface;
+                        btn.FlatAppearance.MouseDownBackColor = theme.ControlPressedSurface;
+                    }
+                    else
+                    {
+                        btn.FlatAppearance.MouseOverBackColor = theme.ControlDefaultSurface;
+                        btn.FlatAppearance.MouseDownBackColor = theme.ControlDefaultSurface;
+                    }
                 }
                 break;
 

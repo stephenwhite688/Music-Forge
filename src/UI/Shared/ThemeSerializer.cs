@@ -31,7 +31,7 @@ public static class ThemeSerializer
             MenuDropdownHover;
         public string? FontName;
         public float FontSizeStandard, FontSizeHeader, FontSizeDigital;
-        public bool FontAntiAliasing, GlobalToolTipsEnabled;
+        public bool FontAntiAliasing, GlobalToolTipsEnabled, MouseOverEffectsEnabled;
         public int ToolTipInitialDelayMs, ToolTipAutoPopDelayMs;
     }
 
@@ -81,6 +81,7 @@ public static class ThemeSerializer
             FontSizeDigital = t.FontSizeDigital,
             FontAntiAliasing = t.FontAntiAliasing,
             GlobalToolTipsEnabled = t.GlobalToolTipsEnabled,
+            MouseOverEffectsEnabled = t.MouseOverEffectsEnabled,
             ToolTipInitialDelayMs = t.ToolTipInitialDelayMs,
             ToolTipAutoPopDelayMs = t.ToolTipAutoPopDelayMs
         };
@@ -141,6 +142,7 @@ public static class ThemeSerializer
             FontSizeDigital = d.FontSizeDigital,
             FontAntiAliasing = d.FontAntiAliasing,
             GlobalToolTipsEnabled = d.GlobalToolTipsEnabled,
+            MouseOverEffectsEnabled = d.MouseOverEffectsEnabled,
             ToolTipInitialDelayMs = d.ToolTipInitialDelayMs,
             ToolTipAutoPopDelayMs = d.ToolTipAutoPopDelayMs
         };

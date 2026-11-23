@@ -262,7 +262,7 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
         {
             var group = new RibbonGroupPanel("Interface");
             group.AddButton("Layout", BuildLayoutMenu());
-            group.AddButton("Tooltips", BuildTooltipsMenu());
+            group.AddButton("Tooltips & Hover", BuildTooltipsMenu());
             group.AddButton("Reset", BuildResetMenu());
             return group;
         }
@@ -294,6 +294,11 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
             AddCheckItem(menu, "Show Tooltips", ThemeManager.Current.GlobalToolTipsEnabled, () =>
             {
                 ThemeManager.UpdateSingleColor(t => t.GlobalToolTipsEnabled = !t.GlobalToolTipsEnabled);
+            });
+            menu.Items.Add(new ToolStripSeparator());
+            AddCheckItem(menu, "Mouse-Over Effects", ThemeManager.Current.MouseOverEffectsEnabled, () =>
+            {
+                ThemeManager.UpdateSingleColor(t => t.MouseOverEffectsEnabled = !t.MouseOverEffectsEnabled);
             });
             return menu;
         }
