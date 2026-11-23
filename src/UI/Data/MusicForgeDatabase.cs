@@ -24,6 +24,7 @@ public sealed class MusicForgeDatabase
         Directory.CreateDirectory(directory);
 
         DatabasePath = Path.Combine(directory, "musicforge.db");
+        MigrateLegacyDatabase(directory);
 
         var builder = new SqliteConnectionStringBuilder
         {
@@ -35,6 +36,37 @@ public sealed class MusicForgeDatabase
             DefaultTimeout = 30 // seconds - wait instead of failing on brief locks
         };
         _connectionString = builder.ConnectionString;
+    }
+
+    /// <summary>
+    /// One-time migration from the pre-rename AudioForge install: if the new
+    /// database doesn't exist yet but %LOCALAPPDATA%\AudioForge\audioforge.db
+    /// does, copy it (plus WAL/SHM sidecars) so library/radio data survives
+    /// the MusicForge rebrand. The legacy folder is left untouched.
+    /// </summary>
+    private void MigrateLegacyDatabase(string newDirectory)
+    {
+        try
+        {
+            if (File.Exists(DatabasePath)) return;
+            string legacyDir = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "AudioForge");
+            string legacyDb = Path.Combine(legacyDir, "audioforge.db");
+            if (!File.Exists(legacyDb)) return;
+
+            File.Copy(legacyDb, DatabasePath);
+            foreach (string suffix in new[] { "-wal", "-shm" })
+            {
+                string src = legacyDb + suffix;
+                if (File.Exists(src))
+                    File.Copy(src, DatabasePath + suffix, overwrite: true);
+            }
+        }
+        catch
+        {
+            // Migration is best-effort: a failed copy just means a fresh DB.
+        }
     }
 
     /// <summary>Opens a new connection. Caller owns disposal.</summary>
