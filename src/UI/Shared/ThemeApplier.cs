@@ -73,13 +73,26 @@ public static class ThemeApplier
             case TextBoxBase:
             case ComboBox:
             case ListBox:
-            case ListView:
-            case TreeView:
             case NumericUpDown:
             case TrackBar:
                 c.BackColor = theme.ControlDefaultSurface;
                 c.ForeColor = theme.TextPrimary;
                 c.Font = MakeFont(theme);
+                break;
+
+            case ListView lv:
+                c.BackColor = theme.ControlDefaultSurface;
+                c.ForeColor = theme.TextPrimary;
+                c.Font = MakeFont(theme);
+                // Browsers set ToolTipText per item - WinForms hides it unless enabled.
+                lv.ShowItemToolTips = theme.GlobalToolTipsEnabled;
+                break;
+
+            case TreeView tv:
+                c.BackColor = theme.ControlDefaultSurface;
+                c.ForeColor = theme.TextPrimary;
+                c.Font = MakeFont(theme);
+                tv.ShowNodeToolTips = theme.GlobalToolTipsEnabled;
                 break;
 
             case TabControl:
