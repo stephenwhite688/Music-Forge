@@ -14,10 +14,30 @@ internal static class Program
     static void Main()
     {
         InstallCrashHandlers();
-        ApplicationConfiguration.Initialize();
-        MusicForgeDatabase.Instance.Initialize();
-        MusicForge.UI.Shared.ThemeManager.LoadPersisted();
-        Application.Run(new MainForm());
+        ApplicationConfiguration.Initialize();   // must precede any control creation
+
+        using var splash = new SplashForm();
+        splash.Show();
+        Application.DoEvents();
+
+        try
+        {
+            splash.SetStatus("Starting audio engine…");
+
+            splash.SetStatus("Opening library…");
+            MusicForgeDatabase.Instance.Initialize();
+            MusicForge.UI.Shared.ThemeManager.LoadPersisted();
+
+            splash.SetStatus("Building window…");
+            var main = new MainForm();
+            main.Shown += (_, _) => splash.Close();
+            Application.Run(main);
+        }
+        catch
+        {
+            splash.Close();
+            throw;
+        }
     }
 
     /// <summary>
