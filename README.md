@@ -1,8 +1,12 @@
-# MusicForge
+<p align="center">
+  <img src="musicforge.png" alt="MusicForge" width="128" />
+</p>
 
-A Windows music player built on a reusable pro-audio sound engine — with a
-31-band graphic equaliser designed to stress-test the engine, real-time
-visualisations, network speaker streaming, and a fully themeable UI.
+<h1 align="center">MusicForge</h1>
+
+<p align="center">A Windows music player built on a reusable pro-audio sound engine — with a<br/>
+31-band graphic equaliser designed to stress-test the engine, real-time<br/>
+visualisations, network speaker streaming, and a fully themeable UI.</p>
 
 ## The product family
 
