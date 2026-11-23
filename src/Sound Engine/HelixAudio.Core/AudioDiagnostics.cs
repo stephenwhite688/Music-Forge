@@ -66,9 +66,14 @@ public static class AudioDiagnostics
                 return Path.Combine(directory.FullName, "logs");
         }
 
+        // App-agnostic fallback: use the host app's assembly name so each
+        // consumer (MusicForge, a future DAW, the forensics tool) gets its
+        // own log folder under %LOCALAPPDATA%.
+        var appName = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name;
+        if (string.IsNullOrWhiteSpace(appName)) appName = "HelixAudio";
         return Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "AudioForge",
+            appName,
             "logs");
     }
 }
