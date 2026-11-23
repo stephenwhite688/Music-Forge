@@ -530,9 +530,11 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
         private RibbonGroupPanel BuildHelpGroup()
         {
             var menu = new ContextMenuStrip();
+            AddMenuItem(menu, "User Guide", () => HelpBrowserDialog.Open(FindForm()));
+            AddMenuItem(menu, "Keyboard Shortcuts", ShowShortcuts);
+            menu.Items.Add(new ToolStripSeparator());
             AddMenuItem(menu, "View Diagnostics Log", OpenDiagnosticsFolder);
             AddMenuItem(menu, "Report a Problem", ReportProblem);
-            AddMenuItem(menu, "Keyboard Shortcuts", ShowShortcuts);
 
             var group = new RibbonGroupPanel("Help") { ContextMenuStrip = menu };
             group.AddButton("Help", menu);

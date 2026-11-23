@@ -260,6 +260,15 @@ CREATE TABLE IF NOT EXISTS Themes (
 );
 
 -- ===================== HELP SYSTEM =====================
+CREATE TABLE IF NOT EXISTS HelpTopics (
+    Id INTEGER PRIMARY KEY,
+    TopicKey TEXT NOT NULL UNIQUE,
+    Title TEXT NOT NULL,
+    Category TEXT NOT NULL,
+    SortOrder INTEGER NOT NULL DEFAULT 0,
+    Content TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS HelpSearchIndex (
     Id INTEGER PRIMARY KEY,
     TopicName TEXT NOT NULL,
