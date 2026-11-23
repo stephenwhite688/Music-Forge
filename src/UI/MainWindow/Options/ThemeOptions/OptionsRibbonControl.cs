@@ -64,8 +64,20 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
             group.AddButton("Colours", BuildColoursMenu());
             group.AddButton("Fonts", BuildFontsMenu());
             group.AddButton("Icons", BuildIconsMenu());
-            group.AddButton("Reset", BuildThemesMenu());
+            group.AddButton("Reset", BuildResetThemeMenu());
             return group;
+        }
+
+        private ContextMenuStrip BuildResetThemeMenu()
+        {
+            var menu = new ContextMenuStrip();
+            AddMenuItem(menu, "Reset Theme to Dark Default", () => ApplyPreset("Dark", ThemePresets.Dark));
+            AddMenuItem(menu, "Reset Font", () =>
+            {
+                _activePreset = null;
+                ThemeManager.UpdateSingleColor(t => { t.FontName = "Segoe UI"; t.FontSizeStandard = 9F; });
+            });
+            return menu;
         }
 
         private ContextMenuStrip BuildThemesMenu()
@@ -486,7 +498,6 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
 
             var group = new RibbonGroupPanel("Performance") { ContextMenuStrip = menu };
             group.AddButton("Performance", menu);
-            group.AddButton("Diagnostics", menu);
             return group;
         }
 
@@ -536,7 +547,6 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
 
             var group = new RibbonGroupPanel("Help") { ContextMenuStrip = menu };
             group.AddButton("Help", menu);
-            group.AddButton("Support", menu);
             return group;
         }
 
@@ -570,8 +580,6 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
 
             var group = new RibbonGroupPanel("About") { ContextMenuStrip = menu };
             group.AddButton("About", menu);
-            group.AddButton("Version", menu);
-            group.AddButton("Licence", menu);
             return group;
         }
 
