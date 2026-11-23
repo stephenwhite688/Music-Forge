@@ -40,34 +40,36 @@ public sealed class ThemeMenuRenderer : ToolStripProfessionalRenderer
         base.OnRenderItemText(e);
     }
 
-    /// <summary>Check glyphs + item images - drawn in theme colours, never system black.</summary>
+    /// <summary>Check glyphs + item images - fully owned so no system chrome leaks.</summary>
     protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
     {
-        if (e.Item is ToolStripMenuItem { Checked: true } item && item.Image is null)
+        if (e.Item.Image is null)
         {
-            // Draw our own check in the image margin
-            var theme = ThemeManager.Current;
-            var g = e.Graphics;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            int size = Math.Min(e.ImageRectangle.Width, e.ImageRectangle.Height);
-            var rect = new Rectangle(e.ImageRectangle.X + (e.ImageRectangle.Width - size) / 2,
-                e.ImageRectangle.Y + (e.ImageRectangle.Height - size) / 2, size, size);
-            using var b = new SolidBrush(theme.PrimaryAccent);
-            using var path = new GraphicsPath();
-            // simple check mark
-            int pad = size / 4;
-            var pts = new[]
-            {
-                new PointF(rect.X + pad, rect.Y + size / 2f),
-                new PointF(rect.X + size / 2f - pad / 2, rect.Y + size - pad),
-                new PointF(rect.X + size - pad, rect.Y + pad)
-            };
-            using var pen = new Pen(theme.PrimaryAccent, Math.Max(1.5f, size / 8f))
-            { StartCap = LineCap.Round, EndCap = LineCap.Round, LineJoin = LineJoin.Round };
-            g.DrawLines(pen, pts);
+            // Checked items get our accent check; everything else gets
+            // nothing - the base renderer would paint system-coloured
+            // margin/check chrome (the "black box" on hover).
+            if (e.Item is ToolStripMenuItem { Checked: true })
+                DrawCheck(e.Graphics, e.ImageRectangle);
             return;
         }
         base.OnRenderItemImage(e);
+    }
+
+    private static void DrawCheck(Graphics g, Rectangle imageRect)
+    {
+        var theme = ThemeManager.Current;
+        g.SmoothingMode = SmoothingMode.AntiAlias;
+        int size = Math.Min(imageRect.Width, imageRect.Height);
+        int pad = Math.Max(2, size / 4);
+        var pts = new[]
+        {
+            new PointF(imageRect.X + pad, imageRect.Y + size / 2f),
+            new PointF(imageRect.X + size / 2f - pad / 2, imageRect.Y + size - pad),
+            new PointF(imageRect.X + size - pad, imageRect.Y + pad)
+        };
+        using var pen = new Pen(theme.PrimaryAccent, Math.Max(1.5f, size / 8f))
+        { StartCap = LineCap.Round, EndCap = LineCap.Round, LineJoin = LineJoin.Round };
+        g.DrawLines(pen, pts);
     }
 
     /// <summary>Submenu arrows - theme border colour instead of system grey.</summary>
