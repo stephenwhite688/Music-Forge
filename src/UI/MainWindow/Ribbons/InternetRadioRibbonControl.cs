@@ -72,7 +72,7 @@ public partial class InternetRadioRibbonControl : RibbonStripControl
     {
         var item = new ToolStripMenuItem(text);
         item.Click += (s, e) =>
-            AppMessageBox.Show($"'{text}' is not implemented yet.", "AudioForge",
+            AppMessageBox.Show($"'{text}' is not implemented yet.", "MusicForge",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         menu.Items.Add(item);
     }

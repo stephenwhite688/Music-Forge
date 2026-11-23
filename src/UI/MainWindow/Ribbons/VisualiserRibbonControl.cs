@@ -191,7 +191,7 @@ public partial class VisualiserRibbonControl : RibbonStripControl
         AddItem(menu, "Copy Settings", CopySettings);
         AddItem(menu, "About Visualiser", () =>
             AppMessageBox.Show(
-                "AudioForge Visualiser\n\nRealtime engine taps: spectrum (FFT), waveform, spectrogram, level/true-peak meters.\nAll data comes from the live HelixAudio playback chain.",
+                "MusicForge Visualiser\n\nRealtime engine taps: spectrum (FFT), waveform, spectrogram, level/true-peak meters.\nAll data comes from the live HelixAudio playback chain.",
                 "Visualiser", MessageBoxButtons.OK, MessageBoxIcon.Information));
 
         var group = new RibbonGroupPanel("Tools") { ContextMenuStrip = menu };

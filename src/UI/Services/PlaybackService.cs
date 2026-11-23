@@ -278,7 +278,7 @@ public sealed class PlaybackService : IDisposable
     /// </summary>
     public async Task PlayTestToneAsync()
     {
-        var path = Path.Combine(Path.GetTempPath(), "audioforge-test-tone.wav");
+        var path = Path.Combine(Path.GetTempPath(), "musicforge-test-tone.wav");
         WriteTestToneWav(path);
         await _player.PlayAsync(path, MeterService.Instance.Chain());
     }

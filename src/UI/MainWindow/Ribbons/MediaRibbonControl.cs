@@ -232,7 +232,7 @@ public partial class MediaRibbonControl : RibbonStripControl
         {
             Title = "Export library backup",
             Filter = "SQLite backup (*.db)|*.db|All files (*.*)|*.*",
-            FileName = $"audioforge-backup-{DateTime.Now:yyyyMMdd-HHmmss}.db"
+            FileName = $"musicforge-backup-{DateTime.Now:yyyyMMdd-HHmmss}.db"
         };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         try

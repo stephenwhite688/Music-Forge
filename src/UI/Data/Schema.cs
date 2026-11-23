@@ -1,7 +1,7 @@
 namespace MusicForge.UI.Data;
 
 /// <summary>
-/// Full SQLite schema for AudioForge. Stores metadata, references, paths and
+/// Full SQLite schema for MusicForge. Stores metadata, references, paths and
 /// settings only — media files, artwork, logos, log exports and backups live
 /// on the filesystem outside the database.
 /// </summary>

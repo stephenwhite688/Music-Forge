@@ -19,7 +19,7 @@ internal static class RibbonMenuFactory
 
             var menuItem = new ToolStripMenuItem(item);
             menuItem.Click += (s, e) =>
-                AppMessageBox.Show($"'{item}' is not implemented yet.", "AudioForge", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                AppMessageBox.Show($"'{item}' is not implemented yet.", "MusicForge", MessageBoxButtons.OK, MessageBoxIcon.Information);
             menu.Items.Add(menuItem);
         }
         return menu;
