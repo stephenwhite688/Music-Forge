@@ -40,17 +40,28 @@ public sealed class ThemeMenuRenderer : ToolStripProfessionalRenderer
         base.OnRenderItemText(e);
     }
 
-    /// <summary>Check glyphs + item images - fully owned so no system chrome leaks.</summary>
+    /// <summary>The check gutter column - keep it the same as the menu background.</summary>
+    protected override void OnRenderImageMargin(ToolStripRenderEventArgs e)
+    {
+        // Base paints a gradient "icon well" in system colours - skip it
+        // entirely so the gutter matches the themed dropdown.
+    }
+
+    /// <summary>
+    /// The actual check path - separate from OnRenderItemImage. Draw only the
+    /// themed check; never call base (it paints RenderCheckBackground, the
+    /// system box that shows on hover).
+    /// </summary>
+    protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
+    {
+        if (e.Item is ToolStripMenuItem { Checked: true })
+            DrawCheck(e.Graphics, e.ImageRectangle);
+        // Unchecked: paint nothing.
+    }
+
+    /// <summary>Item images only - checks are handled by OnRenderItemCheck.</summary>
     protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
     {
-        // Checked state FIRST - checked items can carry an internal system
-        // check image, so testing Image==null first lets the base renderer
-        // draw system chrome that highlights on selection.
-        if (e.Item is ToolStripMenuItem { Checked: true })
-        {
-            DrawCheck(e.Graphics, e.ImageRectangle);
-            return;
-        }
         if (e.Item.Image is null) return;
         base.OnRenderItemImage(e);
     }
