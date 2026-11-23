@@ -8,7 +8,7 @@ using MusicForge.UI.Shared;
 using MusicForge.UI.Dialogs;
 using MusicForge.UI.MainWindow.GraphicEqualizer;
 using MusicForge.UI.Services;
-using HelixAudio.DSP.GraphicEQ;
+using AudioForge.DSP.GraphicEQ;
 
 namespace MusicForge.UI.MainWindow.Ribbons;
 

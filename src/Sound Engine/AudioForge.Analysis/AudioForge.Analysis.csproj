@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>AudioForge.Analysis</RootNamespace>
+    <AssemblyName>AudioForge.Analysis</AssemblyName>
+    <Description>AudioForge SoundEngine - Real-time Audio Analysis</Description>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AudioForge.Core\AudioForge.Core.csproj" />
+    <ProjectReference Include="..\AudioForge.DSP\AudioForge.DSP.csproj" />
+  </ItemGroup>
+</Project>

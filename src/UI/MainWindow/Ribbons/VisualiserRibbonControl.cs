@@ -130,9 +130,9 @@ public partial class VisualiserRibbonControl : RibbonStripControl
         AddItem(menu, "FFT 4096", () => SetFft(4096));
         AddItem(menu, "FFT 8192", () => SetFft(8192));
         AddSeparator(menu);
-        AddItem(menu, "Hann", () => SetWindow(HelixAudio.DSP.Analysis.WindowType.Hann));
-        AddItem(menu, "Hamming", () => SetWindow(HelixAudio.DSP.Analysis.WindowType.Hamming));
-        AddItem(menu, "Blackman-Harris", () => SetWindow(HelixAudio.DSP.Analysis.WindowType.BlackmanHarris));
+        AddItem(menu, "Hann", () => SetWindow(AudioForge.DSP.Analysis.WindowType.Hann));
+        AddItem(menu, "Hamming", () => SetWindow(AudioForge.DSP.Analysis.WindowType.Hamming));
+        AddItem(menu, "Blackman-Harris", () => SetWindow(AudioForge.DSP.Analysis.WindowType.BlackmanHarris));
         AddSeparator(menu);
         AddItem(menu, "Toggle Peak Hold", () => _display.PeakHoldEnabled = !_display.PeakHoldEnabled);
         AddItem(menu, "Toggle Log/Linear Freq", () => _display.LogFrequency = !_display.LogFrequency);
@@ -150,7 +150,7 @@ public partial class VisualiserRibbonControl : RibbonStripControl
         m.Spectrogram.SetFftParameters(size, m.Spectrogram.Window);
     }
 
-    private static void SetWindow(HelixAudio.DSP.Analysis.WindowType window)
+    private static void SetWindow(AudioForge.DSP.Analysis.WindowType window)
     {
         var m = MeterService.Instance;
         m.PreEq.SetFftParameters(m.PreEq.FftSize, window);

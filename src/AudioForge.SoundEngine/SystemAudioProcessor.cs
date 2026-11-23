@@ -1,6 +1,6 @@
-using HelixAudio.Core;
-using HelixAudio.DSP;
-using HelixAudio.DSP.GraphicEQ;
+using AudioForge.Core;
+using AudioForge.DSP;
+using AudioForge.DSP.GraphicEQ;
 using System;
 
 namespace AudioForge.SoundEngine;

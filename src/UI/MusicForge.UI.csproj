@@ -43,11 +43,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Sound Engine\HelixAudio.Engine\HelixAudio.Engine.csproj" />
-    <ProjectReference Include="..\Sound Engine\HelixAudio.DSP\HelixAudio.DSP.csproj" />
-    <ProjectReference Include="..\Sound Engine\HelixAudio.Streaming\HelixAudio.Streaming.csproj" />
-    <ProjectReference Include="..\Sound Engine\HelixAudio.MIDI\HelixAudio.MIDI.csproj" />
-    <ProjectReference Include="..\Sound Engine\HelixAudio.PluginHost.CLAP\HelixAudio.PluginHost.CLAP.csproj" />
+    <ProjectReference Include="..\Sound Engine\AudioForge.Engine\AudioForge.Engine.csproj" />
+    <ProjectReference Include="..\Sound Engine\AudioForge.DSP\AudioForge.DSP.csproj" />
+    <ProjectReference Include="..\Sound Engine\AudioForge.Streaming\AudioForge.Streaming.csproj" />
+    <ProjectReference Include="..\Sound Engine\AudioForge.MIDI\AudioForge.MIDI.csproj" />
+    <ProjectReference Include="..\Sound Engine\AudioForge.PluginHost.CLAP\AudioForge.PluginHost.CLAP.csproj" />
   </ItemGroup>
 
   <ItemGroup>

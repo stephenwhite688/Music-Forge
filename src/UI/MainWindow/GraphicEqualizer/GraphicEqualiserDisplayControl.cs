@@ -1,6 +1,6 @@
 using MusicForge.UI.Services;
 using MusicForge.UI.Dialogs;
-using HelixAudio.DSP;
+using AudioForge.DSP;
 using MusicForge.UI.Shared;
 using System;
 using System.Drawing;

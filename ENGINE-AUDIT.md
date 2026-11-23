@@ -1,7 +1,7 @@
-﻿# HelixAudio Engine — Foundation Audit
+# AudioForge Engine — Foundation Audit
 
 **Date:** 2026 (pre-SDK-extraction audit)
-**Scope:** `src/Sound Engine/HelixAudio.*` (21 projects) + `src/AudioForge.SoundEngine`
+**Scope:** `src/Sound Engine/AudioForge.*` (21 projects) + `src/AudioForge.SoundEngine`
 **Method:** Full read-only source inventory of every project; cross-checked
 against `H:\future projects\AudioForge-DAW-Spec.md` and
 `AudioForge-Forensics-Spec.md`.
@@ -32,25 +32,25 @@ The engine is approximately **60% real / 25% scaffolded / 15% stubbed**.
 
 | Project | Status | Notes |
 |---|---|---|
-| `HelixAudio.Core` | Partial / fragmented | Real `IAudioNode`/`AudioNode`/`AudioFormat`; ~15 effect classes are **not** nodes; `WASAPIBackend.cs` is a placeholder (real backend lives in `Backend.Wasapi`) |
-| `HelixAudio.Engine` | Partial — mostly real | `ProcessingGraph` allocates heavily per block; `EngineController` pipelines are stubs |
-| `HelixAudio.DSP` | Mostly real | Biquads, FIR/IIR, FFT, EQ, dynamics processors, taps; resampler is naive |
-| ~~`HelixAudio.DSP.3D`~~ → `HelixAudio.DSP.Spatial` | **REAL - verified** | Old pass-through stubs deleted; new `BinauralPannerNode` does real ITD (fractional-delay)/ILD/distance spatialisation, impulse-verified. HRTF convolution is the planned upgrade |
-| `HelixAudio.Effects` | Partial — wrong abstraction | Real Freeverb-style DSP but `EffectBase.Process` allocates per block; **not `IAudioNode`** |
-| `HelixAudio.Filters` | Partial — wrong abstraction | Same `FilterBase` non-node pattern |
-| `HelixAudio.Mixing` | Partial — fragmented | `StereoMixerNode` is real; `MixerNode.Process` is a pass-through stub; batch mixers allocate |
-| `HelixAudio.IO` | Real (PCM + float WAV) | `WavReader/Writer` int PCM **and IEEE float32** with TPDF dither; chunked `AudioStream` decode; no RF64 |
-| `HelixAudio.IO.Codecs` | Partial→improving | WAV R/W (float+int); **chunked decode** for WAV/MF/FLAC/OGG; **sample-accurate seek** on WAV/MF/OGG streams; FLAC/OGG managed-verified; MP3/AAC/WMA/ALAC via OS decoder (unverified); **Opus/DSD throw**; **encode = WAV only** (no MP3/FLAC encoder dep yet) |
-| `HelixAudio.MIDI` | **REAL - verified** | SMF parser (format 0/1, tempo map, running status, all channel voice events) + `MidiSynthNode` polyphonic synth (ADSR, per-channel vol/pan/pitch-bend, sample-accurate, zero-alloc). Verified against generated SMF. No MIDI file *writing* or device I/O yet |
-| `HelixAudio.Analysis` | **Real — strongest project** | BS.1770/EBU R128 `LoudnessMeter`, `HumDetector`, `NoiseFloorEstimator`, `PitchTracker`, `SignalStatistics`, `PeakFileGenerator`, meter/tap nodes |
-| `HelixAudio.Streaming` | **REAL - verified** | HLS client: m3u8 master/media parse (variants, EXTINF, media sequence), AES-128-CBC segment decrypt, MF stream decode via `CodecManager.DecodeStream`, pull-based `AudioStream` with prefetch + live playlist refresh. Verified vs public test stream. DASH still absent |
-| `HelixAudio.Visualization` | **REAL - verified** | Engine-side visual backend: `VisualFrameProducer` owns spectrum/waveform/spectrogram/meter taps and emits `EngineVisualFrame` (UI-free data); `EqResponseCalculator` computes full EQ curves incl. trims/bypass/channel. Verified: 440Hz tone peaks correctly, EQ curve matches gains. UI consumes equivalent engine tap data via MeterService |
-| `HelixAudio.Benchmarks` | Empty project (kept) | Retained for Phase 4 benchmark suite |
-| `HelixAudio.Backend.Wasapi` | Real — output + loopback + **input** | Device enum, `WasapiOut`, `SystemLoopbackCapture`, `WasapiInputCapture` (added: mic/line-in float capture) |
-| ~~`HelixAudio.Backend.Alsa` / `.CoreAudio`~~ | **REMOVED** | Empty csproj shells for non-Windows platforms — deleted |
-| `HelixAudio.PluginHost` | Partial — managed-DLL only | Reflection-based `IAudioPlugin` load/scan/unload; **no state blobs, no buses, no crash isolation, stringly-typed params** |
-| ~~`HelixAudio.PluginHost.VST3`~~ | **REMOVED** | `NotImplementedException` stub — deleted; real VST3 hosting deferred to DAW phase |
-| `HelixAudio.PluginHost.CLAP` | **REAL - verified working** | Full CLAP 1.2.x host: native load/`clap_entry`/factory/descriptor enumeration, activate/process/deactivate/destroy lifecycle, `clap.audio-ports`, `clap.params` (info/get_value/value_to_text/text_to_value/flush via param_value events), `clap.state` save/load. `ClapPluginNode` bridges to `AudioNode`. Verified end-to-end against a compiled C test plugin (`tests/gain.c`) — enumeration, param automation, and DSP output all pass. No plugin GUI, no note/MIDI events yet |
+| `AudioForge.Core` | Partial / fragmented | Real `IAudioNode`/`AudioNode`/`AudioFormat`; ~15 effect classes are **not** nodes; `WASAPIBackend.cs` is a placeholder (real backend lives in `Backend.Wasapi`) |
+| `AudioForge.Engine` | Partial — mostly real | `ProcessingGraph` allocates heavily per block; `EngineController` pipelines are stubs |
+| `AudioForge.DSP` | Mostly real | Biquads, FIR/IIR, FFT, EQ, dynamics processors, taps; resampler is naive |
+| ~~`AudioForge.DSP.3D`~~ → `AudioForge.DSP.Spatial` | **REAL - verified** | Old pass-through stubs deleted; new `BinauralPannerNode` does real ITD (fractional-delay)/ILD/distance spatialisation, impulse-verified. HRTF convolution is the planned upgrade |
+| `AudioForge.Effects` | Partial — wrong abstraction | Real Freeverb-style DSP but `EffectBase.Process` allocates per block; **not `IAudioNode`** |
+| `AudioForge.Filters` | Partial — wrong abstraction | Same `FilterBase` non-node pattern |
+| `AudioForge.Mixing` | Partial — fragmented | `StereoMixerNode` is real; `MixerNode.Process` is a pass-through stub; batch mixers allocate |
+| `AudioForge.IO` | Real (PCM + float WAV) | `WavReader/Writer` int PCM **and IEEE float32** with TPDF dither; chunked `AudioStream` decode; no RF64 |
+| `AudioForge.IO.Codecs` | Partial→improving | WAV R/W (float+int); **chunked decode** for WAV/MF/FLAC/OGG; **sample-accurate seek** on WAV/MF/OGG streams; FLAC/OGG managed-verified; MP3/AAC/WMA/ALAC via OS decoder (unverified); **Opus/DSD throw**; **encode = WAV only** (no MP3/FLAC encoder dep yet) |
+| `AudioForge.MIDI` | **REAL - verified** | SMF parser (format 0/1, tempo map, running status, all channel voice events) + `MidiSynthNode` polyphonic synth (ADSR, per-channel vol/pan/pitch-bend, sample-accurate, zero-alloc). Verified against generated SMF. No MIDI file *writing* or device I/O yet |
+| `AudioForge.Analysis` | **Real — strongest project** | BS.1770/EBU R128 `LoudnessMeter`, `HumDetector`, `NoiseFloorEstimator`, `PitchTracker`, `SignalStatistics`, `PeakFileGenerator`, meter/tap nodes |
+| `AudioForge.Streaming` | **REAL - verified** | HLS client: m3u8 master/media parse (variants, EXTINF, media sequence), AES-128-CBC segment decrypt, MF stream decode via `CodecManager.DecodeStream`, pull-based `AudioStream` with prefetch + live playlist refresh. Verified vs public test stream. DASH still absent |
+| `AudioForge.Visualization` | **REAL - verified** | Engine-side visual backend: `VisualFrameProducer` owns spectrum/waveform/spectrogram/meter taps and emits `EngineVisualFrame` (UI-free data); `EqResponseCalculator` computes full EQ curves incl. trims/bypass/channel. Verified: 440Hz tone peaks correctly, EQ curve matches gains. UI consumes equivalent engine tap data via MeterService |
+| `AudioForge.Benchmarks` | Empty project (kept) | Retained for Phase 4 benchmark suite |
+| `AudioForge.Backend.Wasapi` | Real — output + loopback + **input** | Device enum, `WasapiOut`, `SystemLoopbackCapture`, `WasapiInputCapture` (added: mic/line-in float capture) |
+| ~~`AudioForge.Backend.Alsa` / `.CoreAudio`~~ | **REMOVED** | Empty csproj shells for non-Windows platforms — deleted |
+| `AudioForge.PluginHost` | Partial — managed-DLL only | Reflection-based `IAudioPlugin` load/scan/unload; **no state blobs, no buses, no crash isolation, stringly-typed params** |
+| ~~`AudioForge.PluginHost.VST3`~~ | **REMOVED** | `NotImplementedException` stub — deleted; real VST3 hosting deferred to DAW phase |
+| `AudioForge.PluginHost.CLAP` | **REAL - verified working** | Full CLAP 1.2.x host: native load/`clap_entry`/factory/descriptor enumeration, activate/process/deactivate/destroy lifecycle, `clap.audio-ports`, `clap.params` (info/get_value/value_to_text/text_to_value/flush via param_value events), `clap.state` save/load. `ClapPluginNode` bridges to `AudioNode`. Verified end-to-end against a compiled C test plugin (`tests/gain.c`) — enumeration, param automation, and DSP output all pass. No plugin GUI, no note/MIDI events yet |
 | `AudioForge.SoundEngine` | Real, small | Clean facade: `RealtimePlayer` + meter/EQ/tap chain + `OutputTaps` + loopback processor |
 
 ---

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>AudioForge.Streaming</RootNamespace>
+    <AssemblyName>AudioForge.Streaming</AssemblyName>
+    <Description>AudioForge - adaptive streaming (HLS)</Description>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AudioForge.Core\AudioForge.Core.csproj" />
+    <ProjectReference Include="..\AudioForge.IO\AudioForge.IO.csproj" />
+    <ProjectReference Include="..\AudioForge.IO.Codecs\AudioForge.IO.Codecs.csproj" />
+  </ItemGroup>
+</Project>

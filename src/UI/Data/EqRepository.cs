@@ -107,7 +107,7 @@ public sealed class EqRepository
 
     // ---------- Live state ----------
 
-    public void SaveState(HelixAudio.DSP.GraphicEQ.GraphicEqNode node, string mode = "MinimumPhase")
+    public void SaveState(AudioForge.DSP.GraphicEQ.GraphicEqNode node, string mode = "MinimumPhase")
     {
         var state = new StateJson
         {
@@ -128,7 +128,7 @@ public sealed class EqRepository
         cmd.ExecuteNonQuery();
     }
 
-    public string? LoadState(HelixAudio.DSP.GraphicEQ.GraphicEqNode node)
+    public string? LoadState(AudioForge.DSP.GraphicEQ.GraphicEqNode node)
     {
         string? json;
         using (var connection = MusicForgeDatabase.Instance.OpenConnection())

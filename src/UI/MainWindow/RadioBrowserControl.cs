@@ -14,7 +14,7 @@ namespace MusicForge.UI.MainWindow;
 /// Internet radio directory panel: Continent -> Country -> stations tree on
 /// the left (plus All / Favourites / Language / Genre / Popular / Recent
 /// views), station list on the right. Double-click or Play starts the
-/// station through <see cref="PlaybackService"/> (Helix engine).
+/// station through <see cref="PlaybackService"/> (AudioForge engine).
 /// </summary>
 public sealed class RadioBrowserControl : UserControl
 {

@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MusicForge.UI.Shared;
-using HelixAudio.Core;
+using AudioForge.Core;
 using MusicForge.UI.Data;
 using MusicForge.UI.MainWindow;
 

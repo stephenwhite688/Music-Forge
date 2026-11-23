@@ -1,7 +1,7 @@
 using MusicForge.UI.Data;
-using HelixAudio.Core;
-using HelixAudio.DSP;
-using HelixAudio.DSP.GraphicEQ;
+using AudioForge.Core;
+using AudioForge.DSP;
+using AudioForge.DSP.GraphicEQ;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -154,17 +154,17 @@ public sealed class EqService
     public async Task<string> RenderOfflineAsync(string inputPath, string outputPath)
     {
         var node = CreateDetachedNode();
-        var renderer = new HelixAudio.Engine.OfflineRenderer();
+        var renderer = new AudioForge.Engine.OfflineRenderer();
         var result = await renderer.RenderAsync(inputPath, outputPath, new IAudioNode[] { node }, 24);
         WriteProvenance(inputPath, outputPath, result);
         return $"Rendered {result.FramesRendered:N0} frames ({result.Duration:hh\\:mm\\:ss}) -> {result.OutputPath}";
     }
 
-    private void WriteProvenance(string inputPath, string outputPath, HelixAudio.Engine.OfflineRenderer.RenderResult result)
+    private void WriteProvenance(string inputPath, string outputPath, AudioForge.Engine.OfflineRenderer.RenderResult result)
     {
         try
         {
-            var trust = HelixAudio.IO.Codecs.CodecManager.GetTrustForFile(inputPath);
+            var trust = AudioForge.IO.Codecs.CodecManager.GetTrustForFile(inputPath);
             var doc = new
             {
                 timestampUtc = DateTime.UtcNow.ToString("o"),
@@ -190,10 +190,10 @@ public sealed class EqService
     /// <summary>Runs BS.1770 loudness + true-peak analysis on a file (offline).</summary>
     public async Task<string> AnalyzeFileAsync(string inputPath)
     {
-        var meter = new HelixAudio.Engine.OfflineMeter();
+        var meter = new AudioForge.Engine.OfflineMeter();
         var r = await meter.MeasureAsync(inputPath);
         var rep = r.Report;
-        var trust = HelixAudio.IO.Codecs.CodecManager.GetTrustForFile(inputPath);
+        var trust = AudioForge.IO.Codecs.CodecManager.GetTrustForFile(inputPath);
         return $"File: {System.IO.Path.GetFileName(inputPath)}\n" +
                $"Format: {r.Format.SampleRate} Hz / {r.Format.Channels} ch float\n" +
                $"Decoder: {(trust?.CodecName ?? "unknown")} ({trust?.Backend ?? "?"}) verified={(trust?.VerifiedDecoder == true ? "yes" : "NO")}\n" +
@@ -220,7 +220,7 @@ public sealed class EqService
     /// A transparent flat EQ should produce a bit-identical (or ~-140 dB) result.</summary>
     public string RunNullTest()
     {
-        var fmt = new HelixAudio.Core.AudioFormat(48000, 2, true, 32);
+        var fmt = new AudioForge.Core.AudioFormat(48000, 2, true, 32);
         var rng = new Random(12345);
         var src = new float[8192];
         for (int i = 0; i < src.Length; i++) src[i] = (float)(rng.NextDouble() * 2.0 - 1.0) * 0.5f;

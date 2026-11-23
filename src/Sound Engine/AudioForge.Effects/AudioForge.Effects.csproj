@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>AudioForge.Effects</RootNamespace>
+    <AssemblyName>AudioForge.Effects</AssemblyName>
+    <Description>AudioForge SoundEngine - Audio Effects Library</Description>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AudioForge.Core\AudioForge.Core.csproj" />
+  </ItemGroup>
+</Project>

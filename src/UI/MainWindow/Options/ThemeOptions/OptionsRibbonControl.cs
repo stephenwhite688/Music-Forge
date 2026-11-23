@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using HelixAudio.Core;
+using AudioForge.Core;
 using MusicForge.UI.Data;
 using MusicForge.UI.MainWindow.Ribbons;
 using MusicForge.UI.Shared;

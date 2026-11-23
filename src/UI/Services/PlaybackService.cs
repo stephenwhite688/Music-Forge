@@ -1,5 +1,5 @@
 using MusicForge.UI.Data;
-using HelixAudio.Engine;
+using AudioForge.Engine;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -156,8 +156,8 @@ public sealed class PlaybackService : IDisposable
 
     /// <summary>
     /// Plays a media URL through the engine: HLS (.m3u8) via
-    /// <see cref="HelixAudio.Streaming.HlsStream"/>, DASH (.mpd) via
-    /// <see cref="HelixAudio.Streaming.DashStream"/>, anything else via the
+    /// <see cref="AudioForge.Streaming.HlsStream"/>, DASH (.mpd) via
+    /// <see cref="AudioForge.Streaming.DashStream"/>, anything else via the
     /// Media Foundation live-stream path. All go through the same node chain
     /// and output device as file playback.
     /// </summary>
@@ -174,11 +174,11 @@ public sealed class PlaybackService : IDisposable
         try
         {
             var path = new Uri(url).AbsolutePath;
-            HelixAudio.IO.AudioStream stream;
+            AudioForge.IO.AudioStream stream;
             if (path.EndsWith(".m3u8", StringComparison.OrdinalIgnoreCase))
-                stream = await HelixAudio.Streaming.HlsStream.OpenAsync(url);
+                stream = await AudioForge.Streaming.HlsStream.OpenAsync(url);
             else if (path.EndsWith(".mpd", StringComparison.OrdinalIgnoreCase))
-                stream = await HelixAudio.Streaming.DashStream.OpenAsync(url);
+                stream = await AudioForge.Streaming.DashStream.OpenAsync(url);
             else
             {
                 _player.PlayStream(url, nodes: MeterService.Instance.Chain());
@@ -262,7 +262,7 @@ public sealed class PlaybackService : IDisposable
 
     /// <summary>All active Windows render endpoints (speakers, Bluetooth, USB DACs, HDMI...).</summary>
     public IReadOnlyList<(string Id, string Name)> OutputDevices =>
-        HelixAudio.Backend.Wasapi.WasapiDeviceManager.EnumerateOutputDevices();
+        AudioForge.Backend.Wasapi.WasapiDeviceManager.EnumerateOutputDevices();
 
     /// <summary>Selected output endpoint ID; null/empty = Windows default. Applies to next play.</summary>
     public string? OutputDeviceId
@@ -313,7 +313,7 @@ public sealed class PlaybackService : IDisposable
     {
         if (_index < 0 || _index >= _queue.Count) return;
         Log($"Play index={_index}/{_queue.Count} path={_queue[_index]}");
-        if (HelixAudio.IO.Codecs.CodecManager.GetTrustForFile(_queue[_index]) is { } trust)
+        if (AudioForge.IO.Codecs.CodecManager.GetTrustForFile(_queue[_index]) is { } trust)
             Log($"  DECODE codec={trust.CodecName} backend=\"{trust.Backend}\" verified={(trust.VerifiedDecoder ? "yes" : "NO - system decoder")} ");
         try
         {

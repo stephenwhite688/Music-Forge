@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>AudioForge.MIDI</RootNamespace>
+    <AssemblyName>AudioForge.MIDI</AssemblyName>
+    <Description>AudioForge - MIDI file parsing and synthesis</Description>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AudioForge.Core\AudioForge.Core.csproj" />
+  </ItemGroup>
+</Project>

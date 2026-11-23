@@ -1,27 +1,27 @@
-﻿├── HelixAudio.Analysis
-├── HelixAudio.Backend.Alsa
-├── HelixAudio.Backend.CoreAudio
-├── HelixAudio.Backend.Wasapi
-├── HelixAudio.Benchmarks
-├── HelixAudio.Core
-├── HelixAudio.DSP
-├── HelixAudio.DSP.3D
-├── HelixAudio.Effects
-├── HelixAudio.Engine
-├── HelixAudio.Filters
-├── HelixAudio.IO
-├── HelixAudio.IO.Codecs
-├── HelixAudio.MIDI
-├── HelixAudio.Mixing
-├── HelixAudio.PluginHost
-├── HelixAudio.PluginHost.CLAP
-├── HelixAudio.PluginHost.VST3
-├── HelixAudio.Streaming
-├── HelixAudio.Tests
-├── HelixAudio.Visualization
+├── AudioForge.Analysis
+├── AudioForge.Backend.Alsa
+├── AudioForge.Backend.CoreAudio
+├── AudioForge.Backend.Wasapi
+├── AudioForge.Benchmarks
+├── AudioForge.Core
+├── AudioForge.DSP
+├── AudioForge.DSP.3D
+├── AudioForge.Effects
+├── AudioForge.Engine
+├── AudioForge.Filters
+├── AudioForge.IO
+├── AudioForge.IO.Codecs
+├── AudioForge.MIDI
+├── AudioForge.Mixing
+├── AudioForge.PluginHost
+├── AudioForge.PluginHost.CLAP
+├── AudioForge.PluginHost.VST3
+├── AudioForge.Streaming
+├── AudioForge.Tests
+├── AudioForge.Visualization
 ├── audio engine tree.txt
   ├── AnalysisBase.cs
-  ├── HelixAudio.Analysis.csproj
+  ├── AudioForge.Analysis.csproj
   ├── LoudnessAnalyzer.cs
   ├── LoudnessMeterNode.cs
   ├── PeakDetector.cs
@@ -31,17 +31,17 @@
   ├── RMSMeterNode.cs
   ├── SpectrumAnalyzer.cs
   ├── ZeroCrossingRate.cs
-  ├── HelixAudio.Backend.Alsa.csproj
-  ├── HelixAudio.Backend.CoreAudio.csproj
+  ├── AudioForge.Backend.Alsa.csproj
+  ├── AudioForge.Backend.CoreAudio.csproj
   ├── CircularBuffer.cs
-  ├── HelixAudio.Backend.Wasapi.csproj
+  ├── AudioForge.Backend.Wasapi.csproj
   ├── WasapiCapture.cs
   ├── WasapiDeviceManager.cs
   ├── WasapiInputThread.cs
   ├── WasapiInterop.cs
   ├── WasapiOutput.cs
   ├── WasapiOutputThread.cs
-  ├── HelixAudio.Benchmarks.csproj
+  ├── AudioForge.Benchmarks.csproj
   ├── Engine
   ├── AudioBuffer.cs
   ├── AudioCallback.cs
@@ -65,7 +65,7 @@
   ├── EngineNode.cs
   ├── FlangerNode.cs
   ├── GainNode.cs
-  ├── HelixAudio.Core.csproj
+  ├── AudioForge.Core.csproj
   ├── HighPassNode.cs
   ├── IAudioBackend.cs
   ├── IAudioDeviceManager.cs
@@ -101,7 +101,7 @@
   ├── DSPUtils.cs
   ├── EnvelopeADSR.cs
   ├── FIRFilter.cs
-  ├── HelixAudio.DSP.csproj
+  ├── AudioForge.DSP.csproj
   ├── IIRFilter.cs
   ├── NodeGraph.cs
   ├── NoiseGenerator.cs
@@ -124,7 +124,7 @@
   ├── AmbisonicNode.cs
   ├── AmbisonicOrder.cs
   ├── BinauralNode.cs
-  ├── HelixAudio.DSP.3D.csproj
+  ├── AudioForge.DSP.3D.csproj
   ├── ListenerNode.cs
   ├── Quaternion.cs
   ├── SpatialAudioNode.cs
@@ -136,7 +136,7 @@
   ├── CombFilter.cs
   ├── DelayEffect.cs
   ├── EffectBase.cs
-  ├── HelixAudio.Effects.csproj
+  ├── AudioForge.Effects.csproj
   ├── ReverbEffect.cs
   ├── AnalysisNode.cs
   ├── AudioEngine.cs
@@ -146,7 +146,7 @@
   ├── EngineController.cs
   ├── EngineNode.cs
   ├── FilterNode.cs
-  ├── HelixAudio.Engine.csproj
+  ├── AudioForge.Engine.csproj
   ├── IAudioDeviceManager.cs
   ├── InputNode.cs
   ├── MixerNode.cs
@@ -154,14 +154,14 @@
   ├── ProcessingGraph.cs
   ├── BandPassFilter.cs
   ├── FilterBase.cs
-  ├── HelixAudio.Filters.csproj
+  ├── AudioForge.Filters.csproj
   ├── HighPassFilter.cs
   ├── LowPassFilter.cs
   ├── AudioMetadata.cs
   ├── AudioStream.cs
   ├── FlacDecoder.cs
   ├── FormatDetector.cs
-  ├── HelixAudio.IO.csproj
+  ├── AudioForge.IO.csproj
   ├── Mp3Decoder.cs
   ├── OggVorbisDecoder.cs
   ├── PcmReader.cs
@@ -173,7 +173,7 @@
   ├── CodecManager.cs
   ├── DsdCodec.cs
   ├── FlacCodec.cs
-  ├── HelixAudio.IO.Codecs.csproj
+  ├── AudioForge.IO.Codecs.csproj
   ├── IAudioCodec.cs
   ├── Mp3Codec.cs
   ├── OggCodec.cs
@@ -181,7 +181,7 @@
   ├── WavCodec.cs
   ├── WmaCodec.cs
   ├── GeneralMIDI.cs
-  ├── HelixAudio.MIDI.csproj
+  ├── AudioForge.MIDI.csproj
   ├── MIDIEnums.cs
   ├── MIDIEvent.cs
   ├── MIDIFile.cs
@@ -189,7 +189,7 @@
   ├── MIDIOutput.cs
   ├── Synthesizer.cs
   ├── CrossfadeMixer.cs
-  ├── HelixAudio.Mixing.csproj
+  ├── AudioForge.Mixing.csproj
   ├── MixerBase.cs
   ├── MixerChannel.cs
   ├── MixerNode.cs
@@ -198,7 +198,7 @@
   ├── PanMixer.cs
   ├── SimpleMixer.cs
   ├── BuiltinPlugin.cs
-  ├── HelixAudio.PluginHost.csproj
+  ├── AudioForge.PluginHost.csproj
   ├── IAudioPlugin.cs
   ├── PluginDescriptor.cs
   ├── PluginHost.cs
@@ -209,13 +209,13 @@
   ├── PluginParameterController.cs
   ├── PluginType.cs
   ├── CLAPHost.cs
-  ├── HelixAudio.PluginHost.CLAP.csproj
-  ├── HelixAudio.PluginHost.VST3.csproj
+  ├── AudioForge.PluginHost.CLAP.csproj
+  ├── AudioForge.PluginHost.VST3.csproj
   ├── VST3Host.cs
   ├── AudioPipeline.cs
   ├── AudioStreamer.cs
   ├── DASHStream.cs
-  ├── HelixAudio.Streaming.csproj
+  ├── AudioForge.Streaming.csproj
   ├── HLSStream.cs
   ├── HTTPStream.cs
   ├── IStream.cs
@@ -226,7 +226,7 @@
   ├── AudioDiagnosticsTests.cs
   ├── AudioEngineRoutingTests.cs
   ├── CoreAndAnalysisTests.cs
-  ├── HelixAudio.Tests.csproj
+  ├── AudioForge.Tests.csproj
   ├── ProcessingGraphTests.cs
   ├── ProcessingSubsystemTests.cs
-  ├── HelixAudio.Visualization.csproj
+  ├── AudioForge.Visualization.csproj

@@ -5,27 +5,27 @@ VisualStudioVersion = 18.11.12328.437
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicForge.UI", "src\UI\MusicForge.UI.csproj", "{A8FDB46A-1234-4ABC-9DEF-112233445566}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelixAudio.Analysis", "src\Sound Engine\HelixAudio.Analysis\HelixAudio.Analysis.csproj", "{A5B3C5FA-BDC3-3AC2-AB2F-12A50D5857CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudioForge.Analysis", "src\Sound Engine\AudioForge.Analysis\AudioForge.Analysis.csproj", "{A5B3C5FA-BDC3-3AC2-AB2F-12A50D5857CC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelixAudio.Backend.Wasapi", "src\Sound Engine\HelixAudio.Backend.Wasapi\HelixAudio.Backend.Wasapi.csproj", "{99B342A5-A5C0-3757-A62B-1CF8350C7282}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudioForge.Backend.Wasapi", "src\Sound Engine\AudioForge.Backend.Wasapi\AudioForge.Backend.Wasapi.csproj", "{99B342A5-A5C0-3757-A62B-1CF8350C7282}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelixAudio.Benchmarks", "src\Sound Engine\HelixAudio.Benchmarks\HelixAudio.Benchmarks.csproj", "{F7AA8D4D-BB39-3A51-AC2B-9CE4EAECE533}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudioForge.Benchmarks", "src\Sound Engine\AudioForge.Benchmarks\AudioForge.Benchmarks.csproj", "{F7AA8D4D-BB39-3A51-AC2B-9CE4EAECE533}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelixAudio.Core", "src\Sound Engine\HelixAudio.Core\HelixAudio.Core.csproj", "{4DD59A1D-4F4A-3716-AFFD-5994ADA394D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudioForge.Core", "src\Sound Engine\AudioForge.Core\AudioForge.Core.csproj", "{4DD59A1D-4F4A-3716-AFFD-5994ADA394D7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelixAudio.DSP", "src\Sound Engine\HelixAudio.DSP\HelixAudio.DSP.csproj", "{4B9EF020-CDCA-36D6-B428-D7E3E06B76B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudioForge.DSP", "src\Sound Engine\AudioForge.DSP\AudioForge.DSP.csproj", "{4B9EF020-CDCA-36D6-B428-D7E3E06B76B3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelixAudio.Effects", "src\Sound Engine\HelixAudio.Effects\HelixAudio.Effects.csproj", "{5772B0AD-1D40-3941-8C93-EF70B6E0D1F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudioForge.Effects", "src\Sound Engine\AudioForge.Effects\AudioForge.Effects.csproj", "{5772B0AD-1D40-3941-8C93-EF70B6E0D1F5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelixAudio.Engine", "src\Sound Engine\HelixAudio.Engine\HelixAudio.Engine.csproj", "{4B4C1CA1-0935-34D6-9C06-0BE6728C08FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudioForge.Engine", "src\Sound Engine\AudioForge.Engine\AudioForge.Engine.csproj", "{4B4C1CA1-0935-34D6-9C06-0BE6728C08FE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelixAudio.IO", "src\Sound Engine\HelixAudio.IO\HelixAudio.IO.csproj", "{B566EFB2-CE3F-352E-A8F9-62B0CB2CAF67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudioForge.IO", "src\Sound Engine\AudioForge.IO\AudioForge.IO.csproj", "{B566EFB2-CE3F-352E-A8F9-62B0CB2CAF67}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelixAudio.IO.Codecs", "src\Sound Engine\HelixAudio.IO.Codecs\HelixAudio.IO.Codecs.csproj", "{319963A0-C621-3B3D-8D00-19B8B655504F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudioForge.IO.Codecs", "src\Sound Engine\AudioForge.IO.Codecs\AudioForge.IO.Codecs.csproj", "{319963A0-C621-3B3D-8D00-19B8B655504F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelixAudio.Mixing", "src\Sound Engine\HelixAudio.Mixing\HelixAudio.Mixing.csproj", "{129D2C39-0B2D-3B10-83D6-BE0F750B645F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudioForge.Mixing", "src\Sound Engine\AudioForge.Mixing\AudioForge.Mixing.csproj", "{129D2C39-0B2D-3B10-83D6-BE0F750B645F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelixAudio.PluginHost", "src\Sound Engine\HelixAudio.PluginHost\HelixAudio.PluginHost.csproj", "{E687AFAC-0B7E-3A34-8A30-7384BD267BCF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudioForge.PluginHost", "src\Sound Engine\AudioForge.PluginHost\AudioForge.PluginHost.csproj", "{E687AFAC-0B7E-3A34-8A30-7384BD267BCF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sound Engine", "Sound Engine", "{D3D12356-C1E5-4563-A48C-AA9EEAB815AE}"
 EndProject
@@ -41,17 +41,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioForge.VisualPlugins.Sa
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sound Engine", "Sound Engine", "{CE122C33-08DD-8605-11AB-D2FF338A96E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelixAudio.Verify", "src\Sound Engine\HelixAudio.Verify\HelixAudio.Verify.csproj", "{D375E7A3-E4DF-42B7-994C-0381C62ADA9B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioForge.Verify", "src\Sound Engine\AudioForge.Verify\AudioForge.Verify.csproj", "{D375E7A3-E4DF-42B7-994C-0381C62ADA9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelixAudio.PluginHost.CLAP", "src\Sound Engine\HelixAudio.PluginHost.CLAP\HelixAudio.PluginHost.CLAP.csproj", "{68E7CCD5-E2FC-491F-9E80-6580EF5F4216}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioForge.PluginHost.CLAP", "src\Sound Engine\AudioForge.PluginHost.CLAP\AudioForge.PluginHost.CLAP.csproj", "{68E7CCD5-E2FC-491F-9E80-6580EF5F4216}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelixAudio.MIDI", "src\Sound Engine\HelixAudio.MIDI\HelixAudio.MIDI.csproj", "{76BA8851-D3F4-4074-9DE2-78A0EB69EBB5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioForge.MIDI", "src\Sound Engine\AudioForge.MIDI\AudioForge.MIDI.csproj", "{76BA8851-D3F4-4074-9DE2-78A0EB69EBB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelixAudio.Streaming", "src\Sound Engine\HelixAudio.Streaming\HelixAudio.Streaming.csproj", "{4D7A7084-C156-4E9A-8309-E4C2AA85EC59}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioForge.Streaming", "src\Sound Engine\AudioForge.Streaming\AudioForge.Streaming.csproj", "{4D7A7084-C156-4E9A-8309-E4C2AA85EC59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelixAudio.DSP.Spatial", "src\Sound Engine\HelixAudio.DSP.Spatial\HelixAudio.DSP.Spatial.csproj", "{F3372D48-F35E-4471-B920-BEFDF963D5CC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioForge.DSP.Spatial", "src\Sound Engine\AudioForge.DSP.Spatial\AudioForge.DSP.Spatial.csproj", "{F3372D48-F35E-4471-B920-BEFDF963D5CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelixAudio.Visualization", "src\Sound Engine\HelixAudio.Visualization\HelixAudio.Visualization.csproj", "{3DEFC73C-A72F-4621-B6ED-7BB1EA206F8D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioForge.Visualization", "src\Sound Engine\AudioForge.Visualization\AudioForge.Visualization.csproj", "{3DEFC73C-A72F-4621-B6ED-7BB1EA206F8D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

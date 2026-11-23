@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>AudioForge.Verify</RootNamespace>
+    <AssemblyName>AudioForge.Verify</AssemblyName>
+    <Description>AudioForge - DSP correctness verification harness</Description>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AudioForge.Core\AudioForge.Core.csproj" />
+    <ProjectReference Include="..\AudioForge.DSP\AudioForge.DSP.csproj" />
+    <ProjectReference Include="..\AudioForge.Effects\AudioForge.Effects.csproj" />
+    <ProjectReference Include="..\AudioForge.Mixing\AudioForge.Mixing.csproj" />
+  </ItemGroup>
+</Project>

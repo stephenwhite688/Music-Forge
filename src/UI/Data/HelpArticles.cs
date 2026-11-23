@@ -85,7 +85,7 @@ Your local music library, playlists and playback tools.
         new Article("radio", "Internet Radio Tab", "Tabs", 20, """
 # Internet Radio Tab
 
-Stream thousands of radio stations through the same Helix playback engine as local music.
+Stream thousands of radio stations through the same AudioForge engine as local music.
 
 ## Directory group
 - Load Directory / Refresh Directory: download the station directory.
@@ -144,7 +144,7 @@ A full 31-band ISO third-octave equaliser - the engine's stress test and your to
         new Article("visualizer", "Visualizer Tab", "Tabs", 40, """
 # Visualizer Tab
 
-Real-time audio visualisations driven by the Helix analysis engine.
+Real-time audio visualisations driven by the AudioForge analysis engine.
 
 ## Ribbon groups
 - Visualiser: start/stop the display, choose the visualiser plugin if several are installed.
@@ -204,7 +204,7 @@ Extend the sound engine with audio plugins.
 
 ## Supported formats
 - CLAP: modern native plugin format - load .clap plugins for effects, instruments and analysis.
-- .NET plugins: managed HelixAudio plugins built against the plugin SDK.
+- .NET plugins: managed AudioForge plugins built against the plugin SDK.
 
 ## Using plugins
 - The Plugins menu lists discovered plugins grouped by type.

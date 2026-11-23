@@ -1,5 +1,5 @@
-using HelixAudio.Analysis;
-using HelixAudio.IO.Codecs;
+using AudioForge.Analysis;
+using AudioForge.IO.Codecs;
 using System;
 using System.Drawing;
 using System.IO;

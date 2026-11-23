@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>AudioForge.PluginHost.CLAP</RootNamespace>
+    <AssemblyName>AudioForge.PluginHost.CLAP</AssemblyName>
+    <Description>AudioForge - CLAP plugin host</Description>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AudioForge.Core\AudioForge.Core.csproj" />
+  </ItemGroup>
+</Project>

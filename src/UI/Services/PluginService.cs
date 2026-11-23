@@ -1,5 +1,5 @@
-using HelixAudio.Core;
-using HelixAudio.PluginHost.CLAP;
+using AudioForge.Core;
+using AudioForge.PluginHost.CLAP;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -16,7 +16,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - New full-bleed application icon
 
 ### Fixed
-- NU1104 restore errors from stale HelixAudio.Filters project reference
+- NU1104 restore errors from stale AudioForge.Filters project reference
 - Taskbar icon rendering (old icon artwork filled ~11% of frame)
 
 ## [1.0.0] - Initial public build
@@ -24,7 +24,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 - Music library: source folders/drives, recursive scan, album/track browsing
 - Playlist creation and management
-- Playback through the AudioForge (HelixAudio) engine: WASAPI output,
+- Playback through the AudioForge (AudioForge) engine: WASAPI output,
   EQ, visualiser taps, CLAP plugin hosting
 - Internet radio: directory search, favourites, presets
 - Graphic equaliser: 31-band ISO EQ, presets, A/B, per-channel link/unlink

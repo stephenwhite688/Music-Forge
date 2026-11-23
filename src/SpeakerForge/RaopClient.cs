@@ -12,7 +12,7 @@ namespace SpeakerForge;
 /// <summary>
 /// Minimal AirPlay 1 / RAOP sender. RTSP control channel to the device,
 /// unicast UDP/RTP L16 audio pushed in real time. Reads PCM from the same
-/// embedded HTTP WAV stream the UPnP path uses - no Helix coupling.
+/// embedded HTTP WAV stream the UPnP path uses - no engine coupling.
 ///
 /// Known limitations: no AirPlay 2 devices (HomePod, newer Apple TV),
 /// no pairing/encryption (devices that require a pairing PIN won't work),

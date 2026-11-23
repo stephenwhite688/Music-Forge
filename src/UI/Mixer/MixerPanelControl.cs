@@ -1,5 +1,5 @@
 using MusicForge.UI.Services;
-using HelixAudio.Mixing;
+using AudioForge.Mixing;
 using System;
 using System.Drawing;
 using System.Windows.Forms;

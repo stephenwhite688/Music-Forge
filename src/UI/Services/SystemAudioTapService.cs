@@ -1,5 +1,5 @@
 using AudioForge.SoundEngine;
-using HelixAudio.Backend.Wasapi;
+using AudioForge.Backend.Wasapi;
 using System;
 
 namespace MusicForge.UI.Services;
@@ -11,7 +11,7 @@ namespace MusicForge.UI.Services;
 /// and feeds the result to the network broadcast server - the same treatment
 /// engine playback gets.
 ///
-/// Mutually exclusive with Helix playback on the network feed: while active,
+/// Mutually exclusive with AudioForge playback on the network feed: while active,
 /// the chain's broadcast node is disabled so the two sources never interleave
 /// into one stream.
 /// </summary>

@@ -1,9 +1,9 @@
 using AudioForge.SoundEngine;
-using HelixAudio.Backend.Wasapi;
-using HelixAudio.Core;
-using HelixAudio.DSP;
-using HelixAudio.DSP.GraphicEQ;
-using HelixAudio.Engine;
+using AudioForge.Backend.Wasapi;
+using AudioForge.Core;
+using AudioForge.DSP;
+using AudioForge.DSP.GraphicEQ;
+using AudioForge.Engine;
 using System;
 using System.Collections.Generic;
 using System.Threading;

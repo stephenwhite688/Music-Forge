@@ -1,6 +1,6 @@
 using System;
 using SpeakerForge;
-using HelixAudio.Core;
+using AudioForge.Core;
 
 namespace MusicForge.UI.Services;
 

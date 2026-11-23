@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Platforms>x64</Platforms>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RootNamespace>AudioForge.Core</RootNamespace>
+    <AssemblyName>AudioForge.Core</AssemblyName>
+    <Description>AudioForge Professional Audio Engine - Core Library</Description>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+</Project>

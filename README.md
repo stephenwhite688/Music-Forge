@@ -28,7 +28,7 @@ visualisations, network speaker streaming, and a fully themeable UI.
 - C# / .NET 10, Windows Forms
 - SQLite (Microsoft.Data.Sqlite) for library, playlists, radio, themes and settings
 - TagLibSharp for metadata, NAudio for WASAPI
-- HelixAudio engine components (`src/Sound Engine/`)
+- AudioForge engine components (`src/Sound Engine/`)
 
 ## Build
 
@@ -49,7 +49,7 @@ dotnet run --project src/UI/MusicForge.UI.csproj
 ```
 src/
   UI/                              MusicForge WinForms app
-  Sound Engine/                    HelixAudio engine components (playback, DSP, streaming, plugins)
+  Sound Engine/                    AudioForge engine components (playback, DSP, streaming, plugins)
   AudioForge.SoundEngine/          Engine compatibility layer
   AudioForge.NetworkSpeakers/      Network speaker services
   AudioForge.Visualizer.Contracts/ Visualiser plugin contracts

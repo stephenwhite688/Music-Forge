@@ -12,9 +12,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Sound Engine\HelixAudio.Engine\HelixAudio.Engine.csproj" />
-    <ProjectReference Include="..\Sound Engine\HelixAudio.DSP\HelixAudio.DSP.csproj" />
-    <ProjectReference Include="..\Sound Engine\HelixAudio.Analysis\HelixAudio.Analysis.csproj" />
+    <ProjectReference Include="..\Sound Engine\AudioForge.Engine\AudioForge.Engine.csproj" />
+    <ProjectReference Include="..\Sound Engine\AudioForge.DSP\AudioForge.DSP.csproj" />
+    <ProjectReference Include="..\Sound Engine\AudioForge.Analysis\AudioForge.Analysis.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,5 @@
-using HelixAudio.Core;
-using HelixAudio.DSP;
+using AudioForge.Core;
+using AudioForge.DSP;
 using System.Collections.Generic;
 
 namespace MusicForge.UI.Services;
@@ -18,7 +18,7 @@ public sealed class MeterService
     public SpectrumTapNode PreEq { get; } = new(48000, 2, name: "PreEqSpectrum");
     public SpectrumTapNode PostEq { get; } = new(48000, 2, name: "PostEqSpectrum");
     public TruePeakNode TruePeak { get; } = new(48000, 2, "TruePeak");
-    public HelixAudio.Mixing.StereoMixerNode Mixer { get; } = new(48000, 2, "StereoMixer");
+    public AudioForge.Mixing.StereoMixerNode Mixer { get; } = new(48000, 2, "StereoMixer");
     public WaveformTapNode Waveform { get; } = new(48000, 2, historySeconds: 4.0, name: "WaveformTap");
     public SpectrogramTapNode Spectrogram { get; } = new(48000, 2, fftSize: 2048, historySeconds: 12.0, perChannel: true, name: "SpectrogramTap");
 
