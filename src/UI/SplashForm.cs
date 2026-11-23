@@ -56,7 +56,7 @@ internal sealed class SplashForm : Form
 
         var subtitleLabel = new Label
         {
-            Text = "Music player  ·  HelixAudio engine",
+            Text = "Music player  ·  AudioForge engine",
             Font = new Font("Segoe UI", 10F),
             ForeColor = ThemeManager.Current.TextSecondary,
             AutoSize = true,

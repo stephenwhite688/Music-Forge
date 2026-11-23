@@ -595,7 +595,7 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
                 $"MusicForge\n\n" +
                 $"Version {v?.Major}.{v?.Minor}.{v?.Build}\n\n" +
                 "Your music, your library, your way.\n\n" +
-                "Powered by the HelixAudio sound engine.",
+                "Powered by the AudioForge sound engine.",
                 "About MusicForge");
         }
 
@@ -613,7 +613,7 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
         {
             AppMessageBox.ShowWithLogo(FindForm(),
                 "MusicForge is proprietary software.\n\n" +
-                "All rights reserved. The HelixAudio sound engine components\n" +
+                "All rights reserved. The AudioForge sound engine components\n" +
                 "are licensed separately for SDK use.",
                 "Licence Information");
         }
