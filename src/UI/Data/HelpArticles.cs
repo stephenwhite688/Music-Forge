@@ -129,6 +129,12 @@ A full 31-band ISO third-octave equaliser - the engine's stress test and your to
   - Import / Export shares preset files between machines.
 - Engine: live engine diagnostics for the EQ path.
 
+## How it works
+- Each band is a filter centred on a musical note frequency. The 31 bands are spaced in ISO third-octaves - the same standard hi-fi equipment uses - running from 20 Hz (deep bass) to 20 kHz (air).
+- Gains are measured in decibels (dB), a logarithmic loudness scale. +6 dB is roughly twice as loud, -6 dB half as loud. The +/-12 dB range covers everything from subtle warmth to extreme effect.
+- The curve you see is the combined response of all 31 filters working together, not 31 separate lines. Moving one slider shifts the whole curve around that frequency.
+- Phase is the timing relationship between frequencies. Minimum Phase mode reacts instantly but slightly shifts timing. Linear Phase mode keeps timing mathematically perfect but delays the signal by about 85 ms - choose it for mixing and mastering where timing matters, Minimum Phase for live monitoring where latency doesn't.
+
 ## Tips
 - Small moves go a long way - +/-3 dB is often plenty.
 - Linear Phase is best for mixing/mastering; Minimum Phase for live monitoring.
@@ -154,6 +160,12 @@ Real-time audio visualisations driven by the Helix analysis engine.
 
 ## Plugins
 - Visualiser plugins extend the display options - see the Plugins tab.
+
+## How it works
+- The spectrum display is built on the FFT (Fast Fourier Transform): the engine takes a small slice of audio, works out which frequencies it contains and how much energy each has, then draws that as bars. It repeats many times per second so the display moves with the music.
+- FFT size is the resolution/speed trade-off. A large FFT splits the spectrum into finer frequency bins (more detail) but each slice covers more time, so it reacts slower. A small FFT reacts faster but shows less detail.
+- The waveform and oscilloscope modes show the raw signal shape instead of its frequency content - useful for seeing transients, clipping and overall level.
+- Levels use a decibel scale because human hearing is logarithmic: the bottom of the display represents vastly more "quiet" than the top represents "loud". This is why the bars look dramatic even for modest level changes.
 
 Tip: the mini visualiser in the transport bar mirrors the main display at low cost.
 """),

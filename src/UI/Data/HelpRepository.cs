@@ -37,18 +37,22 @@ public sealed class HelpRepository
             t.Content.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
     }
 
+    /// <summary>Upserts the built-in articles so doc updates ship with new versions.</summary>
     private void EnsureSeeded()
     {
         using var connection = MusicForgeDatabase.Instance.OpenConnection();
-        using (var count = connection.CreateCommand())
-        {
-            count.CommandText = "SELECT COUNT(*) FROM HelpTopics;";
-            if (Convert.ToInt64(count.ExecuteScalar()) > 0) return;
-        }
         foreach (var a in HelpArticles.All)
         {
             using var ins = connection.CreateCommand();
-            ins.CommandText = "INSERT OR IGNORE INTO HelpTopics (TopicKey, Title, Category, SortOrder, Content) VALUES ($k, $t, $c, $s, $b);";
+            ins.CommandText = """
+                INSERT INTO HelpTopics (TopicKey, Title, Category, SortOrder, Content)
+                VALUES ($k, $t, $c, $s, $b)
+                ON CONFLICT(TopicKey) DO UPDATE SET
+                    Title = excluded.Title,
+                    Category = excluded.Category,
+                    SortOrder = excluded.SortOrder,
+                    Content = excluded.Content;
+                """;
             ins.Parameters.AddWithValue("$k", a.Key);
             ins.Parameters.AddWithValue("$t", a.Title);
             ins.Parameters.AddWithValue("$c", a.Category);
