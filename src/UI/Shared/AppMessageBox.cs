@@ -41,10 +41,42 @@ public static class AppMessageBox
         MessageBoxButtons buttons, MessageBoxIcon icon)
         => Show(owner, text, caption, buttons, icon, MessageBoxDefaultButton.Button1);
 
+    /// <summary>Shows a dialog with the app logo instead of a severity glyph.</summary>
+    public static DialogResult ShowWithLogo(string text, string caption)
+        => ShowWithLogo(null, text, caption);
+
+    public static DialogResult ShowWithLogo(IWin32Window? owner, string text, string caption)
+    {
+        using var dlg = new MessageDialog(text, caption, MessageBoxButtons.OK,
+            MessageBoxIcon.None, MessageBoxDefaultButton.Button1, LoadLogo());
+        if (owner is not null)
+            return dlg.ShowDialog(owner);
+        return dlg.ShowDialog();
+    }
+
+    private static Image? _logo;
+
+    /// <summary>App icon rendered to a bitmap, cached for dialog reuse.</summary>
+    private static Image? LoadLogo()
+    {
+        if (_logo is not null) return _logo;
+        try
+        {
+            string path = System.IO.Path.Combine(AppContext.BaseDirectory, "Assets", "Main", "musicforge.ico");
+            if (System.IO.File.Exists(path))
+            {
+                using var icon = new Icon(path, new Size(64, 64));
+                _logo = icon.ToBitmap();
+            }
+        }
+        catch { /* logo is cosmetic */ }
+        return _logo;
+    }
+
     public static DialogResult Show(IWin32Window? owner, string text, string caption,
         MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton defaultButton)
     {
-        using var dlg = new MessageDialog(text, caption, buttons, icon, defaultButton);
+        using var dlg = new MessageDialog(text, caption, buttons, icon, defaultButton, null);
         if (owner is not null)
             return dlg.ShowDialog(owner);
         return dlg.ShowDialog();
@@ -57,7 +89,7 @@ public static class AppMessageBox
         private readonly DialogResult _result = DialogResult.None;
 
         public MessageDialog(string text, string caption, MessageBoxButtons buttons,
-            MessageBoxIcon icon, MessageBoxDefaultButton defaultButton)
+            MessageBoxIcon icon, MessageBoxDefaultButton defaultButton, Image? logo = null)
         {
             _text = text;
             _icon = icon;
@@ -82,11 +114,26 @@ public static class AppMessageBox
             int height = Math.Clamp(textSize.Height + 130, 150, 480);
             ClientSize = new Size(width, height);
 
-            var iconPanel = new GlyphPanel(icon)
+            Control glyph;
+            if (logo is not null)
             {
-                Location = new Point(20, 20),
-                Size = new Size(36, 36)
-            };
+                glyph = new PictureBox
+                {
+                    Image = logo,
+                    SizeMode = PictureBoxSizeMode.Zoom,
+                    Location = new Point(20, 20),
+                    Size = new Size(36, 36),
+                    BackColor = Color.Transparent
+                };
+            }
+            else
+            {
+                glyph = new GlyphPanel(icon)
+                {
+                    Location = new Point(20, 20),
+                    Size = new Size(36, 36)
+                };
+            }
 
             var messageLabel = new Label
             {
@@ -97,7 +144,7 @@ public static class AppMessageBox
                 BackColor = Color.Transparent
             };
 
-            Controls.Add(iconPanel);
+            Controls.Add(glyph);
             Controls.Add(messageLabel);
             AddButtons(buttons, defaultButton, theme);
         }

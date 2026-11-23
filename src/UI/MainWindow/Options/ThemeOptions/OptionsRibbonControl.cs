@@ -552,22 +552,36 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
 
         private void ReportProblem()
         {
-            var path = AudioDiagnostics.LogFilePath;
-            AppMessageBox.Show(
-                "To report a problem, include the diagnostics log:\n\n" + path +
-                "\n\nThe log folder has been opened in Explorer.",
-                "Report a Problem", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            OpenDiagnosticsFolder();
+            var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            var version = $"{v?.Major}.{v?.Minor}.{v?.Build}";
+            string subject = Uri.EscapeDataString($"MusicForge problem report - v{version}");
+            string body = Uri.EscapeDataString(
+                $"MusicForge v{version}\n" +
+                $"OS: {Environment.OSVersion.VersionString}\n" +
+                $"Diagnostics log: {AudioDiagnostics.LogFilePath}\n\n" +
+                "Describe the problem below:\n");
+            try
+            {
+                Process.Start(new ProcessStartInfo($"mailto:?subject={subject}&body={body}") { UseShellExecute = true });
+            }
+            catch
+            {
+                // No mail client - fall back to showing the info
+                AppMessageBox.ShowWithLogo(FindForm(),
+                    "No email client is configured.\n\n" +
+                    $"Diagnostics log for your report:\n{AudioDiagnostics.LogFilePath}",
+                    "Report a Problem");
+            }
         }
 
         private void ShowShortcuts()
         {
-            AppMessageBox.Show(
+            AppMessageBox.ShowWithLogo(FindForm(),
                 "Keyboard shortcuts\n\n" +
                 "Space - Play / Pause\n" +
                 "Ctrl+O - Open stream URL\n" +
                 "The full shortcut list grows as features are added.",
-                "Keyboard Shortcuts", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                "Keyboard Shortcuts");
         }
 
         private RibbonGroupPanel BuildAboutGroup()
@@ -586,12 +600,12 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
         private void ShowAbout()
         {
             var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            AppMessageBox.Show(
+            AppMessageBox.ShowWithLogo(FindForm(),
                 $"MusicForge\n\n" +
                 $"Version {v?.Major}.{v?.Minor}.{v?.Build}\n\n" +
                 "Your music, your library, your way.\n\n" +
                 "Powered by the AudioForge sound engine.",
-                "About MusicForge", MessageBoxButtons.OK, MessageBoxIcon.None);
+                "About MusicForge");
         }
 
         private void ShowVersion()
@@ -601,16 +615,16 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
             var info = $"MusicForge {v?.Major}.{v?.Minor}.{v?.Build}\n\n" +
                        $"Runtime: {System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription}\n" +
                        $"OS: {Environment.OSVersion.VersionString}";
-            AppMessageBox.Show(info, "Version Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            AppMessageBox.ShowWithLogo(FindForm(), info, "Version Information");
         }
 
         private void ShowLicence()
         {
-            AppMessageBox.Show(
+            AppMessageBox.ShowWithLogo(FindForm(),
                 "MusicForge is proprietary software.\n\n" +
                 "All rights reserved. The AudioForge sound engine components\n" +
                 "are licensed separately for SDK use.",
-                "Licence Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                "Licence Information");
         }
 
         private void ShowChangeLog()
