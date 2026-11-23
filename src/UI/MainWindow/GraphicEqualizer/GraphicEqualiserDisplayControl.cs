@@ -18,12 +18,13 @@ namespace MusicForge.UI.MainWindow.GraphicEqualizer;
 /// </summary>
 public partial class GraphicEqualiserDisplayControl : UserControl
 {
-    private static readonly Color BgDark = Color.FromArgb(24, 24, 26);
-    private static readonly Color PanelDark = Color.FromArgb(38, 38, 42);
-    private static readonly Color TrackColor = Color.FromArgb(70, 70, 74);
-    private static readonly Color FillColor = Color.FromArgb(10, 71, 138);
-    private static readonly Color TextColor = Color.FromArgb(212, 212, 212);
-    private static readonly Color DimText = Color.FromArgb(140, 140, 150);
+    // Theme-driven colours - read live from ThemeManager so theme changes repaint correctly.
+    private static Color BgDark => ThemeManager.Current.WindowBackground;
+    private static Color PanelDark => ThemeManager.Current.ControlDefaultSurface;
+    private static Color TrackColor => ThemeManager.Current.SliderTrackBackground;
+    private static Color FillColor => ThemeManager.Current.PrimaryAccent;
+    private static Color TextColor => ThemeManager.Current.TextPrimary;
+    private static Color DimText => ThemeManager.Current.TextSecondary;
 
     private readonly ImageSlider[] _bandSliders = new ImageSlider[31];
     private readonly Label[] _bandValues = new Label[31];
@@ -60,8 +61,18 @@ public partial class GraphicEqualiserDisplayControl : UserControl
         _eq.Changed += (_, _) => RefreshFromService();
         _meterTimer.Tick += (_, _) => { _meterPanel.Invalidate(); _spectrumPanel.Invalidate(); _curvePanel.Invalidate(); };
         _meterTimer.Start();
+        ThemeManager.ThemeChanged += OnThemeChanged;
         RefreshFromService();
         RefreshPresets();
+    }
+
+    private void OnThemeChanged()
+    {
+        ThemeApplier.Apply(this);
+        _curvePanel.Invalidate();
+        _spectrumPanel.Invalidate();
+        _meterPanel.Invalidate();
+        Refresh();
     }
 
     // ---------- UI construction ----------
@@ -471,9 +482,12 @@ public partial class GraphicEqualiserDisplayControl : UserControl
             return barRect.X + t * barRect.Width;
         }
 
-        using (var bg = new SolidBrush(TrackColor))
-            g.FillRectangle(bg, barRect);
-
+        using (var bg = new SolidBrush(TrackColor))
+
+            g.FillRectangle(bg, barRect);
+
+
+
         // Headroom markers at -18/-12/-6/0 dBFS
         using (var markerPen = new Pen(Color.FromArgb(70, 70, 76)))
         using (var markerFont = new Font("Segoe UI", 6F))

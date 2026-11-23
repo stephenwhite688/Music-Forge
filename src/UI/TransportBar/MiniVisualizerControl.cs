@@ -35,6 +35,12 @@ public partial class MiniVisualizerControl : UserControl
     {
         base.OnPaint(e);
 
+        if (MusicForge.UI.Shared.UiPerformance.LowPower)
+        {
+            e.Graphics.Clear(BackColor);
+            return;
+        }
+
         var meters = MusicForge.UI.Services.MeterService.Instance;
         if (UseBars)
         {

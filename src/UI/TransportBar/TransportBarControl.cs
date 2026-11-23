@@ -10,6 +10,9 @@ public partial class TransportBarControl : UserControl
 {
     private bool _busy;
 
+    /// <summary>The mini visualiser - used by Options low-power mode to hide decorative rendering.</summary>
+    public MiniVisualizerControl MiniVisualizer => miniVisualizerControl;
+
     public TransportBarControl()
     {
         InitializeComponent();

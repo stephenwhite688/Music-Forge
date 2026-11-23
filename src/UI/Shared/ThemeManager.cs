@@ -16,10 +16,29 @@ public static class ThemeManager
     // Notifies your TransportBar items to instantly redraw when an option changes
     public static event Action? ThemeChanged;
 
+    /// <summary>Restores the persisted theme (called once at startup).</summary>
+    public static void LoadPersisted()
+    {
+        try
+        {
+            var saved = new MusicForge.UI.Data.ThemeRepository().LoadCurrent();
+            if (saved is not null) Current = saved;
+        }
+        catch { /* first run or unreadable DB - keep default */ }
+    }
+
+    /// <summary>Persists the current theme (called after every theme change).</summary>
+    public static void Persist()
+    {
+        try { new MusicForge.UI.Data.ThemeRepository().SaveCurrent(); }
+        catch { /* never let persistence break theming */ }
+    }
+
     public static void ApplyCustomTheme(ThemeModel customTheme)
     {
         Current = customTheme ?? throw new ArgumentNullException(nameof(customTheme));
         ThemeChanged?.Invoke();
+        Persist();
     }
 
     public static void UpdateSingleColor(Action<ThemeModel> updateAction)
@@ -27,7 +46,11 @@ public static class ThemeManager
         // Allows your Options menu sliders/pickers to modify one color at a time dynamically
         updateAction(Current);
         ThemeChanged?.Invoke();
+        Persist();
     }
+
+    /// <summary>A fresh copy of the default dark theme - used by presets and reset.</summary>
+    public static ThemeModel CreateDefault() => LoadBlankTemplate();
 
     private static ThemeModel LoadBlankTemplate()
     {

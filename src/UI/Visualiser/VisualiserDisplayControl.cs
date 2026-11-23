@@ -118,6 +118,7 @@ public class VisualiserDisplayControl : UserControl
         var g = e.Graphics;
         g.Clear(BackgroundColor);
 
+        if (Shared.UiPerformance.LowPower) { DrawCentered(g, "Low power mode - visualiser paused"); return; }
         if (!_running) { DrawCentered(g, "Visualiser stopped"); return; }
 
         var meters = MeterService.Instance;

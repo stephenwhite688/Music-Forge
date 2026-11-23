@@ -21,8 +21,12 @@ public static class AudioDiagnostics
     public static string LogDirectory => _logDirectory;
     public static string LogFilePath => _logFilePath;
 
+    /// <summary>When false, Log/LogError calls become no-ops (crash.log still written by the app).</summary>
+    public static bool Enabled { get; set; } = true;
+
     public static void Log(string subsystem, string message)
     {
+        if (!Enabled) return;
         var line = $"[{DateTimeOffset.UtcNow:O}] [{subsystem}] {message}{Environment.NewLine}";
         try
         {

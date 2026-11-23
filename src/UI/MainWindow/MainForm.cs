@@ -12,14 +12,54 @@ public partial class MainForm : Form
     /// <summary>The docked transport bar - used to show long-operation progress.</summary>
     public MusicForge.UI.TransportBar.TransportBarControl TransportBar => _dockedTransportBar;
 
+    /// <summary>Main tab control - used by Options to switch tabs and persist startup tab.</summary>
+    public TabControl MainTabs => _mainTabControl;
+
     public MainForm()
     {
         InitializeComponent();
         AttachTabContents();
         LoadApplicationIcon();
+        SelectStartupTab();
+        _mainTabControl.SelectedIndexChanged += (_, _) => PersistLastTab();
 
         ThemeManager.ThemeChanged += ApplyActiveTheme;
         ApplyActiveTheme();
+    }
+
+    private void SelectStartupTab()
+    {
+        // A fixed startup tab (StartupMode) wins; otherwise reopen the last-used tab.
+        string? last = null;
+        try
+        {
+            var settings = new MusicForge.UI.Data.SettingsRepository();
+            last = settings.Get("StartupMode") ?? settings.Get("LastOpenedMode");
+        }
+        catch { /* settings unavailable - default tab */ }
+
+        if (!string.IsNullOrEmpty(last))
+        {
+            foreach (TabPage page in _mainTabControl.TabPages)
+            {
+                if (string.Equals(page.Text, last, StringComparison.OrdinalIgnoreCase))
+                {
+                    _mainTabControl.SelectedTab = page;
+                    return;
+                }
+            }
+        }
+        _mainTabControl.SelectedIndex = 0;
+    }
+
+    private void PersistLastTab()
+    {
+        try
+        {
+            if (_mainTabControl.SelectedTab is { } tab)
+                new MusicForge.UI.Data.SettingsRepository().Set("LastOpenedMode", tab.Text);
+        }
+        catch { /* never let settings persistence break tab switching */ }
     }
 
     // Tabs can expose extra content (e.g. the EQ display) via RibbonStripControl.TabContent.
@@ -82,5 +122,9 @@ public partial class MainForm : Form
                 control.BackColor = ThemeManager.Current.ControlDefaultSurface;
             }
         }
+
+        // Cascade the theme through every child control (buttons, lists, text, etc.)
+        ThemeApplier.Apply(this);
+        ThemeApplier.Apply(_dockedTransportBar);
     }
 }

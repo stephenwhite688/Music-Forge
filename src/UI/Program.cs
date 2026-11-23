@@ -16,6 +16,7 @@ internal static class Program
         InstallCrashHandlers();
         ApplicationConfiguration.Initialize();
         MusicForgeDatabase.Instance.Initialize();
+        MusicForge.UI.Shared.ThemeManager.LoadPersisted();
         Application.Run(new MainForm());
     }
 
