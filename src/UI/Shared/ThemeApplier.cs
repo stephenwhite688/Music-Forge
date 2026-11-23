@@ -60,8 +60,12 @@ public static class ThemeApplier
                     }
                     else
                     {
-                        btn.FlatAppearance.MouseOverBackColor = theme.ControlDefaultSurface;
-                        btn.FlatAppearance.MouseDownBackColor = theme.ControlDefaultSurface;
+                        // Transparent buttons sit on their parent's surface -
+                        // use the effective resting colour so hover truly
+                        // shows no change.
+                        var rest = btn.BackColor.A == 0 ? theme.ContainerBackground : btn.BackColor;
+                        btn.FlatAppearance.MouseOverBackColor = rest;
+                        btn.FlatAppearance.MouseDownBackColor = rest;
                     }
                 }
                 break;

@@ -47,11 +47,22 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
             menu.Items.Add(item);
         }
 
-        private static void AddCheckItem(ContextMenuStrip menu, string text, bool isChecked, Action handler)
+        // Live check-state: each menu remembers its check getters and refreshes
+        // them every time the menu opens, so checkmarks always reflect reality.
+        private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<
+            ContextMenuStrip, System.Collections.Generic.List<(ToolStripMenuItem Item, Func<bool> Get)>> _checkItems = new();
+
+        private static void AddCheckItem(ContextMenuStrip menu, string text, Func<bool> isChecked, Action handler)
         {
-            var item = new ToolStripMenuItem(text) { Checked = isChecked };
+            var item = new ToolStripMenuItem(text);
             item.Click += (_, _) => handler();
             menu.Items.Add(item);
+            var list = _checkItems.GetOrCreateValue(menu);
+            list.Add((item, isChecked));
+            menu.Opening += (_, _) =>
+            {
+                foreach (var (i, get) in list) i.Checked = get();
+            };
         }
 
         // ==================== APPEARANCE ====================
@@ -82,12 +93,12 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
         private ContextMenuStrip BuildThemesMenu()
         {
             var menu = new ContextMenuStrip();
-            AddCheckItem(menu, "Dark", _activePreset == "Dark", () => ApplyPreset("Dark", ThemePresets.Dark));
-            AddCheckItem(menu, "Light", _activePreset == "Light", () => ApplyPreset("Light", ThemePresets.Light));
-            AddCheckItem(menu, "Blue", _activePreset == "Blue", () => ApplyPreset("Blue", ThemePresets.Blue));
-            AddCheckItem(menu, "Green", _activePreset == "Green", () => ApplyPreset("Green", ThemePresets.Green));
-            AddCheckItem(menu, "Red", _activePreset == "Red", () => ApplyPreset("Red", ThemePresets.Red));
-            AddCheckItem(menu, "High Contrast", _activePreset == "HighContrast", () => ApplyPreset("HighContrast", ThemePresets.HighContrast));
+            AddCheckItem(menu, "Dark", () => _activePreset == "Dark", () => ApplyPreset("Dark", ThemePresets.Dark));
+            AddCheckItem(menu, "Light", () => _activePreset == "Light", () => ApplyPreset("Light", ThemePresets.Light));
+            AddCheckItem(menu, "Blue", () => _activePreset == "Blue", () => ApplyPreset("Blue", ThemePresets.Blue));
+            AddCheckItem(menu, "Green", () => _activePreset == "Green", () => ApplyPreset("Green", ThemePresets.Green));
+            AddCheckItem(menu, "Red", () => _activePreset == "Red", () => ApplyPreset("Red", ThemePresets.Red));
+            AddCheckItem(menu, "High Contrast", () => _activePreset == "HighContrast", () => ApplyPreset("HighContrast", ThemePresets.HighContrast));
             menu.Items.Add(new ToolStripSeparator());
             AddMenuItem(menu, "Customise Colours…", PickThemeColour);
             AddMenuItem(menu, "Customise Font…", PickThemeFont);
@@ -270,9 +281,9 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
         private ContextMenuStrip BuildLayoutMenu()
         {
             var menu = new ContextMenuStrip();
-            AddCheckItem(menu, "Compact", Math.Abs(ThemeManager.Current.FontSizeStandard - 8F) < 0.5F, () => SetDensity("Compact", 8F));
-            AddCheckItem(menu, "Standard", Math.Abs(ThemeManager.Current.FontSizeStandard - 9F) < 0.5F, () => SetDensity("Standard", 9F));
-            AddCheckItem(menu, "Comfortable", Math.Abs(ThemeManager.Current.FontSizeStandard - 10.5F) < 0.5F, () => SetDensity("Comfortable", 10.5F));
+            AddCheckItem(menu, "Compact", () => Math.Abs(ThemeManager.Current.FontSizeStandard - 8F) < 0.5F, () => SetDensity("Compact", 8F));
+            AddCheckItem(menu, "Standard", () => Math.Abs(ThemeManager.Current.FontSizeStandard - 9F) < 0.5F, () => SetDensity("Standard", 9F));
+            AddCheckItem(menu, "Comfortable", () => Math.Abs(ThemeManager.Current.FontSizeStandard - 10.5F) < 0.5F, () => SetDensity("Comfortable", 10.5F));
             return menu;
         }
 
@@ -291,12 +302,12 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
         private ContextMenuStrip BuildTooltipsMenu()
         {
             var menu = new ContextMenuStrip();
-            AddCheckItem(menu, "Show Tooltips", ThemeManager.Current.GlobalToolTipsEnabled, () =>
+            AddCheckItem(menu, "Show Tooltips", () => ThemeManager.Current.GlobalToolTipsEnabled, () =>
             {
                 ThemeManager.UpdateSingleColor(t => t.GlobalToolTipsEnabled = !t.GlobalToolTipsEnabled);
             });
             menu.Items.Add(new ToolStripSeparator());
-            AddCheckItem(menu, "Mouse-Over Effects", ThemeManager.Current.MouseOverEffectsEnabled, () =>
+            AddCheckItem(menu, "Mouse-Over Effects", () => ThemeManager.Current.MouseOverEffectsEnabled, () =>
             {
                 ThemeManager.UpdateSingleColor(t => t.MouseOverEffectsEnabled = !t.MouseOverEffectsEnabled);
             });
@@ -332,14 +343,14 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
         private RibbonGroupPanel BuildStartupGroup()
         {
             var menu = new ContextMenuStrip();
-            AddCheckItem(menu, "Automatic - Last Used Tab", GetStartupMode() is null, ClearStartupMode);
+            AddCheckItem(menu, "Automatic - Last Used Tab", () => GetStartupMode() is null, ClearStartupMode);
             menu.Items.Add(new ToolStripSeparator());
-            AddCheckItem(menu, "Media", IsStartupTab("Media"), () => SetStartupTab("Media"));
-            AddCheckItem(menu, "Internet Radio", IsStartupTab("Internet radio"), () => SetStartupTab("Internet radio"));
-            AddCheckItem(menu, "Graphic Equalizer", IsStartupTab("Graphic Equalizer"), () => SetStartupTab("Graphic Equalizer"));
-            AddCheckItem(menu, "Visualizer", IsStartupTab("Visualizer"), () => SetStartupTab("Visualizer"));
-            AddCheckItem(menu, "Networked Speakers", IsStartupTab("Networked Speakers"), () => SetStartupTab("Networked Speakers"));
-            AddCheckItem(menu, "Plugins", IsStartupTab("Plugins"), () => SetStartupTab("Plugins"));
+            AddCheckItem(menu, "Media", () => IsStartupTab("Media"), () => SetStartupTab("Media"));
+            AddCheckItem(menu, "Internet Radio", () => IsStartupTab("Internet radio"), () => SetStartupTab("Internet radio"));
+            AddCheckItem(menu, "Graphic Equalizer", () => IsStartupTab("Graphic Equalizer"), () => SetStartupTab("Graphic Equalizer"));
+            AddCheckItem(menu, "Visualizer", () => IsStartupTab("Visualizer"), () => SetStartupTab("Visualizer"));
+            AddCheckItem(menu, "Networked Speakers", () => IsStartupTab("Networked Speakers"), () => SetStartupTab("Networked Speakers"));
+            AddCheckItem(menu, "Plugins", () => IsStartupTab("Plugins"), () => SetStartupTab("Plugins"));
 
             var group = new RibbonGroupPanel("Startup") { ContextMenuStrip = menu };
             group.AddButton("Startup Tab", menu);
@@ -387,11 +398,11 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
             AddMenuItem(menu, "Export Profile (theme + layout)…", ExportProfile);
             AddMenuItem(menu, "Import Profile…", ImportTheme);
             menu.Items.Add(new ToolStripSeparator());
-            AddCheckItem(menu, "Low Resource Mode", UiPerformance.Current == UiPerformance.Mode.Low, () => SetPerfMode(UiPerformance.Mode.Low));
-            AddCheckItem(menu, "Balanced Mode", UiPerformance.Current == UiPerformance.Mode.Balanced, () => SetPerfMode(UiPerformance.Mode.Balanced));
-            AddCheckItem(menu, "High Performance Mode", UiPerformance.Current == UiPerformance.Mode.High, () => SetPerfMode(UiPerformance.Mode.High));
+            AddCheckItem(menu, "Low Resource Mode", () => UiPerformance.Current == UiPerformance.Mode.Low, () => SetPerfMode(UiPerformance.Mode.Low));
+            AddCheckItem(menu, "Balanced Mode", () => UiPerformance.Current == UiPerformance.Mode.Balanced, () => SetPerfMode(UiPerformance.Mode.Balanced));
+            AddCheckItem(menu, "High Performance Mode", () => UiPerformance.Current == UiPerformance.Mode.High, () => SetPerfMode(UiPerformance.Mode.High));
             menu.Items.Add(new ToolStripSeparator());
-            AddCheckItem(menu, "Engine Logging Enabled", AudioDiagnostics.Enabled, ToggleLogging);
+            AddCheckItem(menu, "Engine Logging Enabled", () => AudioDiagnostics.Enabled, ToggleLogging);
             AddMenuItem(menu, "Clear Memory Cache", ClearCache);
             AddMenuItem(menu, "View Diagnostics Folder", OpenDiagnosticsFolder);
 
