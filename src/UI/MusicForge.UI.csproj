@@ -9,7 +9,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>MusicForge.UI</RootNamespace>
     <AssemblyName>MusicForge</AssemblyName>
-    <ApplicationIcon>Assets\Main\audioforge.ico</ApplicationIcon>
+    <ApplicationIcon>Assets\Main\musicforge.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,7 +36,7 @@
     <Content Include="Assets\Transport\TransportBar\slider2.png" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Assets\Transport\TransportBar\slider3.png" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Assets\Transport\TransportBar\sliderpanel.jpg" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="Assets\Main\audioforge.ico" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Main\musicforge.ico" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Assets\InternetRadio\station is not available.mp3" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Assets\Transport\TransportBar\stop.png" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

@@ -92,7 +92,7 @@ public partial class MainForm : Form
     {
         try
         {
-            string iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "Main", "audioforge.ico");
+            string iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "Main", "musicforge.ico");
             if (File.Exists(iconPath))
                 this.Icon = new Icon(iconPath);
         }
