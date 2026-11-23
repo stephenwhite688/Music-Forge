@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MusicForge.UI.Shared;
 
 namespace MusicForge.UI.MainWindow.Ribbons;
 
@@ -51,13 +52,13 @@ public partial class NetworkedSpeakersRibbonControl : RibbonStripControl
     private static async Task RunAsync(Func<Task> action)
     {
         try { await action(); }
-        catch (Exception ex) { MessageBox.Show(ex.Message, "Network Speakers", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
+        catch (Exception ex) { AppMessageBox.Show(ex.Message, "Network Speakers", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
     }
 
     private static void NeedSelection(NetworkSpeakersPanel panel)
     {
         if (panel.TickedDevices().Count == 0 && !panel.LocalTicked)
-            MessageBox.Show("Tick at least one speaker (or Local) in the list below first.");
+            AppMessageBox.Show("Tick at least one speaker (or Local) in the list below first.");
     }
 
     private RibbonGroupPanel BuildDevicesGroup()
@@ -69,7 +70,7 @@ public partial class NetworkedSpeakersRibbonControl : RibbonStripControl
                 var found = await Task.Run(() => Engine.DiscoverAsync(3000));
                 Ui.NotifyChanged();
                 if (found.Count == 0)
-                    MessageBox.Show("No UPnP renderers found.");
+                    AppMessageBox.Show("No UPnP renderers found.");
             }),
             ("Refresh Devices", () => { Ui.NotifyChanged(); return Task.CompletedTask; }),
             ("Stop All Playback", async () => { await _panel.StopAllAsync(); }));

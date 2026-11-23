@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using MusicForge.UI.Shared;
 
 namespace MusicForge.UI.MainWindow;
 
@@ -276,7 +277,7 @@ public sealed class SourceBrowserControl : UserControl
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Could not add folder:\n{ex.Message}", "Browse Media",
+            AppMessageBox.Show($"Could not add folder:\n{ex.Message}", "Browse Media",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         finally { Cursor = Cursors.Default; }
@@ -313,7 +314,7 @@ public sealed class SourceBrowserControl : UserControl
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Could not add file:\n{ex.Message}", "Browse Media",
+            AppMessageBox.Show($"Could not add file:\n{ex.Message}", "Browse Media",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -334,7 +335,7 @@ public sealed class SourceBrowserControl : UserControl
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Could not add folder:\n{ex.Message}", "Browse Media",
+            AppMessageBox.Show($"Could not add folder:\n{ex.Message}", "Browse Media",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         finally { Cursor = Cursors.Default; }
@@ -350,7 +351,7 @@ public sealed class SourceBrowserControl : UserControl
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Could not add source:\n{ex.Message}", "Browse Media",
+            AppMessageBox.Show($"Could not add source:\n{ex.Message}", "Browse Media",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }

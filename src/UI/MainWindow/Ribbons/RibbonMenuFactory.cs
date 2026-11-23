@@ -1,4 +1,5 @@
 using System.Windows.Forms;
+using MusicForge.UI.Shared;
 
 namespace MusicForge.UI.MainWindow.Ribbons;
 
@@ -18,7 +19,7 @@ internal static class RibbonMenuFactory
 
             var menuItem = new ToolStripMenuItem(item);
             menuItem.Click += (s, e) =>
-                MessageBox.Show($"'{item}' is not implemented yet.", "AudioForge", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                AppMessageBox.Show($"'{item}' is not implemented yet.", "AudioForge", MessageBoxButtons.OK, MessageBoxIcon.Information);
             menu.Items.Add(menuItem);
         }
         return menu;

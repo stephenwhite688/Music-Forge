@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using MusicForge.UI.Shared;
 
 namespace MusicForge.UI.MainWindow.Ribbons;
 
@@ -189,7 +190,7 @@ public partial class VisualiserRibbonControl : RibbonStripControl
         AddItem(menu, "Test Tone (440 Hz)…", () => _ = MusicForge.UI.Services.PlaybackService.Instance.PlayTestToneAsync());
         AddItem(menu, "Copy Settings", CopySettings);
         AddItem(menu, "About Visualiser", () =>
-            MessageBox.Show(
+            AppMessageBox.Show(
                 "AudioForge Visualiser\n\nRealtime engine taps: spectrum (FFT), waveform, spectrogram, level/true-peak meters.\nAll data comes from the live HelixAudio playback chain.",
                 "Visualiser", MessageBoxButtons.OK, MessageBoxIcon.Information));
 
@@ -212,12 +213,12 @@ public partial class VisualiserRibbonControl : RibbonStripControl
             using var bmp = new Bitmap(_display.Width, _display.Height);
             _display.DrawToBitmap(bmp, new Rectangle(0, 0, bmp.Width, bmp.Height));
             bmp.Save(dlg.FileName, System.Drawing.Imaging.ImageFormat.Png);
-            MessageBox.Show($"Saved:\n{dlg.FileName}", "Visualiser",
+            AppMessageBox.Show($"Saved:\n{dlg.FileName}", "Visualiser",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Export failed:\n{ex.Message}", "Visualiser",
+            AppMessageBox.Show($"Export failed:\n{ex.Message}", "Visualiser",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -227,7 +228,7 @@ public partial class VisualiserRibbonControl : RibbonStripControl
         var text = $"Mode={_display.Mode} Theme={_display.Theme} Bands={_display.BandCount} " +
                    $"LogFreq={_display.LogFrequency} PeakHold={_display.PeakHoldEnabled} Overlays={_display.ShowOverlays}";
         Clipboard.SetText(text);
-        MessageBox.Show($"Copied:\n{text}", "Visualiser",
+        AppMessageBox.Show($"Copied:\n{text}", "Visualiser",
             MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 }

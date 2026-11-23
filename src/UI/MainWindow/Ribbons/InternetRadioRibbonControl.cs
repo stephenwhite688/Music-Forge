@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MusicForge.UI.Shared;
 
 namespace MusicForge.UI.MainWindow.Ribbons;
 
@@ -71,7 +72,7 @@ public partial class InternetRadioRibbonControl : RibbonStripControl
     {
         var item = new ToolStripMenuItem(text);
         item.Click += (s, e) =>
-            MessageBox.Show($"'{text}' is not implemented yet.", "AudioForge",
+            AppMessageBox.Show($"'{text}' is not implemented yet.", "AudioForge",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         menu.Items.Add(item);
     }
@@ -107,7 +108,7 @@ public partial class InternetRadioRibbonControl : RibbonStripControl
     {
         if (_directoryLoading)
         {
-            MessageBox.Show("Directory load already in progress.", "Internet Radio",
+            AppMessageBox.Show("Directory load already in progress.", "Internet Radio",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
@@ -132,7 +133,7 @@ public partial class InternetRadioRibbonControl : RibbonStripControl
             int saved = await _radioService.LoadDirectoryAsync(progress, _loadCts.Token);
             transport?.EndOperationProgress();
             _radioBrowser.ShowDirectory(); // reveal the freshly loaded station list
-            MessageBox.Show(
+            AppMessageBox.Show(
                 $"Directory loaded.\nStations written: {saved}\nTotal in database: {_radioService.CachedStationCount}\nPreviously cached: {existing}",
                 "Internet Radio", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -143,7 +144,7 @@ public partial class InternetRadioRibbonControl : RibbonStripControl
         catch (Exception ex)
         {
             transport?.EndOperationProgress();
-            MessageBox.Show($"Directory load failed:\n{ex.Message}", "Internet Radio",
+            AppMessageBox.Show($"Directory load failed:\n{ex.Message}", "Internet Radio",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         finally
@@ -201,7 +202,7 @@ public partial class InternetRadioRibbonControl : RibbonStripControl
         if (playback.CurrentStationUrl is { } url && playback.CurrentTrackName is { Length: > 0 } name)
             playback.PlayStation(name, url);
         else
-            MessageBox.Show("No station is playing.", "Internet Radio",
+            AppMessageBox.Show("No station is playing.", "Internet Radio",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
@@ -224,11 +225,11 @@ public partial class InternetRadioRibbonControl : RibbonStripControl
 
     private void ClearPlayHistory()
     {
-        var result = MessageBox.Show("Clear all radio play history?", "Clear History",
+        var result = AppMessageBox.Show("Clear all radio play history?", "Clear History",
             MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
         if (result != DialogResult.Yes) return;
         _radio.ClearPlayHistory();
-        MessageBox.Show("Play history cleared.", "Clear History",
+        AppMessageBox.Show("Play history cleared.", "Clear History",
             MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
@@ -254,11 +255,11 @@ public partial class InternetRadioRibbonControl : RibbonStripControl
         var playback = PlaybackService.Instance;
         if (!playback.IsStationPlaying)
         {
-            MessageBox.Show("No station is playing.", "Internet Radio",
+            AppMessageBox.Show("No station is playing.", "Internet Radio",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
-        MessageBox.Show(
+        AppMessageBox.Show(
             $"Station: {playback.CurrentTrackName}\nStream URL: {playback.CurrentStationUrl}\n" +
             $"Sample rate: {(playback.IsPlaying ? "(live)" : "-")}",
             "Stream Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -267,7 +268,7 @@ public partial class InternetRadioRibbonControl : RibbonStripControl
     private void ShowCurrentTrack()
     {
         var playback = PlaybackService.Instance;
-        MessageBox.Show(
+        AppMessageBox.Show(
             playback.IsPlaying || playback.IsPaused
                 ? $"Now playing: {playback.CurrentTrackName}"
                 : "Nothing is playing.",
@@ -279,7 +280,7 @@ public partial class InternetRadioRibbonControl : RibbonStripControl
         // Votes are the community reliability signal in the Radio Browser data
         var stations = _radio.GetStations(1);
         int total = _radio.StationCount();
-        MessageBox.Show(
+        AppMessageBox.Show(
             $"Stations cached: {total}\nMost popular station: {(stations.Count > 0 ? stations[0].Name : "-")} " +
             $"({stations.FirstOrDefault()?.Votes ?? 0:N0} votes)\n\nReliability is community-driven: higher vote counts indicate better uptime.",
             "Reliability", MessageBoxButtons.OK, MessageBoxIcon.Information);

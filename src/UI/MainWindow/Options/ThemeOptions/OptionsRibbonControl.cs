@@ -187,7 +187,7 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
             var menu = new ContextMenuStrip();
             menu.Items.Add(new ToolStripMenuItem("Icon packs") { Enabled = false });
             menu.Items.Add(new ToolStripSeparator());
-            AddMenuItem(menu, "About icons", () => MessageBox.Show(
+            AddMenuItem(menu, "About icons", () => AppMessageBox.Show(
                 "MusicForge currently ships a single icon set.\n\n" +
                 "Custom icon packs are planned - themes will be able to select\n" +
                 "alternate artwork for transport, ribbon, and toolbar icons.",
@@ -209,7 +209,7 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
                 var theme = ThemeSerializer.FromJson(File.ReadAllText(dlg.FileName));
                 if (theme is null)
                 {
-                    MessageBox.Show("That file is not a valid MusicForge theme.", "Import Theme",
+                    AppMessageBox.Show("That file is not a valid MusicForge theme.", "Import Theme",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
@@ -218,7 +218,7 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Could not import theme: {ex.Message}", "Import Theme",
+                AppMessageBox.Show($"Could not import theme: {ex.Message}", "Import Theme",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -235,12 +235,12 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
             try
             {
                 File.WriteAllText(dlg.FileName, ThemeSerializer.ToJson(ThemeManager.Current));
-                MessageBox.Show($"Theme exported to:\n{dlg.FileName}", "Export Theme",
+                AppMessageBox.Show($"Theme exported to:\n{dlg.FileName}", "Export Theme",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Could not export theme: {ex.Message}", "Export Theme",
+                AppMessageBox.Show($"Could not export theme: {ex.Message}", "Export Theme",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -299,7 +299,7 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Could not reset layout: {ex.Message}", "Options",
+                    AppMessageBox.Show($"Could not reset layout: {ex.Message}", "Options",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             });
@@ -346,7 +346,7 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
             try { new SettingsRepository().Set("StartupMode", tabText); }
             catch (Exception ex)
             {
-                MessageBox.Show($"Could not save startup tab: {ex.Message}", "Options",
+                AppMessageBox.Show($"Could not save startup tab: {ex.Message}", "Options",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
@@ -388,12 +388,12 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
             try
             {
                 MusicForgeDatabase.Instance.Backup(dlg.FileName);
-                MessageBox.Show($"Library backed up to:\n{dlg.FileName}", "Backup",
+                AppMessageBox.Show($"Library backed up to:\n{dlg.FileName}", "Backup",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Backup failed: {ex.Message}", "Backup",
+                AppMessageBox.Show($"Backup failed: {ex.Message}", "Backup",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -408,7 +408,7 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
             };
             if (dlg.ShowDialog(FindForm()) != DialogResult.OK) return;
 
-            var confirm = MessageBox.Show(
+            var confirm = AppMessageBox.Show(
                 "Restoring will REPLACE the entire current library database.\n\n" +
                 "Your current library will be lost. Continue?",
                 "Restore Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -417,12 +417,12 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
             try
             {
                 MusicForgeDatabase.Instance.Restore(dlg.FileName);
-                MessageBox.Show("Library restored. Restart MusicForge to use the restored data.",
+                AppMessageBox.Show("Library restored. Restart MusicForge to use the restored data.",
                     "Restore Backup", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Restore failed: {ex.Message}", "Restore Backup",
+                AppMessageBox.Show($"Restore failed: {ex.Message}", "Restore Backup",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -461,12 +461,12 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
                            "  \"interfaceLayout\": \"" + layout + "\",\n" +
                            "  \"theme\": " + ThemeSerializer.ToJson(ThemeManager.Current) + "\n}";
                 File.WriteAllText(dlg.FileName, json);
-                MessageBox.Show($"Profile exported to:\n{dlg.FileName}", "Export Profile",
+                AppMessageBox.Show($"Profile exported to:\n{dlg.FileName}", "Export Profile",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Could not export profile: {ex.Message}", "Export Profile",
+                AppMessageBox.Show($"Could not export profile: {ex.Message}", "Export Profile",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -507,7 +507,7 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
         private void ClearCache()
         {
             GC.Collect(2, GCCollectionMode.Optimized, false);
-            MessageBox.Show("Memory cache cleared.", "Performance",
+            AppMessageBox.Show("Memory cache cleared.", "Performance",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
@@ -520,7 +520,7 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Could not open diagnostics folder: {ex.Message}", "Diagnostics",
+                AppMessageBox.Show($"Could not open diagnostics folder: {ex.Message}", "Diagnostics",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
@@ -543,7 +543,7 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
         private void ReportProblem()
         {
             var path = AudioDiagnostics.LogFilePath;
-            MessageBox.Show(
+            AppMessageBox.Show(
                 "To report a problem, include the diagnostics log:\n\n" + path +
                 "\n\nThe log folder has been opened in Explorer.",
                 "Report a Problem", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -552,7 +552,7 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
 
         private void ShowShortcuts()
         {
-            MessageBox.Show(
+            AppMessageBox.Show(
                 "Keyboard shortcuts\n\n" +
                 "Space - Play / Pause\n" +
                 "Ctrl+O - Open stream URL\n" +
@@ -578,12 +578,12 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
         private void ShowAbout()
         {
             var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            MessageBox.Show(
+            AppMessageBox.Show(
                 $"MusicForge\n\n" +
                 $"Version {v?.Major}.{v?.Minor}.{v?.Build}\n\n" +
-                "Music player powered by the AudioForge (HelixAudio) sound engine.\n\n" +
-                "UI: WinForms  |  Engine: HelixAudio  |  Speaker engine: SpeakerForge",
-                "About MusicForge", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                "Your music, your library, your way.\n\n" +
+                "Powered by the AudioForge sound engine.",
+                "About MusicForge", MessageBoxButtons.OK, MessageBoxIcon.None);
         }
 
         private void ShowVersion()
@@ -593,12 +593,12 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
             var info = $"MusicForge {v?.Major}.{v?.Minor}.{v?.Build}\n\n" +
                        $"Runtime: {System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription}\n" +
                        $"OS: {Environment.OSVersion.VersionString}";
-            MessageBox.Show(info, "Version Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            AppMessageBox.Show(info, "Version Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void ShowLicence()
         {
-            MessageBox.Show(
+            AppMessageBox.Show(
                 "MusicForge is proprietary software.\n\n" +
                 "All rights reserved. The AudioForge sound engine components\n" +
                 "are licensed separately for SDK use.",
@@ -607,12 +607,7 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
 
         private void ShowChangeLog()
         {
-            string changelog = Path.Combine(AppContext.BaseDirectory, "CHANGELOG.md");
-            if (File.Exists(changelog))
-                Process.Start(new ProcessStartInfo(changelog) { UseShellExecute = true });
-            else
-                MessageBox.Show("No change log file found.", "Change Log",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            ScrollTextDialog.ShowChangeLog(FindForm());
         }
     }
 }

@@ -94,6 +94,12 @@ public static class ThemeSerializer
         catch { return null; }
         if (d is null) return null;
 
+        // Reject degenerate themes (e.g. "{}" or partial files): every colour
+        // would deserialize as transparent and crash controls that reject
+        // transparent BackColor.
+        if (d.WindowBackground == 0 || d.ControlDefaultSurface == 0 || d.TextPrimary == 0)
+            return null;
+
         return new ThemeModel
         {
             WindowBackground = C(d.WindowBackground),

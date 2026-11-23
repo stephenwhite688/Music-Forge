@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MusicForge.UI.Shared;
 
 namespace MusicForge.UI.MainWindow.Ribbons;
 
@@ -86,7 +87,7 @@ public partial class MediaRibbonControl : RibbonStripControl
         foreach (string path in _library.GetSourcePaths())
         {
             var child = new ToolStripMenuItem(path) { ToolTipText = path };
-            child.Click += (s, e) => MessageBox.Show($"Source:\n{path}", "Media",
+            child.Click += (s, e) => AppMessageBox.Show($"Source:\n{path}", "Media",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             item.DropDownItems.Add(child);
         }
@@ -100,17 +101,17 @@ public partial class MediaRibbonControl : RibbonStripControl
         var paths = _library.GetSourcePaths();
         if (paths.Count == 0)
         {
-            MessageBox.Show("No sources configured.", "Media",
+            AppMessageBox.Show("No sources configured.", "Media",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
-        var result = MessageBox.Show(
+        var result = AppMessageBox.Show(
             $"Remove all {paths.Count} source(s)?\nTracks and playlists are kept.\n\n" +
             string.Join("\n", paths.Take(5)) + (paths.Count > 5 ? "\n…" : ""),
             "Clear Sources", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
         if (result != DialogResult.Yes) return;
         _library.ClearSources();
-        MessageBox.Show("Sources cleared.", "Media", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        AppMessageBox.Show("Sources cleared.", "Media", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     private void SelectFolderSource()
@@ -143,7 +144,7 @@ public partial class MediaRibbonControl : RibbonStripControl
         var drives = DriveInfo.GetDrives().Where(d => d.IsReady).ToList();
         if (drives.Count == 0)
         {
-            MessageBox.Show("No ready drives found.", "Media", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            AppMessageBox.Show("No ready drives found.", "Media", MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
 
@@ -164,12 +165,12 @@ public partial class MediaRibbonControl : RibbonStripControl
         try
         {
             _library.AddSource(path);
-            MessageBox.Show($"Source added:\n{path}", "Media",
+            AppMessageBox.Show($"Source added:\n{path}", "Media",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Could not add source:\n{ex.Message}", "Media",
+            AppMessageBox.Show($"Could not add source:\n{ex.Message}", "Media",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -220,7 +221,7 @@ public partial class MediaRibbonControl : RibbonStripControl
         int sources = _library.GetSourcePaths().Count;
         int tracks = _library.GetTrackCount();
         int playlists = _library.GetPlaylists().Count;
-        MessageBox.Show(
+        AppMessageBox.Show(
             $"Library: Default Library\n\nSources: {sources}\nTracks: {tracks}\nPlaylists: {playlists}\n\nDatabase: {MusicForgeDatabase.Instance.DatabasePath}",
             "Library Properties", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
@@ -237,12 +238,12 @@ public partial class MediaRibbonControl : RibbonStripControl
         try
         {
             MusicForgeDatabase.Instance.Backup(dialog.FileName);
-            MessageBox.Show($"Backup saved to:\n{dialog.FileName}", "Media",
+            AppMessageBox.Show($"Backup saved to:\n{dialog.FileName}", "Media",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Backup failed:\n{ex.Message}", "Media",
+            AppMessageBox.Show($"Backup failed:\n{ex.Message}", "Media",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -254,12 +255,12 @@ public partial class MediaRibbonControl : RibbonStripControl
             int added = await _library.ScanLibraryAsync();
             int total = _library.GetTrackCount();
             _libraryBrowser.RefreshLibrary();
-            MessageBox.Show($"Scan complete.\nNew tracks: {added}\nLibrary total: {total}",
+            AppMessageBox.Show($"Scan complete.\nNew tracks: {added}\nLibrary total: {total}",
                 "Media", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Library scan failed:\n{ex.Message}", "Media",
+            AppMessageBox.Show($"Library scan failed:\n{ex.Message}", "Media",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -284,7 +285,7 @@ public partial class MediaRibbonControl : RibbonStripControl
         var playlists = _library.GetPlaylists();
         if (playlists.Count == 0)
         {
-            MessageBox.Show("No playlists yet. Create one with 'New Playlist'.", "Media",
+            AppMessageBox.Show("No playlists yet. Create one with 'New Playlist'.", "Media",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
@@ -298,7 +299,7 @@ public partial class MediaRibbonControl : RibbonStripControl
         var playlists = _library.GetPlaylists();
         if (playlists.Count == 0)
         {
-            MessageBox.Show("No playlists to delete.", "Media",
+            AppMessageBox.Show("No playlists to delete.", "Media",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
@@ -306,11 +307,11 @@ public partial class MediaRibbonControl : RibbonStripControl
         if (picker.ShowDialog(FindForm()) != DialogResult.OK || picker.SelectedPlaylistId < 0) return;
 
         string? name = playlists.FirstOrDefault(p => p.Id == picker.SelectedPlaylistId).Name;
-        var result = MessageBox.Show($"Delete playlist '{name}' and all its track entries?",
+        var result = AppMessageBox.Show($"Delete playlist '{name}' and all its track entries?",
             "Delete Playlist", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
         if (result != DialogResult.Yes) return;
         _library.DeletePlaylist(picker.SelectedPlaylistId);
-        MessageBox.Show("Playlist deleted.", "Media", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        AppMessageBox.Show("Playlist deleted.", "Media", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     private void NewPlaylist()
@@ -320,12 +321,12 @@ public partial class MediaRibbonControl : RibbonStripControl
         try
         {
             _library.CreatePlaylist(name.Trim());
-            MessageBox.Show($"Playlist '{name.Trim()}' created.", "Media",
+            AppMessageBox.Show($"Playlist '{name.Trim()}' created.", "Media",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Could not create playlist:\n{ex.Message}", "Media",
+            AppMessageBox.Show($"Could not create playlist:\n{ex.Message}", "Media",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -335,7 +336,7 @@ public partial class MediaRibbonControl : RibbonStripControl
         var playlists = _library.GetPlaylists();
         if (playlists.Count == 0)
         {
-            MessageBox.Show("No playlists yet. Create one with 'New Playlist'.", "Media",
+            AppMessageBox.Show("No playlists yet. Create one with 'New Playlist'.", "Media",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
@@ -386,11 +387,11 @@ public partial class MediaRibbonControl : RibbonStripControl
         string? path = MusicForge.UI.Services.PlaybackService.Instance.CurrentTrackPath;
         if (path is null)
         {
-            MessageBox.Show("No track is playing.", "Artwork",
+            AppMessageBox.Show("No track is playing.", "Artwork",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
-        var result = MessageBox.Show(
+        var result = AppMessageBox.Show(
             $"Remove embedded artwork from:\n{path}\n\nThis modifies the file permanently.",
             "Remove Artwork", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
         if (result != DialogResult.Yes) return;
@@ -401,12 +402,12 @@ public partial class MediaRibbonControl : RibbonStripControl
             file.Tag.Pictures = Array.Empty<TagLib.IPicture>();
             file.Save();
             if (_artworkPanel.Visible) _artworkPanel.RefreshArtwork();
-            MessageBox.Show("Artwork removed.", "Artwork",
+            AppMessageBox.Show("Artwork removed.", "Artwork",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Could not remove artwork:\n{ex.Message}", "Artwork",
+            AppMessageBox.Show($"Could not remove artwork:\n{ex.Message}", "Artwork",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -513,7 +514,7 @@ public partial class MediaRibbonControl : RibbonStripControl
         if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
             !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
         {
-            MessageBox.Show("Only http/https stream URLs are supported.", "Media",
+            AppMessageBox.Show("Only http/https stream URLs are supported.", "Media",
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
@@ -531,7 +532,7 @@ public partial class MediaRibbonControl : RibbonStripControl
         string? path = MusicForge.UI.Services.PlaybackService.Instance.CurrentTrackPath;
         if (path is null)
         {
-            MessageBox.Show("No track is playing.", "Properties",
+            AppMessageBox.Show("No track is playing.", "Properties",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
@@ -553,7 +554,7 @@ public partial class MediaRibbonControl : RibbonStripControl
         long dbSize = 0;
         try { dbSize = new FileInfo(MusicForgeDatabase.Instance.DatabasePath).Length; }
         catch { }
-        MessageBox.Show(
+        AppMessageBox.Show(
             $"Sources: {sources}\nTracks: {tracks}\nPlaylists: {playlists}\n" +
             $"Database size: {dbSize / 1024.0 / 1024:F1} MB\n\n{MusicForgeDatabase.Instance.DatabasePath}",
             "Library Statistics", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -565,12 +566,12 @@ public partial class MediaRibbonControl : RibbonStripControl
         {
             using var connection = MusicForgeDatabase.Instance.OpenConnection();
             MusicForgeDatabase.Execute(connection, "VACUUM;");
-            MessageBox.Show("Database compacted.", "Tools",
+            AppMessageBox.Show("Database compacted.", "Tools",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Compact failed:\n{ex.Message}", "Tools",
+            AppMessageBox.Show($"Compact failed:\n{ex.Message}", "Tools",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }

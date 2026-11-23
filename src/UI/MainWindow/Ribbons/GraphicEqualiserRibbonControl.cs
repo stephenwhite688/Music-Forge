@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Windows.Forms;
+using MusicForge.UI.Shared;
 using MusicForge.UI.Dialogs;
 using MusicForge.UI.MainWindow.GraphicEqualizer;
 using MusicForge.UI.Services;
@@ -86,7 +87,7 @@ public partial class GraphicEqualiserRibbonControl : RibbonStripControl
     private static void AddSeparator(ContextMenuStrip menu) => menu.Items.Add(new ToolStripSeparator());
 
     private static void Info(string title, string message) =>
-        MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        AppMessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
     // ---------- Target ----------
 

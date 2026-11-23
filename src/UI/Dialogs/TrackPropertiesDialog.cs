@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MusicForge.UI.Shared;
 
 namespace MusicForge.UI.Dialogs;
 
@@ -205,11 +206,11 @@ public sealed class TrackPropertiesDialog : Form
         try
         {
             AudioTags.Write(_path, _tag);
-            MessageBox.Show("Tags saved.", "Properties", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            AppMessageBox.Show("Tags saved.", "Properties", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Could not save tags:\n{ex.Message}", "Properties",
+            AppMessageBox.Show($"Could not save tags:\n{ex.Message}", "Properties",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }

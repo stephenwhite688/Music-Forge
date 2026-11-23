@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MusicForge.UI.Shared;
 using HelixAudio.Core;
 using MusicForge.UI.Data;
 using MusicForge.UI.MainWindow;
@@ -52,7 +53,7 @@ internal static class Program
         Application.ThreadException += (_, e) =>
         {
             LogCrash("UI thread", e.Exception);
-            MessageBox.Show(
+            AppMessageBox.Show(
                 $"An error occurred:\n\n{e.Exception.Message}\n\nDetails were written to the log.",
                 "MusicForge", MessageBoxButtons.OK, MessageBoxIcon.Error);
         };

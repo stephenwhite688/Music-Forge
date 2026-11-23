@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MusicForge.UI.Shared;
 
 namespace MusicForge.UI.Services;
 
@@ -95,7 +96,7 @@ public sealed class PlaybackService : IDisposable
         var paths = new LibraryRepository().GetPlaylistTrackPaths(playlistId);
         if (paths.Count == 0)
         {
-            MessageBox.Show("This playlist has no tracks.", "Playback",
+            AppMessageBox.Show("This playlist has no tracks.", "Playback",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
@@ -193,7 +194,7 @@ public sealed class PlaybackService : IDisposable
             _stationName = null;
             _stationUrl = null;
             Log($"STREAM PLAY FAILED {url} err={ex.Message}");
-            MessageBox.Show($"Could not play stream:\n{url}\n\n{ex.Message}",
+            AppMessageBox.Show($"Could not play stream:\n{url}\n\n{ex.Message}",
                 "Playback", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -323,7 +324,7 @@ public sealed class PlaybackService : IDisposable
         catch (Exception ex)
         {
             Log($"PLAY FAILED index={_index} path={_queue[_index]} err={ex.Message}");
-            MessageBox.Show($"Could not play:\n{_queue[_index]}\n\n{ex.Message}",
+            AppMessageBox.Show($"Could not play:\n{_queue[_index]}\n\n{ex.Message}",
                 "Playback", MessageBoxButtons.OK, MessageBoxIcon.Error);
             Next();
         }
@@ -401,7 +402,7 @@ public sealed class PlaybackService : IDisposable
                 _ = PlayUnavailableLoopAsync();
                 return;
             }
-            MessageBox.Show($"Playback error:\n{ex.Message}", "Playback",
+            AppMessageBox.Show($"Playback error:\n{ex.Message}", "Playback",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
             Stop();
         });

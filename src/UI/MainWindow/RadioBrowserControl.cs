@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using MusicForge.UI.Shared;
 
 namespace MusicForge.UI.MainWindow;
 
@@ -316,7 +317,7 @@ public sealed class RadioBrowserControl : UserControl
     {
         var s = SelectedStations().FirstOrDefault();
         if (s is null) return;
-        MessageBox.Show(
+        AppMessageBox.Show(
             $"Name: {s.Name}\nCountry: {s.Country} ({s.CountryCode})\nContinent: {s.Continent}\n" +
             $"Language: {s.Language}\nGenre tags: {s.GenreTags}\nCodec: {s.Codec}  Bitrate: {s.Bitrate}\n" +
             $"Votes: {s.Votes:N0}\nStream: {s.StreamUrl}\nHomepage: {s.HomepageUrl ?? "-"}",

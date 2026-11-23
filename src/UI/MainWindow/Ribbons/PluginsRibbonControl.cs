@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using MusicForge.UI.Shared;
 
 namespace MusicForge.UI.MainWindow.Ribbons;
 
@@ -187,7 +188,7 @@ public partial class PluginsRibbonControl : RibbonStripControl
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Could not load '{Path.GetFileName(file)}':\n{ex.Message}",
+                AppMessageBox.Show($"Could not load '{Path.GetFileName(file)}':\n{ex.Message}",
                     "Plugins", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
@@ -206,7 +207,7 @@ public partial class PluginsRibbonControl : RibbonStripControl
     private void ClearAll()
     {
         if (PluginService.Instance.Plugins.Count == 0) return;
-        var result = MessageBox.Show("Remove all plugins from the chain?",
+        var result = AppMessageBox.Show("Remove all plugins from the chain?",
             "Clear Plugins", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
         if (result != DialogResult.Yes) return;
         PluginService.Instance.Clear();

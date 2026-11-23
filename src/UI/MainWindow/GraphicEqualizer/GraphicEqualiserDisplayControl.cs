@@ -403,7 +403,7 @@ public partial class GraphicEqualiserDisplayControl : UserControl
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, $"Export failed:\n{ex.Message}", "EQ Export", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            AppMessageBox.Show(this, $"Export failed:\n{ex.Message}", "EQ Export", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 

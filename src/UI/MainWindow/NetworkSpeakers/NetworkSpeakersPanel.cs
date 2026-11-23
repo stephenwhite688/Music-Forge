@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MusicForge.UI.Shared;
 
 namespace MusicForge.UI.MainWindow.NetworkSpeakers;
 
@@ -234,7 +235,7 @@ public sealed class NetworkSpeakersPanel : UserControl
         catch (Exception ex)
         {
             _chkSystemAudio.Checked = false;
-            MessageBox.Show($"System audio capture failed: {ex.Message}");
+            AppMessageBox.Show($"System audio capture failed: {ex.Message}");
         }
         finally { _togglingSystemAudio = false; }
         RefreshLists();
@@ -252,9 +253,9 @@ public sealed class NetworkSpeakersPanel : UserControl
             var found = await Task.Run(() => _svc.Engine.DiscoverAsync(3000));
             _svc.NotifyChanged();
             if (found.Count == 0)
-                MessageBox.Show("No UPnP renderers found. Make sure the speakers are on the same network.");
+                AppMessageBox.Show("No UPnP renderers found. Make sure the speakers are on the same network.");
         }
-        catch (Exception ex) { MessageBox.Show($"Scan failed: {ex.Message}"); }
+        catch (Exception ex) { AppMessageBox.Show($"Scan failed: {ex.Message}"); }
         finally { _btnScan.Enabled = true; _btnScan.Text = "Scan Network"; RefreshLists(); }
     }
 
@@ -264,7 +265,7 @@ public sealed class NetworkSpeakersPanel : UserControl
         if (host.Length == 0) return;
         _svc.EnsureServerRunning();
         var dev = await _svc.Engine.AddDeviceByAddressAsync(host);
-        if (dev is null) MessageBox.Show($"No UPnP renderer answered at {host}.");
+        if (dev is null) AppMessageBox.Show($"No UPnP renderer answered at {host}.");
         else _svc.NotifyChanged();
         _txtHost.Clear();
         RefreshLists();
