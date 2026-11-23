@@ -36,45 +36,79 @@ public static class ThemePresets
     public static ThemeModel Blue()
     {
         var t = ThemeManager.CreateDefault();
+        // Deep navy surfaces + bright blue accents - clearly distinct from Dark
+        t.WindowBackground = Color.FromArgb(14, 20, 38);
+        t.ContainerBackground = Color.FromArgb(20, 30, 56);
+        t.ControlDefaultSurface = Color.FromArgb(30, 44, 78);
+        t.ControlHoverSurface = Color.FromArgb(42, 62, 108);
+        t.ControlPressedSurface = Color.FromArgb(52, 78, 135);
+        t.ControlDisabledSurface = Color.FromArgb(35, 45, 70);
+        t.TextSecondary = Color.FromArgb(120, 160, 220);
+        t.TextAccent = Color.FromArgb(160, 210, 255);
+        t.BorderColor = Color.FromArgb(60, 90, 150);
         t.PrimaryAccent = Color.FromArgb(30, 100, 220);
         t.SecondaryAccent = Color.FromArgb(15, 50, 120);
         t.HighlightColor = Color.FromArgb(90, 170, 255);
         t.FocusBorderColor = Color.FromArgb(120, 190, 255);
-        t.TextAccent = Color.FromArgb(160, 210, 255);
         t.EqualizerBarDefault = Color.FromArgb(30, 100, 220);
         t.EqualizerBarActive = Color.FromArgb(90, 170, 255);
         t.OscilloscopeLine = Color.FromArgb(90, 170, 255);
+        t.OscilloscopeBackground = Color.FromArgb(8, 14, 30);
         t.WaveformPrimary = Color.FromArgb(90, 170, 255);
+        t.MenuDropdownBackground = Color.FromArgb(24, 36, 66);
+        t.MenuDropdownHover = Color.FromArgb(42, 62, 108);
         return t;
     }
 
     public static ThemeModel Green()
     {
         var t = ThemeManager.CreateDefault();
+        t.WindowBackground = Color.FromArgb(12, 26, 18);
+        t.ContainerBackground = Color.FromArgb(18, 38, 26);
+        t.ControlDefaultSurface = Color.FromArgb(28, 58, 38);
+        t.ControlHoverSurface = Color.FromArgb(40, 82, 52);
+        t.ControlPressedSurface = Color.FromArgb(52, 105, 66);
+        t.ControlDisabledSurface = Color.FromArgb(32, 48, 36);
+        t.TextSecondary = Color.FromArgb(120, 200, 150);
+        t.TextAccent = Color.FromArgb(140, 235, 180);
+        t.BorderColor = Color.FromArgb(55, 110, 70);
         t.PrimaryAccent = Color.FromArgb(20, 140, 80);
         t.SecondaryAccent = Color.FromArgb(10, 70, 40);
         t.HighlightColor = Color.FromArgb(80, 210, 140);
         t.FocusBorderColor = Color.FromArgb(110, 230, 160);
-        t.TextAccent = Color.FromArgb(140, 235, 180);
         t.EqualizerBarDefault = Color.FromArgb(20, 140, 80);
         t.EqualizerBarActive = Color.FromArgb(80, 210, 140);
         t.OscilloscopeLine = Color.FromArgb(80, 210, 140);
+        t.OscilloscopeBackground = Color.FromArgb(6, 18, 12);
         t.WaveformPrimary = Color.FromArgb(80, 210, 140);
+        t.MenuDropdownBackground = Color.FromArgb(22, 44, 30);
+        t.MenuDropdownHover = Color.FromArgb(40, 82, 52);
         return t;
     }
 
     public static ThemeModel Red()
     {
         var t = ThemeManager.CreateDefault();
+        t.WindowBackground = Color.FromArgb(32, 14, 16);
+        t.ContainerBackground = Color.FromArgb(46, 20, 24);
+        t.ControlDefaultSurface = Color.FromArgb(78, 32, 38);
+        t.ControlHoverSurface = Color.FromArgb(108, 44, 52);
+        t.ControlPressedSurface = Color.FromArgb(135, 56, 66);
+        t.ControlDisabledSurface = Color.FromArgb(60, 36, 40);
+        t.TextSecondary = Color.FromArgb(230, 140, 150);
+        t.TextAccent = Color.FromArgb(255, 150, 160);
+        t.BorderColor = Color.FromArgb(140, 60, 70);
         t.PrimaryAccent = Color.FromArgb(190, 40, 50);
         t.SecondaryAccent = Color.FromArgb(100, 20, 28);
         t.HighlightColor = Color.FromArgb(240, 90, 100);
         t.FocusBorderColor = Color.FromArgb(255, 120, 130);
-        t.TextAccent = Color.FromArgb(255, 150, 160);
         t.EqualizerBarDefault = Color.FromArgb(190, 40, 50);
         t.EqualizerBarActive = Color.FromArgb(240, 90, 100);
         t.OscilloscopeLine = Color.FromArgb(240, 90, 100);
+        t.OscilloscopeBackground = Color.FromArgb(24, 8, 10);
         t.WaveformPrimary = Color.FromArgb(240, 90, 100);
+        t.MenuDropdownBackground = Color.FromArgb(52, 24, 28);
+        t.MenuDropdownHover = Color.FromArgb(108, 44, 52);
         return t;
     }
 
