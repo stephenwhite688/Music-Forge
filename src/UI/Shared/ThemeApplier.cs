@@ -88,11 +88,12 @@ public static class ThemeApplier
                 break;
         }
 
-        // Context menus get the dropdown colours
+        // Context menus get the dropdown colours + theme renderer (hover/selection)
         if (c.ContextMenuStrip is { } cms)
         {
             cms.BackColor = theme.MenuDropdownBackground;
             cms.ForeColor = theme.TextPrimary;
+            cms.Renderer = ThemeMenuRenderer.Instance;
         }
     }
 
