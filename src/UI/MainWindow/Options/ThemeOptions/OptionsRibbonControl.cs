@@ -612,9 +612,9 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
         private void ShowLicence()
         {
             AppMessageBox.ShowWithLogo(FindForm(),
-                "MusicForge is proprietary software.\n\n" +
-                "All rights reserved. The AudioForge sound engine components\n" +
-                "are licensed separately for SDK use.",
+                "MusicForge is open-source software.\n\n" +
+                "Released under the MIT License - see the LICENSE file\n" +
+                "in the project repository for full terms.",
                 "Licence Information");
         }
 
