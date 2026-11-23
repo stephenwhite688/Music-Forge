@@ -27,14 +27,13 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
             var appearanceGroup = BuildAppearanceGroup();
             var interfaceGroup = BuildInterfaceGroup();
             var startupGroup = BuildStartupGroup();
-            var filesGroup = BuildFilesGroup();
-            var performanceGroup = BuildPerformanceGroup();
+            var toolsGroup = BuildToolsGroup();
             var helpGroup = BuildHelpGroup();
             var aboutGroup = BuildAboutGroup();
 
             // WinForms docks later-added controls closer to the edge, so add in
             // reverse order to keep Appearance leftmost and About rightmost.
-            foreach (var group in new[] { aboutGroup, helpGroup, performanceGroup, filesGroup, startupGroup, interfaceGroup, appearanceGroup })
+            foreach (var group in new[] { aboutGroup, helpGroup, toolsGroup, startupGroup, interfaceGroup, appearanceGroup })
             {
                 group.Dock = DockStyle.Left;
                 RibbonPanel.Controls.Add(group);
@@ -369,23 +368,31 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
             catch { }
         }
 
-        // ==================== FILES ====================
+        // ==================== TOOLS (backup / settings / profile / performance) ====================
 
-        private RibbonGroupPanel BuildFilesGroup()
-        {
-            var group = new RibbonGroupPanel("Files");
-            group.AddButton("Backup", BuildBackupMenu());
-            group.AddButton("Settings", BuildSettingsMenu());
-            group.AddButton("Profile", BuildProfileMenu());
-            return group;
-        }
-
-        private ContextMenuStrip BuildBackupMenu()
+        private RibbonGroupPanel BuildToolsGroup()
         {
             var menu = new ContextMenuStrip();
+
             AddMenuItem(menu, "Backup Library Now…", BackupDatabase);
             AddMenuItem(menu, "Restore Backup…", RestoreDatabase);
-            return menu;
+            menu.Items.Add(new ToolStripSeparator());
+            AddMenuItem(menu, "Import Settings…", ImportTheme);
+            AddMenuItem(menu, "Export Settings…", ExportTheme);
+            AddMenuItem(menu, "Export Profile (theme + layout)…", ExportProfile);
+            AddMenuItem(menu, "Import Profile…", ImportTheme);
+            menu.Items.Add(new ToolStripSeparator());
+            AddCheckItem(menu, "Low Resource Mode", UiPerformance.Current == UiPerformance.Mode.Low, () => SetPerfMode(UiPerformance.Mode.Low));
+            AddCheckItem(menu, "Balanced Mode", UiPerformance.Current == UiPerformance.Mode.Balanced, () => SetPerfMode(UiPerformance.Mode.Balanced));
+            AddCheckItem(menu, "High Performance Mode", UiPerformance.Current == UiPerformance.Mode.High, () => SetPerfMode(UiPerformance.Mode.High));
+            menu.Items.Add(new ToolStripSeparator());
+            AddCheckItem(menu, "Engine Logging Enabled", AudioDiagnostics.Enabled, ToggleLogging);
+            AddMenuItem(menu, "Clear Memory Cache", ClearCache);
+            AddMenuItem(menu, "View Diagnostics Folder", OpenDiagnosticsFolder);
+
+            var group = new RibbonGroupPanel("Tools") { ContextMenuStrip = menu };
+            group.AddButton("Tools", menu);
+            return group;
         }
 
         private void BackupDatabase()
@@ -439,22 +446,6 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
             }
         }
 
-        private ContextMenuStrip BuildSettingsMenu()
-        {
-            var menu = new ContextMenuStrip();
-            AddMenuItem(menu, "Import Settings…", ImportTheme);
-            AddMenuItem(menu, "Export Settings…", ExportTheme);
-            return menu;
-        }
-
-        private ContextMenuStrip BuildProfileMenu()
-        {
-            var menu = new ContextMenuStrip();
-            AddMenuItem(menu, "Export Profile (theme + layout)…", ExportProfile);
-            AddMenuItem(menu, "Import Profile…", ImportTheme);
-            return menu;
-        }
-
         private void ExportProfile()
         {
             // A "profile" today is the theme JSON plus the layout setting - bundle both.
@@ -481,24 +472,6 @@ namespace MusicForge.UI.MainWindow.Options.ThemeOptions
                 AppMessageBox.Show($"Could not export profile: {ex.Message}", "Export Profile",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        // ==================== PERFORMANCE ====================
-
-        private RibbonGroupPanel BuildPerformanceGroup()
-        {
-            var menu = new ContextMenuStrip();
-            AddCheckItem(menu, "Low Resource Mode", UiPerformance.Current == UiPerformance.Mode.Low, () => SetPerfMode(UiPerformance.Mode.Low));
-            AddCheckItem(menu, "Balanced Mode", UiPerformance.Current == UiPerformance.Mode.Balanced, () => SetPerfMode(UiPerformance.Mode.Balanced));
-            AddCheckItem(menu, "High Performance Mode", UiPerformance.Current == UiPerformance.Mode.High, () => SetPerfMode(UiPerformance.Mode.High));
-            menu.Items.Add(new ToolStripSeparator());
-            AddCheckItem(menu, "Engine Logging Enabled", AudioDiagnostics.Enabled, ToggleLogging);
-            AddMenuItem(menu, "Clear Memory Cache", ClearCache);
-            AddMenuItem(menu, "View Diagnostics Folder", OpenDiagnosticsFolder);
-
-            var group = new RibbonGroupPanel("Performance") { ContextMenuStrip = menu };
-            group.AddButton("Performance", menu);
-            return group;
         }
 
         private void SetPerfMode(UiPerformance.Mode mode)
