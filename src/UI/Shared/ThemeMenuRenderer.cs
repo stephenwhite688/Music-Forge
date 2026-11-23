@@ -43,15 +43,15 @@ public sealed class ThemeMenuRenderer : ToolStripProfessionalRenderer
     /// <summary>Check glyphs + item images - fully owned so no system chrome leaks.</summary>
     protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
     {
-        if (e.Item.Image is null)
+        // Checked state FIRST - checked items can carry an internal system
+        // check image, so testing Image==null first lets the base renderer
+        // draw system chrome that highlights on selection.
+        if (e.Item is ToolStripMenuItem { Checked: true })
         {
-            // Checked items get our accent check; everything else gets
-            // nothing - the base renderer would paint system-coloured
-            // margin/check chrome (the "black box" on hover).
-            if (e.Item is ToolStripMenuItem { Checked: true })
-                DrawCheck(e.Graphics, e.ImageRectangle);
+            DrawCheck(e.Graphics, e.ImageRectangle);
             return;
         }
+        if (e.Item.Image is null) return;
         base.OnRenderItemImage(e);
     }
 
