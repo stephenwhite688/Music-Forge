@@ -12,6 +12,7 @@
 #define AppName      "MusicForge"
 #define AppVersion   "1.0.0"
 #define AppPublisher "MusicForge"
+#define AppComments  "Music player with 31-band EQ, visualisers, internet radio and network speaker output"
 #define AppExeName   "MusicForge.exe"
 #define PublishDir   "..\publish\win-x64"
 
@@ -21,6 +22,9 @@ AppName={#AppName}
 AppVersion={#AppVersion}
 AppVerName={#AppName} {#AppVersion}
 AppPublisher={#AppPublisher}
+AppComments={#AppComments}
+LicenseFile=License.rtf
+InfoBeforeFile=InfoBefore.rtf
 DefaultDirName={autopf}\{#AppName}
 DefaultGroupName={#AppName}
 DisableProgramGroupPage=yes
@@ -51,6 +55,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Additional icons:"
+Name: "taskbaricon"; Description: "Pin to &taskbar"; GroupDescription: "Additional icons:"
 
 [Files]
 Source: "{#PublishDir}\{#AppExeName}"; DestDir: "{app}"; Flags: ignoreversion
@@ -61,6 +66,7 @@ Source: "{#PublishDir}\visualisers\*"; DestDir: "{app}\visualisers"; Flags: igno
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; Tasks: desktopicon
+Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\{#AppName}"; Filename: "{app}\{#AppExeName}"; Tasks: taskbaricon
 
 [Run]
 Filename: "{app}\{#AppExeName}"; Description: "Launch {#AppName}"; \

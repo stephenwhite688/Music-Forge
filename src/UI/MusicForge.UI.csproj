@@ -39,6 +39,7 @@
     <Content Include="Assets\Main\musicforge.ico" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\CHANGELOG.md" Link="CHANGELOG.md" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Assets\InternetRadio\station is not available.mp3" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Licenses\AudioForge-SoundEngine-MIT.txt" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Assets\Transport\TransportBar\stop.png" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
