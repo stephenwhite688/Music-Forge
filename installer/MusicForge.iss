@@ -35,6 +35,17 @@ PrivilegesRequired=admin
 MinVersion=10.0
 UninstallDisplayIcon={app}\{#AppExeName}
 
+; Branding
+SetupIconFile=Wizard\Setup.ico
+WizardImageFile=Wizard\Wizard.bmp
+WizardSmallImageFile=Wizard\Small.bmp
+VersionInfoVersion=1.0.0.0
+VersionInfoCompany={#AppPublisher}
+VersionInfoDescription={#AppName} Setup
+VersionInfoProductName={#AppName}
+VersionInfoProductVersion={#AppVersion}
+VersionInfoCopyright=Copyright (C) 2025 {#AppPublisher}
+
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
