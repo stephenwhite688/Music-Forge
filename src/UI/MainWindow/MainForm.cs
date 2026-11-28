@@ -92,6 +92,18 @@ public partial class MainForm : Form
     {
         try
         {
+            // Prefer the icon embedded in the exe itself - always present,
+            // no dependence on loose asset files shipping with the build.
+            string exe = Application.ExecutablePath;
+            if (!string.IsNullOrEmpty(exe) && File.Exists(exe))
+            {
+                using var embedded = Icon.ExtractAssociatedIcon(exe);
+                if (embedded is not null)
+                {
+                    this.Icon = (Icon)embedded.Clone();
+                    return;
+                }
+            }
             string iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "Main", "musicforge.ico");
             if (File.Exists(iconPath))
                 this.Icon = new Icon(iconPath);

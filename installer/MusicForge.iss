@@ -55,7 +55,6 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Additional icons:"
-Name: "taskbaricon"; Description: "Pin to &taskbar"; GroupDescription: "Additional icons:"
 
 [Files]
 Source: "{#PublishDir}\{#AppExeName}"; DestDir: "{app}"; Flags: ignoreversion
@@ -66,7 +65,13 @@ Source: "{#PublishDir}\visualisers\*"; DestDir: "{app}\visualisers"; Flags: igno
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; Tasks: desktopicon
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\{#AppName}"; Filename: "{app}\{#AppExeName}"; Tasks: taskbaricon
+
+; Remove all per-user state on uninstall: the SQLite library/settings DB,
+; WAL/SHM sidecars, logs, and the legacy AudioForge data folder the app
+; migrates from. Everything the app writes lives under these two folders.
+[UninstallDelete]
+Type: filesandordirs; Name: "{localappdata}\MusicForge"
+Type: filesandordirs; Name: "{localappdata}\AudioForge"
 
 [Run]
 Filename: "{app}\{#AppExeName}"; Description: "Launch {#AppName}"; \

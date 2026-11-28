@@ -35,11 +35,19 @@ internal sealed class SplashForm : Form
         };
         try
         {
-            string iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "Main", "musicforge.ico");
-            if (File.Exists(iconPath))
+            string exe = Application.ExecutablePath;
+            Icon? icon = null;
+            if (!string.IsNullOrEmpty(exe) && File.Exists(exe))
+                icon = Icon.ExtractAssociatedIcon(exe);
+            if (icon is null)
             {
-                using var icon = new Icon(iconPath, new Size(128, 128));
-                iconBox.Image = icon.ToBitmap();
+                string iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "Main", "musicforge.ico");
+                if (File.Exists(iconPath)) icon = new Icon(iconPath);
+            }
+            if (icon is not null)
+            {
+                using (icon)
+                    iconBox.Image = icon.ToBitmap();
             }
         }
         catch { /* icon is cosmetic */ }
