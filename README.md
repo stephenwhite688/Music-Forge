@@ -4,17 +4,56 @@
 
 <h1 align="center">MusicForge</h1>
 
-<p align="center">A Windows music player built on a reusable pro-audio sound engine — with a<br/>
-31-band graphic equaliser designed to stress-test the engine, real-time<br/>
-visualisations, network speaker streaming, and a fully themeable UI.</p>
+<p align="center"><b>A music player for people who actually listen.</b><br/>
+Built for audiophiles and world-music explorers — a 31-band studio-grade EQ,<br/>
+real-time spectrum analysis, and thousands of internet radio stations<br/>
+from every corner of the globe. Powered by a real audio engine,<br/>
+not a skin over the Windows media library.</p>
 
-## The product family
+## See it
 
-| Product | What it is |
-|---|---|
-| **MusicForge** | The Windows music player (this repo's main app) — library management, playlists, internet radio, EQ, visualiser, plugins, network speakers |
-| **AudioForge SoundEngine** | The audio engine — WASAPI playback, DSP, streaming decode, mixing, CLAP/.NET plugin hosting |
-| **SpeakerForge** | Network speaker discovery and multi-room streaming (UPnP/DLNA, Chromecast, AirPlay) |
+<p align="center">
+  <img src="docs/screenshots/main-window.jpg" alt="MusicForge main window" width="720" />
+</p>
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/graphic-equalizer.jpg" alt="31-band graphic equaliser" /></td>
+    <td width="50%"><img src="docs/screenshots/visualizer-oscilloscope.jpg" alt="Oscilloscope visualiser" /></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/visualizer-bars.jpg" alt="Spectrum bars visualiser" /></td>
+    <td><img src="docs/screenshots/internet-radio-stations.jpg" alt="Internet radio station browser" /></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/library.jpg" alt="Music library" /></td>
+    <td><img src="docs/screenshots/themes.jpg" alt="Theme customisation" /></td>
+  </tr>
+</table>
+
+More views: [mini visualiser](docs/screenshots/mini-visualizer.jpg) ·
+[display modes](docs/screenshots/visualizer-display-mode.jpg) ·
+[internet radio](docs/screenshots/internet-radio.jpg) ·
+[media sources](docs/screenshots/media-source-search.jpg) ·
+[media tab](docs/screenshots/media-tab.jpg)
+
+## Why MusicForge
+
+### Built for ears that notice
+- **31-band graphic equaliser** — ISO 1/3-octave bands, ±15 dB per band, adjustable Q, per-channel unlinking
+- **Minimum *and* linear-phase modes** — linear phase keeps transients coherent for mastering-grade correction; minimum phase keeps latency low
+- **True-peak and BS.1770 loudness analysis**, plus offline EQ rendering to bake your curve permanently into a file
+- Honest DSP — filters you can measure on the spectrum display, not "magic enhancer" marketing
+
+### The world, on tap
+- **Internet radio** — thousands of stations: jazz from New Orleans, rai from Algiers, qawwali from Lahore, field recordings from the Amazon
+- Graceful station handling — a dead stream gets flagged cleanly instead of hanging your player
+- Curate stations alongside your local library
+
+### Your library, your speakers
+- Fast local library — playlists, smart search, track properties, artwork
+- **Stream to the rest of your home** — AirPlay, Chromecast, Sonos and DLNA network speakers
+- Output selection that **follows Windows default-device changes** — plug in headphones mid-track and the music follows you
 
 ## Features
 
@@ -26,6 +65,11 @@ visualisations, network speaker streaming, and a fully themeable UI.</p>
 - **Networked speakers** — discover and stream to speakers around your LAN, synced with local output
 - **Fully themeable UI** — colour presets, per-control colours, fonts, density, tooltips/hover, theme JSON import/export, persisted across sessions
 - **Tools** — audio conversion/export, track tag editing, ReplayGain, MIDI device test, library backup/compact
+
+## Download
+
+Prebuilt installer for Windows x64 is available on the [Releases](../../releases) page —
+self-contained, ~55 MB, no dependencies, no account required, no telemetry.
 
 ## Tech stack
 
