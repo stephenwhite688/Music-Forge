@@ -65,5 +65,8 @@ Specs/                            Design specifications
 
 ## License
 
-MIT — see [LICENSE](LICENSE). AudioForge SoundEngine components are licensed
-for SDK use under the same terms.
+Proprietary — see [LICENSE](LICENSE). The MusicForge application source is
+provided for personal evaluation and non-commercial use only; distributed
+binaries are governed by the End User Licence Agreement shown at install.
+The bundled **AudioForge SoundEngine** and **SpeakerForge** components
+remain MIT-licensed — see their respective repositories.

@@ -1,21 +1,39 @@
-MIT License
+PROPRIETARY LICENSE
 
-Copyright (c) 2026 Stephen White
+Copyright (c) 2026 Stephen White. All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+MusicForge is proprietary software.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The source code in this repository is provided for personal evaluation
+and non-commercial use only. You may NOT use, copy, modify, merge,
+publish, distribute, sublicense, or sell this software or any portion of
+it, in source or binary form, except for non-commercial evaluation
+purposes.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+OPEN-SOURCE COMPONENTS
+
+This repository contains third-party and companion components that
+remain licensed under their own terms and are NOT covered by this
+proprietary license:
+
+- AudioForge SoundEngine (src/Sound Engine/, AudioForge.SoundEngine/) —
+  MIT License, see https://github.com/stephenwhite688/AudioForge-SoundEngine
+- SpeakerForge — MIT License, see the SpeakerForge repository
+
+Your rights under the MIT License in respect of those components are
+unaffected by this license.
+
+DISTRIBUTED BINARIES
+
+Compiled MusicForge binaries are licensed under the MusicForge End User
+Licence Agreement presented during installation.
+
+NO WARRANTY
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
