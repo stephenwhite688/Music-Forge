@@ -9,6 +9,7 @@ public class WasapiDeviceManager : IAudioDeviceManager
     private int _sr, _ch;
     private bool _init, _run, _exclusive;
     private string _outId, _inId;
+    private string? _endpointId; // ID of the endpoint the live WasapiOut is bound to
     private WasapiOut? _wasapiOut;
     private BufferedWaveProvider? _bufferedWaveProvider;
     private float _volume = 1.0f;
@@ -61,15 +62,23 @@ public class WasapiDeviceManager : IAudioDeviceManager
         if (!_init) throw new InvalidOperationException("Not initialized.");
         
         // Resolve the selected output endpoint; empty/null = Windows default.
+        // The default is resolved explicitly so we can track which endpoint
+        // the live stream is bound to (DefaultOutputDeviceChanged).
         MMDevice? device = null;
+        using var en = new MMDeviceEnumerator();
         if (!string.IsNullOrEmpty(_outId))
         {
-            using var en = new MMDeviceEnumerator();
             foreach (var d in en.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active))
                 if (d.ID == _outId) { device = d; break; }
             if (device is null)
                 AudioDiagnostics.Log("WASAPI", $"Output device '{_outId}' not found - using default");
         }
+        else
+        {
+            try { device = en.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia); }
+            catch { /* no active render endpoint - WasapiOut will fail as before */ }
+        }
+        _endpointId = device?.ID;
         var shareMode = _exclusive
             ? NAudio.CoreAudioApi.AudioClientShareMode.Exclusive
             : NAudio.CoreAudioApi.AudioClientShareMode.Shared;
@@ -112,6 +121,45 @@ public class WasapiDeviceManager : IAudioDeviceManager
         _wasapiOut = null;
         _bufferedWaveProvider = null;
         AudioDiagnostics.Log("WASAPI", "Stopped");
+    }
+
+    /// <summary>True while the output stream is open and accepting writes.</summary>
+    public bool IsRunning => _run;
+
+    /// <summary>
+    /// True when no explicit device is pinned (<see cref="CurrentOutputDeviceId"/>
+    /// empty) and Windows' default render endpoint has changed since
+    /// <see cref="Start"/> - e.g. Bluetooth headphones plugged in. The caller
+    /// should <see cref="Reopen"/> the output to follow the new default.
+    /// </summary>
+    public bool DefaultOutputDeviceChanged()
+    {
+        if (!string.IsNullOrEmpty(_outId) || !_run) return false;
+        try
+        {
+            using var en = new MMDeviceEnumerator();
+            var def = en.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            return !string.Equals(def.ID, _endpointId, StringComparison.Ordinal);
+        }
+        catch { return false; }
+    }
+
+    /// <summary>
+    /// Closes and reopens the output endpoint (e.g. after the Windows default
+    /// device changed). Playback position/nodes are the caller's concern -
+    /// buffered audio is discarded. Returns false if the reopen failed; the
+    /// device stays stopped and can be retried.
+    /// </summary>
+    public bool Reopen()
+    {
+        if (!_init) return false;
+        try
+        {
+            Stop();
+            Start();
+            return true;
+        }
+        catch { return false; }
     }
 
     public void Pause()

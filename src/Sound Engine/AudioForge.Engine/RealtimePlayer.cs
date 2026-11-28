@@ -304,12 +304,36 @@ public sealed class RealtimePlayer : IDisposable
             // The only resize happens on the final partial block at EOS.
             var buffer = new float[blockFrames * ch];
             var byteScratch = reader is not null ? new byte[blockFrames * reader.WaveFormat.BlockAlign] : null;
+            long lastDeviceCheck = Environment.TickCount64;
             while (!_stopRequested && id == _playbackId)
             {
                 if (_paused)
                 {
                     Thread.Sleep(20);
                     continue;
+                }
+
+                // Output endpoint may be closed mid-reopen - wait for it
+                // rather than killing the feed thread on a failed Write,
+                // retrying the reopen about once a second.
+                if (!_device.IsRunning)
+                {
+                    if (Environment.TickCount64 - lastDeviceCheck >= 1000)
+                    {
+                        lastDeviceCheck = Environment.TickCount64;
+                        _device.Reopen();
+                    }
+                    Thread.Sleep(50);
+                    continue;
+                }
+
+                // ~once per second: follow Windows default-device changes
+                // (e.g. Bluetooth headphones plugged in mid-playback).
+                if (Environment.TickCount64 - lastDeviceCheck >= 1000)
+                {
+                    lastDeviceCheck = Environment.TickCount64;
+                    if (_device.DefaultOutputDeviceChanged())
+                        _device.Reopen();
                 }
 
                 // Pace against the output buffer: keep ~2s of audio queued,
